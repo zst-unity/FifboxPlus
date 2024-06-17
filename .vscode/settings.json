@@ -56,5 +56,11 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "FifboxPlus.sln"
+    "dotnet.defaultSolution": "FifboxPlus.sln",
+    "cSpell.words": [
+        "Behaviour",
+        "Collidable",
+        "collidables",
+        "Fifbox"
+    ]
 }
