@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Fifbox.Physics;
 using UnityEngine;
 using ZSToolkit.ZSTGizmos;
@@ -45,22 +46,35 @@ namespace Fifbox.Player
 
         private void CheckCollision(PlayerCollidable collidable)
         {
-            Debug.Log("dd");
             if (collidable.Collider is BoxCollider boxCollider) CheckBoxCollision(boxCollider);
         }
 
         private void CheckBoxCollision(BoxCollider collider)
         {
-            var vertices = collider.GetWorldVertices();
-            foreach (var vertex in vertices)
+            var edges = collider.GetWorldEdges();
+            var intersectsTop = false;
+            var intersectsForward = false;
+            var intersectsRight = false;
+
+            foreach (var (a, b) in edges)
             {
-                var vertexTopDownPosition = new Vector2(vertex.x, vertex.z);
-                var playerTopDownPosition = new Vector2(transform.position.x, transform.position.z);
+                var ellipsePosition = new Vector2(transform.position.x, transform.position.z);
+                var ellipseRadius = new Vector2(radius * transform.lossyScale.x, radius * transform.lossyScale.z);
+                var ellipseIntersections = FifboxPhysicsUtility.GetEllipseLineIntersections(new(a.x, a.z), new(b.x, b.z), ellipsePosition, ellipseRadius);
+                if (ellipseIntersections.Length > 0) intersectsTop = true;
 
-                if (Vector2.Distance(vertexTopDownPosition, playerTopDownPosition) > radius) continue;
+                var forwardBackRectanglePosition = (Vector2)ColliderPosition;
+                var forwardBackRectangleSize = new Vector2(radius * 2 * transform.lossyScale.x, height * transform.lossyScale.y);
+                var forwardBackIntersects = FifboxPhysicsUtility.LineIntersectsRectangle(new(a.x, a.y), new(b.x, b.y), forwardBackRectanglePosition, forwardBackRectangleSize);
+                if (forwardBackIntersects) intersectsForward = true;
 
-                Debug.Log("Collision!");
+                var leftRightRectanglePosition = new Vector2(ColliderPosition.z, ColliderPosition.y);
+                var leftRightRectangleSize = new Vector2(radius * 2 * transform.lossyScale.z, height * transform.lossyScale.y);
+                var leftRightIntersects = FifboxPhysicsUtility.LineIntersectsRectangle(new(a.z, a.y), new(b.z, b.y), leftRightRectanglePosition, leftRightRectangleSize);
+                if (leftRightIntersects) intersectsRight = true;
             }
+
+            if (intersectsTop && intersectsForward && intersectsRight) Debug.Log("Box Collision!");
         }
     }
 }
