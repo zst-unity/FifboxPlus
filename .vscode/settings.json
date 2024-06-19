@@ -62,6 +62,10 @@
         "Collidable",
         "collidables",
         "Fifbox",
-        "Mathf"
+        "Mathf",
+        "Postprocess",
+        "Postprocessor",
+        "Rigidbody",
+        "деселерации"
     ]
 }

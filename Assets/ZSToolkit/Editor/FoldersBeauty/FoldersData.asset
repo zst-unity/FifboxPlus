@@ -17,5 +17,5 @@ MonoBehaviour:
     darkThemeColor: {r: 0.36320752, g: 1, b: 0.38193673, a: 1}
     lightThemeColor: {r: 0, g: 0.6367925, b: 0.018729208, a: 1}
   - path: Assets/_Project/Models
-    darkThemeColor: {r: 1, g: 0.68134403, b: 0.3176471, a: 1}
-    lightThemeColor: {r: 0.6823529, g: 0.36369678, b: 0, a: 1}
+    darkThemeColor: {r: 0.3537736, g: 0.69911176, b: 1, a: 1}
+    lightThemeColor: {r: 0, g: 0.34533814, b: 0.6462264, a: 1}
