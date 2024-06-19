@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace ZSToolkit.Editor.FoldersBeauty
 {
+    [Serializable]
     public class FoldersData : ScriptableObject
     {
         public static FoldersData Singleton

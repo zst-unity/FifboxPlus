@@ -12,4 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d5dafe7349e7e7429668e653bc0a866, type: 3}
   m_Name: FoldersData
   m_EditorClassIdentifier: 
-  folders: []
+  folders:
+  - path: Assets/_Project/Scripts
+    darkThemeColor: {r: 0.36320752, g: 1, b: 0.38193673, a: 1}
+    lightThemeColor: {r: 0, g: 0.6367925, b: 0.018729208, a: 1}
+  - path: Assets/_Project/Models
+    darkThemeColor: {r: 1, g: 0.68134403, b: 0.3176471, a: 1}
+    lightThemeColor: {r: 0.6823529, g: 0.36369678, b: 0, a: 1}

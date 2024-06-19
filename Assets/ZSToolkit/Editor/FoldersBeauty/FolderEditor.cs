@@ -132,6 +132,8 @@ namespace ZSToolkit.Editor.FoldersBeauty
                         darkThemeColor = _darkThemeColor,
                         lightThemeColor = _lightThemeColor
                     });
+
+                    EditorUtility.SetDirty(FoldersData.Singleton);
                 }
             }
             else
@@ -193,11 +195,15 @@ namespace ZSToolkit.Editor.FoldersBeauty
                 if (_darkThemeColor == FolderBeautyColors.DARK_THEME_DEFAULT_FOLDER_COLOR && _lightThemeColor == FolderBeautyColors.LIGHT_THEME_DEFAULT_FOLDER_COLOR)
                 {
                     FoldersData.Singleton.folders.RemoveAt(folderDataIdx);
+
+                    EditorUtility.SetDirty(FoldersData.Singleton);
                 }
                 else
                 {
                     FoldersData.Singleton.folders[folderDataIdx].darkThemeColor = _darkThemeColor;
                     FoldersData.Singleton.folders[folderDataIdx].lightThemeColor = _lightThemeColor;
+
+                    EditorUtility.SetDirty(FoldersData.Singleton);
                 }
             }
 
