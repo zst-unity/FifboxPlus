@@ -151,7 +151,7 @@ namespace Fifbox.Player
         }
 
         // пизда :overdrive_shakal:
-        private void CheckGrounded()
+        protected void CheckGrounded()
         {
             // сначала коробкой чекаем вообще ли мы на земле, а потом уже лучем находим слоуп
             _grounded = Physics.CheckBox(GroundCheckPosition, _groundCheckSize / 2, Quaternion.identity, _mapLayers, QueryTriggerInteraction.Ignore);
@@ -213,7 +213,7 @@ namespace Fifbox.Player
         }
 
         // наконецта двигаем игрока
-        protected void FixedUpdate()
+        private void FixedUpdate()
         {
             if (!isLocalPlayer) return;
 
@@ -252,6 +252,12 @@ namespace Fifbox.Player
             {
                 if (contact.normal.y <= -0.5f) _velocity.y = 0;
             }
+        }
+
+        protected void TryJump()
+        {
+            if (!_grounded) return;
+            _velocity.y += _jumpForce;
         }
     }
 }
