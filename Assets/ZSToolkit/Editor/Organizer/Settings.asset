@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cd6b973d97d30849ac183988e623abd, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  folderPath: Assets
+  folderPath: Assets/_Project
   autoScan: 1
   markTypes:
     names:

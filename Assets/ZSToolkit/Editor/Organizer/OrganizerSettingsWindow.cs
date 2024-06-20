@@ -65,6 +65,8 @@ namespace ZSToolkit.Editor.Organizer
 
         private void OnGUI()
         {
+            var isDirty = false;
+
             if (_firstEnterAfterFocus)
             {
                 RemoveInputFocus();
@@ -90,7 +92,11 @@ namespace ZSToolkit.Editor.Organizer
             EditorGUILayout.BeginHorizontal();
 
             EditorGUILayout.LabelField("Path to scan", settingLabelStyle, GUILayout.MaxWidth(100));
+
+            EditorGUI.BeginChangeCheck();
             _settings.folderPath = EditorGUILayout.TextField(_settings.folderPath);
+            if (EditorGUI.EndChangeCheck()) isDirty = true;
+
             if (GUILayout.Button("Select path", GUILayout.MaxWidth(100)))
             {
                 var path = EditorUtility.OpenFolderPanel("Select path", "Assets", "");
@@ -100,6 +106,8 @@ namespace ZSToolkit.Editor.Organizer
                     {
                         _settings.folderPath = "Assets" + path.Replace(Application.dataPath, "");
                         if (_settings.autoScan) OrganizerWindow.Rescan();
+
+                        isDirty = true;
                     }
                     else
                     {
@@ -133,6 +141,8 @@ namespace ZSToolkit.Editor.Organizer
             {
                 _settings.autoScan = !_settings.autoScan;
                 if (_settings.autoScan) OrganizerWindow.Rescan();
+
+                isDirty = true;
             }
             EditorGUIUtility.AddCursorRect(autoScanRect, MouseCursor.Link);
 
@@ -201,6 +211,8 @@ namespace ZSToolkit.Editor.Organizer
 
             foreach (var name in toRemove)
             {
+                isDirty = true;
+
                 _settings.markTypes.Remove(name);
                 if (_markPreviewLines.ContainsKey(name)) _markPreviewLines.Remove(name);
 
@@ -220,6 +232,8 @@ namespace ZSToolkit.Editor.Organizer
             }
             else if (GUILayout.Button("Add"))
             {
+                isDirty = true;
+
                 _settings.markTypes.Add(_keyInput, Color.white);
                 _markPreviewLines.Add(_keyInput, Random.Range(1, 199));
 
@@ -233,6 +247,8 @@ namespace ZSToolkit.Editor.Organizer
             {
                 GUI.FocusControl(null);
             }
+
+            if (isDirty) EditorUtility.SetDirty(_settings);
         }
     }
 }

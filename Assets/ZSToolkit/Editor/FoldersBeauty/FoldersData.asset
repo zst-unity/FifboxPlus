@@ -17,5 +17,14 @@ MonoBehaviour:
     darkThemeColor: {r: 0.36320752, g: 1, b: 0.38193673, a: 1}
     lightThemeColor: {r: 0, g: 0.6367925, b: 0.018729208, a: 1}
   - path: Assets/_Project/Models
-    darkThemeColor: {r: 0.3537736, g: 0.69911176, b: 1, a: 1}
-    lightThemeColor: {r: 0, g: 0.34533814, b: 0.6462264, a: 1}
+    darkThemeColor: {r: 0.5730286, g: 0.41037738, b: 1, a: 1}
+    lightThemeColor: {r: 0.16265123, g: 0, b: 0.5896226, a: 1}
+  - path: Assets/_Project/Resources
+    darkThemeColor: {r: 1, g: 0.912032, b: 0.3537736, a: 1}
+    lightThemeColor: {r: 0.6462264, g: 0.5582585, b: 0, a: 1}
+  - path: Assets/_Project/Textures
+    darkThemeColor: {r: 1, g: 0.2971698, b: 0.2971698, a: 1}
+    lightThemeColor: {r: 0.7028302, g: 0, b: 0, a: 1}
+  - path: Assets/_Project/Materials
+    darkThemeColor: {r: 0.5424528, g: 0.84831893, b: 1, a: 1}
+    lightThemeColor: {r: 0, g: 0.30586612, b: 0.4575472, a: 1}
