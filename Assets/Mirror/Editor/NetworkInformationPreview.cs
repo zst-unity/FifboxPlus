@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Mirror
 {
+    /*
     [CustomPreview(typeof(GameObject))]
     class NetworkInformationPreview : ObjectPreview
     {
@@ -303,5 +304,5 @@ namespace Mirror
                 value = new GUIContent((value ? "Yes" : "No"))
             };
         }
-    }
+    }*/
 }

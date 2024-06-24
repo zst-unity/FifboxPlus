@@ -8,6 +8,7 @@ namespace Fifbox.Player
         [Header("Objects")]
         [SerializeField] private GameObject _mainCameraPrefab;
         [SerializeField] private Transform _cameraHolder;
+        [SerializeField] private GameObject[] _playerModels;
 
         private FifboxActions _actions;
         private float _cameraRotX;
@@ -17,6 +18,11 @@ namespace Fifbox.Player
         protected override void OnStart()
         {
             Cursor.lockState = CursorLockMode.Locked;
+
+            foreach (var model in _playerModels)
+            {
+                model.SetActive(false);
+            }
 
             // меняем слой с Player на LocalPlayer
             foreach (Transform child in GetComponentsInChildren<Transform>())
@@ -46,8 +52,11 @@ namespace Fifbox.Player
             _actions = new();
             _actions.Enable();
 
-            _actions.Player.Move.performed += ctx => _movementInput = ctx.ReadValue<Vector2>();
-            _actions.Player.Move.canceled += ctx => _movementInput = Vector2.zero;
+            _actions.Player.Move.performed += ctx => WishDirection = ctx.ReadValue<Vector2>();
+            _actions.Player.Move.canceled += ctx => WishDirection = Vector2.zero;
+
+            _actions.Player.Run.performed += ctx => WantsToRun = true;
+            _actions.Player.Run.canceled += ctx => WantsToRun = false;
 
             _actions.Player.Jump.performed += ctx => TryJump();
         }
@@ -68,7 +77,7 @@ namespace Fifbox.Player
             _cameraRotY += cameraInput.x;
             _cameraRotX = Mathf.Clamp(_cameraRotX - cameraInput.y, -90f, 90f);
 
-            _orientation.localRotation = Quaternion.Euler(0f, _cameraRotY, 0f);
+            Orientation.localRotation = Quaternion.Euler(0f, _cameraRotY, 0f);
             Camera.main.transform.localRotation = Quaternion.Euler(_cameraRotX, 0f, _cameraRotZ);
         }
 
