@@ -106,7 +106,6 @@ namespace Fifbox.Player
         {
             if (!isLocalPlayer) return;
             GroundCheck();
-            MoveToGround();
             ApplyGravity();
             ApplyFriction();
             Movement();
@@ -115,11 +114,18 @@ namespace Fifbox.Player
             OnUpdate();
         }
 
+        private void LateUpdate()
+        {
+            if (!isLocalPlayer) return;
+            GroundCheck();
+            MoveToGround();
+        }
+
         private void GroundCheck()
         {
             var width = Width - 0.01f;
 
-            var useBuffer = Rigidbody.linearVelocity.y <= 0f && Rigidbody.linearVelocity.y > -0.1f;
+            var useBuffer = Rigidbody.linearVelocity.y == 0f;
             var groundedCheckPosition = useBuffer
                 ? transform.position + Vector3.up * (MaxStepHeight - StepDownBufferHeight) / 2
                 : transform.position + Vector3.up * MaxStepHeight / 2;
@@ -153,7 +159,7 @@ namespace Fifbox.Player
         private void MoveToGround()
         {
             if (!Grounded || Rigidbody.linearVelocity.y > 0f) return;
-            Rigidbody.MovePosition(new(Rigidbody.position.x, GroundHeight, Rigidbody.position.z));
+            transform.position = new(transform.position.x, GroundHeight, transform.position.z);
         }
 
         private void ApplyGravity()

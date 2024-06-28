@@ -387,13 +387,14 @@ MonoBehaviour:
   <Deceleration>k__BackingField: 10
   <MaxSpeed>k__BackingField: 6
   <WalkJumpForce>k__BackingField: 6
+  <JumpBufferTime>k__BackingField: 0
   <AirAcceleration>k__BackingField: 6
   <AirSpeedCap>k__BackingField: 1.8
   <MapLayers>k__BackingField:
     serializedVersion: 2
     m_Bits: 136
   <MaxStepHeight>k__BackingField: 0.4
-  <StepDownBufferHeight>k__BackingField: 0.4
+  <StepDownBufferHeight>k__BackingField: 0.6
   <MaxGroundInfoCheckDistance>k__BackingField: 100
   <Grounded>k__BackingField: 0
   <GroundNormal>k__BackingField: {x: 0, y: 0, z: 0}
