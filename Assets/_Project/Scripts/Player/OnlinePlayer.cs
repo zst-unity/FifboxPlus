@@ -52,13 +52,13 @@ namespace Fifbox.Player
             _actions = new();
             _actions.Enable();
 
-            _actions.Player.Move.performed += ctx => WishDirection = ctx.ReadValue<Vector2>();
-            _actions.Player.Move.canceled += ctx => WishDirection = Vector2.zero;
+            _actions.Player.Move.performed += ctx => RawMovementInput = ctx.ReadValue<Vector2>();
+            _actions.Player.Move.canceled += ctx => RawMovementInput = Vector2.zero;
 
             _actions.Player.Run.performed += ctx => WantsToRun = true;
             _actions.Player.Run.canceled += ctx => WantsToRun = false;
 
-            _actions.Player.Jump.performed += ctx => TryJump();
+            // _actions.Player.Jump.performed += ctx => TryJump();
         }
 
         protected override void OnUpdate()

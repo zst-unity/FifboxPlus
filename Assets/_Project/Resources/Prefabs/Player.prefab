@@ -381,16 +381,29 @@ MonoBehaviour:
   <Mass>k__BackingField: 65
   <Width>k__BackingField: 0.41
   <Height>k__BackingField: 1.7
+  <Friction>k__BackingField: 4
   <WalkSpeed>k__BackingField: 5
-  <MaxStepHeight>k__BackingField: 0.4
+  <Acceleration>k__BackingField: 14
+  <Deceleration>k__BackingField: 10
+  <MaxSpeed>k__BackingField: 6
+  <WalkJumpForce>k__BackingField: 6
+  <AirAcceleration>k__BackingField: 6
+  <AirSpeedCap>k__BackingField: 1.8
   <MapLayers>k__BackingField:
     serializedVersion: 2
     m_Bits: 136
+  <MaxStepHeight>k__BackingField: 0.4
+  <StepDownBufferHeight>k__BackingField: 0.4
+  <MaxGroundInfoCheckDistance>k__BackingField: 100
   <Grounded>k__BackingField: 0
   <GroundNormal>k__BackingField: {x: 0, y: 0, z: 0}
   <GroundAngle>k__BackingField: 0
   <GroundHeight>k__BackingField: 0
-  velocity: {x: 0, y: 0, z: 0}
+  <PreviousGroundHeight>k__BackingField: 0
+  _rawMovementInput: {x: 0, y: 0}
+  _wantsToRun: 0
+  _wantsToCrouch: 0
+  _wishDirection: {x: 0, y: 0}
   _mainCameraPrefab: {fileID: 6722454577904573275, guid: f48ee45efdfb28347b67fd052395d735, type: 3}
   _cameraHolder: {fileID: 3342691042170864155}
   _playerModels:
@@ -420,7 +433,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!114 &5549509710526418612
