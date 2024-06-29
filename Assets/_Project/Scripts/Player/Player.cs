@@ -50,6 +50,8 @@ namespace Fifbox.Player
         [field: SerializeField, ReadOnly] public float GroundHeight { get; private set; }
         [field: SerializeField, ReadOnly] public float PreviousGroundHeight { get; private set; }
 
+        public Vector3 viewAngles;
+
         protected override void OnValidate()
         {
             base.OnValidate();
@@ -105,13 +107,14 @@ namespace Fifbox.Player
         private void Update()
         {
             if (!isLocalPlayer) return;
+            OnUpdate();
+
             GroundCheck();
             ApplyGravity();
-            ApplyFriction();
+            // ApplyFriction();
             Movement();
 
             if (Input.GetKey(KeyCode.Space)) TryJump();
-            OnUpdate();
         }
 
         private void LateUpdate()
@@ -188,33 +191,53 @@ namespace Fifbox.Player
 
         private void Movement()
         {
-            var wishDir = (Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y).normalized;
-            _wishDirection = new(wishDir.x, wishDir.z);
-
-            var horizontalMovement = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z);
+            Vector3 velocity = Rigidbody.linearVelocity;
 
             if (Grounded)
             {
-                var currentSpeed = Vector2.Dot(horizontalMovement, _wishDirection);
+                var wishDir = Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y;
+                var wishSpeed = wishDir.magnitude;
+                wishDir.Normalize();
+                // todo clamp похуй
+                /* // Clamp to server defined max speed
+                if ((wishspeed != 0.0f) && (wishspeed > mv->m_flMaxSpeed))
+                {
+                    VectorScale (wishvel, mv->m_flMaxSpeed/wishspeed, wishvel);
+                    wishspeed = mv->m_flMaxSpeed;
+                } */
 
-                var maxAccel = 10 * MaxSpeed;
-                var addSpeed = Mathf.Clamp(MaxSpeed - currentSpeed, 0, maxAccel * Time.deltaTime);
+                velocity.y = 0;
+                // Accelerate
+                float accel = 5.5f * 0.01905f;
+                {
+                    // See if we are changing direction a bit
+                    float currentspeed = Vector3.Dot(velocity, wishDir);
 
-                Rigidbody.linearVelocity += new Vector3(_wishDirection.x, 0, _wishDirection.y) * addSpeed;
+                    // Reduce wishspeed by the amount of veer.
+                    float addspeed = wishSpeed - currentspeed;
+
+                    // If not going to add any speed, done.
+                    if (addspeed <= 0)
+                        return;
+
+                    // Determine amount of accleration.
+                    float accelspeed = accel * Time.deltaTime * wishSpeed/*  * player->m_surfaceFriction */;
+
+                    // Cap at addspeed
+                    if (accelspeed > addspeed)
+                        accelspeed = addspeed;
+
+                    // Adjust velocity.
+                    velocity.x += accelspeed * wishDir.x;
+                    velocity.z += accelspeed * wishDir.z;
+                }
             }
             else
             {
-                var wishSpeed = Mathf.Min(horizontalMovement.magnitude, AirSpeedCap, MaxSpeed);
-                var currentSpeed = Vector3.Dot(Rigidbody.linearVelocity, wishDir);
-                var addSpeed = wishSpeed - currentSpeed;
-
-                if (addSpeed <= 0) return;
-
-                var accelSpeed = AirAcceleration * wishSpeed * Time.deltaTime;
-                accelSpeed = Mathf.Min(accelSpeed, addSpeed);
-
-                Rigidbody.linearVelocity += wishDir * accelSpeed;
+                // иди нахуй
             }
+
+            Rigidbody.linearVelocity = velocity;
         }
 
         private void OnDrawGizmosSelected()
