@@ -19,6 +19,7 @@ namespace Fifbox.Player
 
         [field: Header("Physics properties")]
         [field: SerializeField] public float Friction { get; private set; }
+        [field: SerializeField] public float GravityMultiplier { get; private set; }
 
         [field: Header("Move properties")]
         [field: SerializeField] public float WalkSpeed { get; private set; }
@@ -27,8 +28,9 @@ namespace Fifbox.Player
         [field: SerializeField] public float MaxSpeed { get; private set; }
 
         [field: Header("Jump properties")]
-        [field: SerializeField] public float WalkJumpForce { get; private set; }
+        [field: SerializeField] public float JumpForce { get; private set; }
         [field: SerializeField] public float JumpBufferTime { get; private set; }
+        [field: SerializeField, Tooltip("Debug purpose")] public bool AutoBHop { get; private set; }
 
         private float _jumpBufferTimer;
 
@@ -42,15 +44,16 @@ namespace Fifbox.Player
         [field: SerializeField] public float StepDownBufferHeight { get; private set; }
         [field: SerializeField] public float MaxGroundInfoCheckDistance { get; private set; }
 
+        private float _maxStepHeight;
+
         [field: Space(9)]
 
         [field: SerializeField, ReadOnly] public bool Grounded { get; private set; }
+        [field: SerializeField, ReadOnly] public bool Ceiled { get; private set; }
         [field: SerializeField, ReadOnly] public Vector3 GroundNormal { get; private set; }
         [field: SerializeField, ReadOnly] public float GroundAngle { get; private set; }
         [field: SerializeField, ReadOnly] public float GroundHeight { get; private set; }
         [field: SerializeField, ReadOnly] public float PreviousGroundHeight { get; private set; }
-
-        public Vector3 viewAngles;
 
         protected override void OnValidate()
         {
@@ -69,14 +72,24 @@ namespace Fifbox.Player
             if (Collider)
             {
                 Collider.isTrigger = false;
-                Collider.size = new Vector3(Width, Height - MaxStepHeight, Width);
-                Collider.center = new Vector3(0, MaxStepHeight / 2, 0);
+                UpdatePlayerCollider(MaxStepHeight);
             }
 
             if (Center)
             {
                 Center.localPosition = new Vector3(0, Height / 2, 0);
             }
+        }
+
+        private void UpdatePlayerCollider(float maxStepHeight)
+        {
+            Collider.size = new Vector3(Width, Height - maxStepHeight, Width);
+            Collider.center = new Vector3(0, maxStepHeight / 2, 0);
+        }
+
+        private void Awake()
+        {
+            _maxStepHeight = MaxStepHeight;
         }
 
         private void Start()
@@ -92,7 +105,6 @@ namespace Fifbox.Player
         [SerializeField, ReadOnly] private Vector2 _rawMovementInput;
         [SerializeField, ReadOnly] private bool _wantsToRun;
         [SerializeField, ReadOnly] private bool _wantsToCrouch;
-        [SerializeField, ReadOnly] private Vector2 _wishDirection;
 
         public Vector2 RawMovementInput { get => _rawMovementInput; protected set => _rawMovementInput = value; }
         public bool WantsToRun { get => _wantsToRun; protected set => _wantsToRun = value; }
@@ -100,21 +112,30 @@ namespace Fifbox.Player
 
         protected void TryJump()
         {
-            if (!Grounded) return;
-            Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, WalkJumpForce, Rigidbody.linearVelocity.z);
+#if UNITY_EDITOR
+            if (AutoBHop) return;
+#endif
+            ResetJumpBuffer();
+        }
+
+        private void ResetJumpBuffer()
+        {
+            _jumpBufferTimer = JumpBufferTime;
         }
 
         private void Update()
         {
             if (!isLocalPlayer) return;
+            CeilCheck();
+            GroundCheck();
+
             OnUpdate();
 
-            GroundCheck();
             ApplyGravity();
-            // ApplyFriction();
-            Movement();
+            ApplyFriction();
 
-            if (Input.GetKey(KeyCode.Space)) TryJump();
+            HandleJump();
+            HandleMoving();
         }
 
         private void LateUpdate()
@@ -130,13 +151,13 @@ namespace Fifbox.Player
 
             var useBuffer = Rigidbody.linearVelocity.y == 0f;
             var groundedCheckPosition = useBuffer
-                ? transform.position + Vector3.up * (MaxStepHeight - StepDownBufferHeight) / 2
-                : transform.position + Vector3.up * MaxStepHeight / 2;
+                ? transform.position + Vector3.up * (_maxStepHeight - StepDownBufferHeight) / 2
+                : transform.position + Vector3.up * _maxStepHeight / 2;
 
-            var groundedCheckSize = new Vector3(width, useBuffer ? MaxStepHeight + StepDownBufferHeight : MaxStepHeight, width);
+            var groundedCheckSize = new Vector3(width, useBuffer ? _maxStepHeight + StepDownBufferHeight : _maxStepHeight, width);
             Grounded = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
 
-            var groundInfoCheckPosition = transform.position + 2f * MaxStepHeight * Vector3.up;
+            var groundInfoCheckPosition = transform.position + 2f * _maxStepHeight * Vector3.up;
             var groundInfoCheckSize = new Vector3(width, 0.1f, width);
             Physics.BoxCast
             (
@@ -159,85 +180,118 @@ namespace Fifbox.Player
             GroundAngle = Vector3.Angle(GroundNormal, Vector3.up);
         }
 
-        private void MoveToGround()
+        private void CeilCheck()
         {
-            if (!Grounded || Rigidbody.linearVelocity.y > 0f) return;
-            transform.position = new(transform.position.x, GroundHeight, transform.position.z);
+            var width = Width - 0.01f;
+            var ceiledCheckSize = new Vector3(width, 0.02f, width);
+            var ceiledCheckPosition = transform.position + Vector3.up * Height;
+
+            Ceiled = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
+            UpdatePlayerCollider(Ceiled ? 0f : MaxStepHeight);
+        }
+
+        private void HandleJump()
+        {
+#if UNITY_EDITOR
+            if (AutoBHop && Input.GetKey(KeyCode.Space) && Grounded)
+            {
+                Jump();
+                return;
+            }
+#endif
+
+            if (_jumpBufferTimer > 0)
+            {
+                if (Grounded)
+                {
+                    Jump();
+                    _jumpBufferTimer = 0;
+                }
+                else
+                {
+                    _jumpBufferTimer -= Time.deltaTime;
+                }
+            }
+        }
+
+        private void Jump()
+        {
+            Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, JumpForce, Rigidbody.linearVelocity.z);
         }
 
         private void ApplyGravity()
         {
             if (Grounded && Rigidbody.linearVelocity.y <= 0) Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, 0, Rigidbody.linearVelocity.z);
-            else Rigidbody.linearVelocity += Physics.gravity * Time.deltaTime;
+            else Rigidbody.linearVelocity += GravityMultiplier * Time.deltaTime * Physics.gravity;
         }
 
         private void ApplyFriction()
         {
-            var speed = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z).magnitude;
-            var drop = 0f;
+            float speed, newSpeed, control, drop;
+
+            speed = Rigidbody.linearVelocity.magnitude;
+            drop = 0f;
 
             if (Grounded)
             {
-                var control = speed < Deceleration ? Deceleration : speed;
-                drop = control * Friction * Time.deltaTime;
+                control = speed < Deceleration ? Deceleration : speed;
+                drop += control * Friction * Time.deltaTime;
             }
 
-            var newSpeed = Mathf.Max(speed - drop, 0f);
-            if (speed > 0.0f) newSpeed /= speed;
+            newSpeed = Mathf.Max(speed - drop, 0f);
 
-            var newVelocity = new Vector3(Rigidbody.linearVelocity.x * newSpeed, Rigidbody.linearVelocity.y, Rigidbody.linearVelocity.z * newSpeed);
-            Rigidbody.linearVelocity = newVelocity;
+            if (newSpeed != speed)
+            {
+                newSpeed /= speed;
+                Rigidbody.linearVelocity *= newSpeed;
+            }
         }
 
-        private void Movement()
+        private void HandleMoving()
         {
-            Vector3 velocity = Rigidbody.linearVelocity;
+            var velocity = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z);
+            var wishVel = (Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y) * WalkSpeed;
+            var wishSpeed = wishVel.magnitude;
+            var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
+
+            if ((wishSpeed != 0f) && (wishSpeed > MaxSpeed))
+            {
+                wishSpeed = MaxSpeed;
+            }
+
+            var currentSpeed = Vector2.Dot(velocity, wishDir);
 
             if (Grounded)
             {
-                var wishDir = Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y;
-                var wishSpeed = wishDir.magnitude;
-                wishDir.Normalize();
-                // todo clamp похуй
-                /* // Clamp to server defined max speed
-                if ((wishspeed != 0.0f) && (wishspeed > mv->m_flMaxSpeed))
-                {
-                    VectorScale (wishvel, mv->m_flMaxSpeed/wishspeed, wishvel);
-                    wishspeed = mv->m_flMaxSpeed;
-                } */
+                var addSpeed = wishSpeed - currentSpeed;
+                if (addSpeed <= 0) return;
 
-                velocity.y = 0;
-                // Accelerate
-                float accel = 5.5f * 0.01905f;
-                {
-                    // See if we are changing direction a bit
-                    float currentspeed = Vector3.Dot(velocity, wishDir);
+                var accelSpeed = Acceleration * wishSpeed * Time.deltaTime;
+                accelSpeed = Mathf.Min(accelSpeed, addSpeed);
 
-                    // Reduce wishspeed by the amount of veer.
-                    float addspeed = wishSpeed - currentspeed;
-
-                    // If not going to add any speed, done.
-                    if (addspeed <= 0)
-                        return;
-
-                    // Determine amount of accleration.
-                    float accelspeed = accel * Time.deltaTime * wishSpeed/*  * player->m_surfaceFriction */;
-
-                    // Cap at addspeed
-                    if (accelspeed > addspeed)
-                        accelspeed = addspeed;
-
-                    // Adjust velocity.
-                    velocity.x += accelspeed * wishDir.x;
-                    velocity.z += accelspeed * wishDir.z;
-                }
+                velocity += wishDir * accelSpeed;
             }
             else
             {
-                // иди нахуй
+                var airWishSpeed = Mathf.Min(wishSpeed, AirSpeedCap);
+                var addSpeed = airWishSpeed - currentSpeed;
+
+                if (addSpeed <= 0) return;
+
+                var accelSpeed = AirAcceleration * airWishSpeed * Time.deltaTime;
+                accelSpeed = Mathf.Min(accelSpeed, addSpeed);
+
+                velocity += wishDir * accelSpeed;
             }
 
-            Rigidbody.linearVelocity = velocity;
+            Rigidbody.linearVelocity = new(velocity.x, Rigidbody.linearVelocity.y, velocity.y);
+        }
+
+        private void MoveToGround()
+        {
+            if (!Grounded || Ceiled || Rigidbody.linearVelocity.y > 0f) return;
+            transform.position = new(transform.position.x, GroundHeight, transform.position.z);
+            Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, 0, Rigidbody.linearVelocity.z);
         }
 
         private void OnDrawGizmosSelected()
@@ -247,6 +301,9 @@ namespace Fifbox.Player
 
             Gizmos.color = Color.blue - Color.black * 0.65f;
             Gizmos.DrawWireCube(transform.position - Vector3.up * StepDownBufferHeight / 2, new(Width - 0.01f, StepDownBufferHeight, Width - 0.01f));
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(transform.position + Vector3.up * Height, new(Width - 0.01f, 0.02f, Width - 0.01f));
         }
     }
 }

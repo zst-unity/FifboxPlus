@@ -58,7 +58,7 @@ namespace Fifbox.Player
             _actions.Player.Run.performed += ctx => WantsToRun = true;
             _actions.Player.Run.canceled += ctx => WantsToRun = false;
 
-            // _actions.Player.Jump.performed += ctx => TryJump();
+            _actions.Player.Jump.performed += ctx => TryJump();
         }
 
         protected override void OnUpdate()
