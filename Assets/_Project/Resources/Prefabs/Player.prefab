@@ -418,14 +418,18 @@ MonoBehaviour:
   <Height>k__BackingField: 1.7
   <Friction>k__BackingField: 0.5
   <GravityMultiplier>k__BackingField: 1.275
-  <WalkSpeed>k__BackingField: 5
-  <Acceleration>k__BackingField: 10
-  <Deceleration>k__BackingField: 50
-  <MaxSpeed>k__BackingField: 6
-  <JumpForce>k__BackingField: 5.3
+  <WalkSpeed>k__BackingField: 2
+  <WalkAcceleration>k__BackingField: 0.15
+  <WalkDeceleration>k__BackingField: 25
+  <RunSpeed>k__BackingField: 5.5
+  <RunAcceleration>k__BackingField: 0.08
+  <RunDeceleration>k__BackingField: 25
+  <MaxSpeed>k__BackingField: 24
+  <WalkJumpForce>k__BackingField: 4.5
+  <RunJumpForce>k__BackingField: 5.3
   <JumpBufferTime>k__BackingField: 0.1
   <AutoBHop>k__BackingField: 0
-  <AirAcceleration>k__BackingField: 40
+  <AirAcceleration>k__BackingField: 60
   <AirSpeedCap>k__BackingField: 0.6
   <MapLayers>k__BackingField:
     serializedVersion: 2
@@ -433,12 +437,12 @@ MonoBehaviour:
   <MaxStepHeight>k__BackingField: 0.4
   <StepDownBufferHeight>k__BackingField: 0.6
   <MaxGroundInfoCheckDistance>k__BackingField: 100
-  <Grounded>k__BackingField: 0
+  <Grounded>k__BackingField: 1
   <Ceiled>k__BackingField: 0
-  <GroundNormal>k__BackingField: {x: 0, y: 0, z: 0}
+  <GroundNormal>k__BackingField: {x: 0, y: 1, z: 0}
   <GroundAngle>k__BackingField: 0
   <GroundHeight>k__BackingField: 0
-  <PreviousGroundHeight>k__BackingField: 0
+  <PreviousGroundHeight>k__BackingField: 0.0022056103
   _rawMovementInput: {x: 0, y: 0}
   _wantsToRun: 0
   _wantsToCrouch: 0

@@ -23,12 +23,25 @@ namespace Fifbox.Player
 
         [field: Header("Move properties")]
         [field: SerializeField] public float WalkSpeed { get; private set; }
-        [field: SerializeField] public float Acceleration { get; private set; }
-        [field: SerializeField] public float Deceleration { get; private set; }
+        [field: SerializeField] public float WalkAcceleration { get; private set; }
+        [field: SerializeField] public float WalkDeceleration { get; private set; }
+
+        [field: Space(9)]
+
+        [field: SerializeField] public float RunSpeed { get; private set; }
+        [field: SerializeField] public float RunAcceleration { get; private set; }
+        [field: SerializeField] public float RunDeceleration { get; private set; }
+
+        [field: Space(9)]
+
         [field: SerializeField] public float MaxSpeed { get; private set; }
 
         [field: Header("Jump properties")]
-        [field: SerializeField] public float JumpForce { get; private set; }
+        [field: SerializeField] public float WalkJumpForce { get; private set; }
+        [field: SerializeField] public float RunJumpForce { get; private set; }
+
+        [field: Space(9)]
+
         [field: SerializeField] public float JumpBufferTime { get; private set; }
         [field: SerializeField, Tooltip("Debug purpose")] public bool AutoBHop { get; private set; }
 
@@ -216,7 +229,8 @@ namespace Fifbox.Player
 
         private void Jump()
         {
-            Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, JumpForce, Rigidbody.linearVelocity.z);
+            var targetForce = WantsToRun ? RunJumpForce : WalkJumpForce;
+            Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, targetForce, Rigidbody.linearVelocity.z);
         }
 
         private void ApplyGravity()
@@ -234,7 +248,8 @@ namespace Fifbox.Player
 
             if (Grounded)
             {
-                control = speed < Deceleration ? Deceleration : speed;
+                var deceleration = WantsToRun ? RunDeceleration : WalkDeceleration;
+                control = speed < deceleration ? deceleration : speed;
                 drop += control * Friction * Time.deltaTime;
             }
 
@@ -249,8 +264,10 @@ namespace Fifbox.Player
 
         private void HandleMoving()
         {
+            var targetSpeed = _wantsToRun ? RunSpeed : WalkSpeed;
+
             var velocity = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z);
-            var wishVel = (Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y) * WalkSpeed;
+            var wishVel = (Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y) * targetSpeed;
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
 
@@ -266,7 +283,8 @@ namespace Fifbox.Player
                 var addSpeed = wishSpeed - currentSpeed;
                 if (addSpeed <= 0) return;
 
-                var accelSpeed = Acceleration * wishSpeed * Time.deltaTime;
+                var acceleration = WantsToRun ? RunAcceleration : WalkAcceleration;
+                var accelSpeed = acceleration * wishSpeed;
                 accelSpeed = Mathf.Min(accelSpeed, addSpeed);
 
                 velocity += wishDir * accelSpeed;
@@ -278,7 +296,7 @@ namespace Fifbox.Player
 
                 if (addSpeed <= 0) return;
 
-                var accelSpeed = AirAcceleration * airWishSpeed * Time.deltaTime;
+                var accelSpeed = AirAcceleration * airWishSpeed;
                 accelSpeed = Mathf.Min(accelSpeed, addSpeed);
 
                 velocity += wishDir * accelSpeed;
