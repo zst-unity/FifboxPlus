@@ -125,9 +125,8 @@ namespace Fifbox.Player
 
         protected void TryJump()
         {
-#if UNITY_EDITOR
             if (AutoBHop) return;
-#endif
+
             ResetJumpBuffer();
         }
 
@@ -205,13 +204,11 @@ namespace Fifbox.Player
 
         private void HandleJump()
         {
-#if UNITY_EDITOR
             if (AutoBHop && Input.GetKey(KeyCode.Space) && Grounded)
             {
                 Jump();
                 return;
             }
-#endif
 
             if (_jumpBufferTimer > 0)
             {
@@ -229,7 +226,7 @@ namespace Fifbox.Player
 
         private void Jump()
         {
-            var targetForce = WantsToRun ? RunJumpForce : WalkJumpForce;
+            var targetForce = WantsToRun && _rawMovementInput.magnitude > 0 ? RunJumpForce : WalkJumpForce;
             Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, targetForce, Rigidbody.linearVelocity.z);
         }
 
@@ -284,7 +281,8 @@ namespace Fifbox.Player
                 if (addSpeed <= 0) return;
 
                 var acceleration = WantsToRun ? RunAcceleration : WalkAcceleration;
-                var accelSpeed = acceleration * wishSpeed;
+
+                var accelSpeed = acceleration * Time.deltaTime * wishSpeed;
                 accelSpeed = Mathf.Min(accelSpeed, addSpeed);
 
                 velocity += wishDir * accelSpeed;
@@ -296,7 +294,7 @@ namespace Fifbox.Player
 
                 if (addSpeed <= 0) return;
 
-                var accelSpeed = AirAcceleration * airWishSpeed;
+                var accelSpeed = AirAcceleration * Time.deltaTime * airWishSpeed;
                 accelSpeed = Mathf.Min(accelSpeed, addSpeed);
 
                 velocity += wishDir * accelSpeed;
