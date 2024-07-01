@@ -73,6 +73,7 @@ namespace Fifbox.Player
         [field: SerializeField] public float MaxGroundInfoCheckDistance { get; private set; }
 
         private float _maxStepHeight;
+        private float _stepDownBufferHeight;
 
         [field: Space(9)]
 
@@ -88,6 +89,10 @@ namespace Fifbox.Player
         {
             base.OnValidate();
 
+            _stepDownBufferHeight = StepDownBufferHeight;
+            _maxStepHeight = MaxStepHeight;
+            _height = Height;
+
             if (TryGetComponent(out Rigidbody rb))
             {
                 Rigidbody = rb;
@@ -101,15 +106,11 @@ namespace Fifbox.Player
             if (Collider)
             {
                 Collider.isTrigger = false;
-
-                _maxStepHeight = MaxStepHeight;
-                _height = Height;
                 UpdatePlayerCollider();
             }
 
             if (Center)
             {
-                _height = Height;
                 UpdatePlayerCenter();
             }
         }
@@ -137,6 +138,7 @@ namespace Fifbox.Player
 
         private void Awake()
         {
+            _stepDownBufferHeight = StepDownBufferHeight;
             _maxStepHeight = MaxStepHeight;
             _height = Height;
             _initialLayer = 5;
@@ -269,7 +271,11 @@ namespace Fifbox.Player
             var ceiledCheckPosition = transform.position + Vector3.up * _height;
             Ceiled = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
 
-            if (Grounded && Ceiled && !_nocliping) _maxStepHeight = 0f;
+            if (Grounded && Ceiled && !_nocliping)
+            {
+                _maxStepHeight = 0f;
+            }
+
             UpdatePlayerCollider();
         }
 
@@ -279,10 +285,10 @@ namespace Fifbox.Player
 
             var useBuffer = Rigidbody.linearVelocity.y == 0f;
             var groundedCheckPosition = useBuffer
-                ? transform.position + Vector3.up * (_maxStepHeight - StepDownBufferHeight) / 2
+                ? transform.position + Vector3.up * (_maxStepHeight - _stepDownBufferHeight) / 2
                 : transform.position + Vector3.up * _maxStepHeight / 2;
 
-            var groundedCheckSize = new Vector3(width, useBuffer ? _maxStepHeight + StepDownBufferHeight : _maxStepHeight, width);
+            var groundedCheckSize = new Vector3(width, useBuffer ? _maxStepHeight + _stepDownBufferHeight : _maxStepHeight, width);
             Grounded = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
 
             var groundInfoCheckPosition = transform.position + 2f * _maxStepHeight * Vector3.up;
@@ -399,9 +405,10 @@ namespace Fifbox.Player
                 {
                     MovementState.Walk => WalkDeceleration,
                     MovementState.Run => RunDeceleration,
-                    MovementState.Crouch => CrouchDeceleration,
                     _ => 0f
                 };
+
+                if (Crouching) deceleration = CrouchDeceleration;
 
                 control = speed < deceleration ? deceleration : speed;
                 drop += control * Friction * Time.deltaTime;
@@ -450,9 +457,10 @@ namespace Fifbox.Player
             {
                 MovementState.Walk => WalkSpeed,
                 MovementState.Run => RunSpeed,
-                MovementState.Crouch => CrouchSpeed,
                 _ => 0f
             };
+            if (Crouching) targetSpeed = CrouchSpeed;
+
             if (Grounded) _lastGroundedTargetSpeed = targetSpeed;
 
             var velocity = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z);
@@ -481,9 +489,10 @@ namespace Fifbox.Player
             {
                 MovementState.Walk => WalkAcceleration,
                 MovementState.Run => RunAcceleration,
-                MovementState.Crouch => CrouchAcceleration,
                 _ => 0f
             };
+
+            if (Crouching) acceleration = CrouchAcceleration;
 
             var accelSpeed = acceleration * Time.deltaTime * wishSpeed;
             accelSpeed = Mathf.Min(accelSpeed, addSpeed);
@@ -519,7 +528,7 @@ namespace Fifbox.Player
             Gizmos.DrawWireCube(transform.position + Vector3.up * _maxStepHeight / 2, new(Width, _maxStepHeight, Width));
 
             Gizmos.color = Color.blue - Color.black * 0.65f;
-            Gizmos.DrawWireCube(transform.position - Vector3.up * StepDownBufferHeight / 2, new(Width, StepDownBufferHeight, Width));
+            Gizmos.DrawWireCube(transform.position - Vector3.up * _stepDownBufferHeight / 2, new(Width, _stepDownBufferHeight, Width));
 
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(transform.position + Vector3.up * _height, new(Width, 0.02f, Width));
