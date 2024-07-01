@@ -66,6 +66,8 @@
         "gameped",
         "Lerp",
         "Mathf",
+        "Noclip",
+        "Nocliping",
         "Postprocess",
         "Postprocessor",
         "Raycast",

@@ -1,6 +1,5 @@
 using Mirror;
 using UnityEngine;
-using ZSToolkit.ZSTUtility.Extensions;
 
 namespace Fifbox.Player
 {
@@ -62,6 +61,11 @@ namespace Fifbox.Player
         [field: SerializeField] public float MaxAirAcceleration { get; private set; }
         [field: SerializeField] public float AirSpeedCap { get; private set; }
 
+        [field: Header("Noclip")]
+        [field: SerializeField] public float NoclipNormalFlySpeed { get; private set; }
+        [field: SerializeField] public float NoclipFastFlySpeed { get; private set; }
+        [field: SerializeField] public float NoclipVerticalModifierSpeed { get; private set; }
+
         [field: Header("Ground handling")]
         [field: SerializeField] public LayerMask MapLayers { get; private set; }
         [field: SerializeField] public float MaxStepHeight { get; private set; }
@@ -121,16 +125,28 @@ namespace Fifbox.Player
             Center.localPosition = new Vector3(0, _height / 2, 0);
         }
 
+        protected int _initialLayer;
+
+        protected void SetLayer(int layer)
+        {
+            foreach (Transform child in GetComponentsInChildren<Transform>())
+            {
+                child.gameObject.layer = layer;
+            }
+        }
+
         private void Awake()
         {
             _maxStepHeight = MaxStepHeight;
             _height = Height;
+            _initialLayer = 5;
         }
 
         private void Start()
         {
             if (!isLocalPlayer) return;
             OnStart();
+            SetLayer(_initialLayer);
         }
 
         protected virtual void OnStart() { }
@@ -140,10 +156,16 @@ namespace Fifbox.Player
         [SerializeField, ReadOnly] private Vector2 _rawMovementInput;
         [SerializeField, ReadOnly] private bool _wantsToRun;
         [SerializeField, ReadOnly] private bool _wantsToCrouch;
+        [SerializeField, ReadOnly] private bool _nocliping;
+        [SerializeField, ReadOnly] private bool _wantsToAscend;
+        [SerializeField, ReadOnly] private float _verticalOrientation;
 
         public Vector2 RawMovementInput { get => _rawMovementInput; protected set => _rawMovementInput = value; }
         public bool WantsToRun { get => _wantsToRun; protected set => _wantsToRun = value; }
         public bool WantsToCrouch { get => _wantsToCrouch; protected set => _wantsToCrouch = value; }
+        public bool WantsToNoclip { get => _nocliping; protected set => _nocliping = value; }
+        public bool WantsToAscend { get => _wantsToAscend; protected set => _wantsToAscend = value; }
+        public float VerticalOrientation { get => _verticalOrientation; protected set => _verticalOrientation = value; }
 
         protected void TryJump()
         {
@@ -156,17 +178,28 @@ namespace Fifbox.Player
         }
 
         [field: Header("States")]
+        [field: SerializeField, ReadOnly] public PlayerState State { get; private set; }
         [field: SerializeField, ReadOnly] public MovementState MoveState { get; private set; }
+
+        [field: Space(9)]
+
         [field: SerializeField, ReadOnly] public MovementState LastMovingMoveState { get; private set; }
         [field: SerializeField, ReadOnly] public bool Crouching { get; private set; }
         [field: SerializeField, ReadOnly] public bool WasCrouchingLastFrame { get; private set; }
 
+        public enum PlayerState
+        {
+            OnGround,
+            InAir,
+            Nocliping
+        }
+
         public enum MovementState
         {
             None,
-            Normal,
-            Fast,
-            Slow
+            Walk,
+            Run,
+            Crouch
         }
 
         private void Update()
@@ -196,6 +229,13 @@ namespace Fifbox.Player
 
         private void HandleCrouching()
         {
+            if (State == PlayerState.Nocliping)
+            {
+                CanStandUp = false;
+                Crouching = false;
+                return;
+            }
+
             var width = Width - 0.001f;
 
             var canStandUpCheckSize = new Vector3(width, Height - CrouchHeight, width);
@@ -203,7 +243,7 @@ namespace Fifbox.Player
             CanStandUp = !Physics.CheckBox(canStandUpCheckPosition, canStandUpCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
 
             WasCrouchingLastFrame = Crouching;
-            var crouching = _wantsToCrouch && MoveState != MovementState.Fast;
+            var crouching = _wantsToCrouch && MoveState != MovementState.Run;
             if (WasCrouchingLastFrame && !crouching && !CanStandUp) crouching = true;
             Crouching = crouching;
 
@@ -229,7 +269,7 @@ namespace Fifbox.Player
             var ceiledCheckPosition = transform.position + Vector3.up * _height;
             Ceiled = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
 
-            if (Grounded && Ceiled) _maxStepHeight = 0f;
+            if (Grounded && Ceiled && !_nocliping) _maxStepHeight = 0f;
             UpdatePlayerCollider();
         }
 
@@ -270,11 +310,38 @@ namespace Fifbox.Player
 
         private void UpdateStates()
         {
+            UpdatePlayerState();
+            UpdateMovementState();
+        }
+
+        private void UpdatePlayerState()
+        {
+            if (_nocliping)
+            {
+                SetLayer(8);
+                State = PlayerState.Nocliping;
+            }
+            else
+            {
+                SetLayer(_initialLayer);
+                if (Grounded) State = PlayerState.OnGround;
+                else State = PlayerState.InAir;
+            }
+        }
+
+        private void UpdateMovementState()
+        {
+            if (State == PlayerState.Nocliping)
+            {
+                MoveState = MovementState.None;
+                return;
+            }
+
             if (_rawMovementInput.magnitude > 0)
             {
-                if (_wantsToRun) MoveState = MovementState.Fast;
-                else if (_wantsToCrouch) MoveState = MovementState.Slow;
-                else MoveState = MovementState.Normal;
+                if (_wantsToRun) MoveState = MovementState.Run;
+                else if (_wantsToCrouch) MoveState = MovementState.Crouch;
+                else MoveState = MovementState.Walk;
             }
             else MoveState = MovementState.None;
 
@@ -301,8 +368,8 @@ namespace Fifbox.Player
         {
             var targetForce = MoveState switch
             {
-                MovementState.Normal => WalkJumpForce,
-                MovementState.Fast => RunJumpForce,
+                MovementState.Walk => WalkJumpForce,
+                MovementState.Run => RunJumpForce,
                 _ => WalkJumpForce
             };
 
@@ -313,6 +380,8 @@ namespace Fifbox.Player
 
         private void ApplyGravity()
         {
+            if (_nocliping) return;
+
             if (Grounded && Rigidbody.linearVelocity.y <= 0) Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, 0, Rigidbody.linearVelocity.z);
             else Rigidbody.linearVelocity += GravityMultiplier * Time.deltaTime * Physics.gravity;
         }
@@ -328,9 +397,9 @@ namespace Fifbox.Player
             {
                 var deceleration = LastMovingMoveState switch
                 {
-                    MovementState.Normal => WalkDeceleration,
-                    MovementState.Fast => RunDeceleration,
-                    MovementState.Slow => CrouchDeceleration,
+                    MovementState.Walk => WalkDeceleration,
+                    MovementState.Run => RunDeceleration,
+                    MovementState.Crouch => CrouchDeceleration,
                     _ => 0f
                 };
 
@@ -351,11 +420,37 @@ namespace Fifbox.Player
 
         private void HandleMoving()
         {
+            if (_nocliping) NoclipMovement();
+            else Accelerate();
+        }
+
+        private void NoclipMovement()
+        {
+            _maxStepHeight = 0f;
+            UpdatePlayerCollider();
+
+            var targetSpeed = _wantsToRun ? NoclipFastFlySpeed : NoclipNormalFlySpeed;
+
+            var fullOrientation = Quaternion.Euler(_verticalOrientation, Orientation.eulerAngles.y, 0f);
+            var forward = fullOrientation * Vector3.forward;
+            var right = fullOrientation * Vector3.right;
+            var direction = right * RawMovementInput.x + forward * RawMovementInput.y;
+
+            var verticalModifierDirection = 0f;
+            if (_wantsToCrouch) verticalModifierDirection -= 1f;
+            if (_wantsToAscend) verticalModifierDirection += 1f;
+            var verticalModifierForce = verticalModifierDirection * NoclipVerticalModifierSpeed;
+
+            Rigidbody.linearVelocity = (targetSpeed * direction) + Vector3.up * verticalModifierForce;
+        }
+
+        private void Accelerate()
+        {
             var targetSpeed = MoveState switch
             {
-                MovementState.Normal => WalkSpeed,
-                MovementState.Fast => RunSpeed,
-                MovementState.Slow => CrouchSpeed,
+                MovementState.Walk => WalkSpeed,
+                MovementState.Run => RunSpeed,
+                MovementState.Crouch => CrouchSpeed,
                 _ => 0f
             };
             if (Grounded) _lastGroundedTargetSpeed = targetSpeed;
@@ -371,45 +466,49 @@ namespace Fifbox.Player
             }
 
             var currentSpeed = Vector2.Dot(velocity, wishDir);
-
-            if (Grounded)
-            {
-                var addSpeed = wishSpeed - currentSpeed;
-                if (addSpeed <= 0) return;
-
-                var acceleration = MoveState switch
-                {
-                    MovementState.Normal => WalkAcceleration,
-                    MovementState.Fast => RunAcceleration,
-                    MovementState.Slow => CrouchAcceleration,
-                    _ => 0f
-                };
-
-                var accelSpeed = acceleration * Time.deltaTime * wishSpeed;
-                accelSpeed = Mathf.Min(accelSpeed, addSpeed);
-
-                velocity += wishDir * accelSpeed;
-            }
-            else
-            {
-                var airWishSpeed = Mathf.Min(wishSpeed, AirSpeedCap);
-                var addSpeed = airWishSpeed - currentSpeed;
-
-                if (addSpeed <= 0) return;
-
-                var acceleration = Mathf.Min(velocity.magnitude * AirAccelerationGain, MaxAirAcceleration);
-                var accelSpeed = acceleration * Time.deltaTime * airWishSpeed;
-                accelSpeed = Mathf.Min(accelSpeed, addSpeed);
-
-                velocity += wishDir * accelSpeed;
-            }
+            if (Grounded) velocity += GroundAccelerate(wishDir, wishSpeed, currentSpeed);
+            else velocity += AirAccelerate(wishDir, wishSpeed, currentSpeed, velocity);
 
             Rigidbody.linearVelocity = new(velocity.x, Rigidbody.linearVelocity.y, velocity.y);
         }
 
+        private Vector2 GroundAccelerate(Vector2 wishDir, float wishSpeed, float currentSpeed)
+        {
+            var addSpeed = wishSpeed - currentSpeed;
+            if (addSpeed <= 0) return Vector2.zero;
+
+            var acceleration = MoveState switch
+            {
+                MovementState.Walk => WalkAcceleration,
+                MovementState.Run => RunAcceleration,
+                MovementState.Crouch => CrouchAcceleration,
+                _ => 0f
+            };
+
+            var accelSpeed = acceleration * Time.deltaTime * wishSpeed;
+            accelSpeed = Mathf.Min(accelSpeed, addSpeed);
+
+            return wishDir * accelSpeed;
+        }
+
+        private Vector2 AirAccelerate(Vector2 wishDir, float wishSpeed, float currentSpeed, Vector2 velocity)
+        {
+            var airWishSpeed = Mathf.Min(wishSpeed, AirSpeedCap);
+            var addSpeed = airWishSpeed - currentSpeed;
+
+            if (addSpeed <= 0) return Vector2.zero;
+
+            var acceleration = Mathf.Min(velocity.magnitude * AirAccelerationGain, MaxAirAcceleration);
+            var accelSpeed = acceleration * Time.deltaTime * airWishSpeed;
+            accelSpeed = Mathf.Min(accelSpeed, addSpeed);
+
+            return wishDir * accelSpeed;
+        }
+
         private void MoveToGround()
         {
-            if (!Grounded || Ceiled || Rigidbody.linearVelocity.y > 0f) return;
+            if (!Grounded || Ceiled || Rigidbody.linearVelocity.y > 0f || _nocliping) return;
+
             transform.position = new(transform.position.x, GroundHeight, transform.position.z);
             Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, 0, Rigidbody.linearVelocity.z);
         }

@@ -35,11 +35,7 @@ namespace Fifbox.Player
                 model.SetActive(false);
             }
 
-            // меняем слой с Player на LocalPlayer
-            foreach (Transform child in GetComponentsInChildren<Transform>())
-            {
-                child.gameObject.layer = 6;
-            }
+            _initialLayer = 6;
 
             // удаляем все камеры на сцене чтобы приколов не было
             var cameras = FindObjectsByType<Camera>(FindObjectsSortMode.None);
@@ -75,11 +71,18 @@ namespace Fifbox.Player
             _actions.Player.Jump.performed += ctx =>
             {
                 _holdingJump = true;
+                WantsToAscend = true;
 
                 if (!_autoBHop) TryJump();
             };
 
-            _actions.Player.Jump.canceled += ctx => _holdingJump = false;
+            _actions.Player.Jump.canceled += ctx =>
+            {
+                _holdingJump = false;
+                WantsToAscend = false;
+            };
+
+            _actions.Player.Noclip.performed += ctx => WantsToNoclip = !WantsToNoclip;
         }
 
         protected override void OnUpdate()
@@ -98,6 +101,7 @@ namespace Fifbox.Player
 
             _cameraRotY += cameraInput.x;
             _cameraRotX = Mathf.Clamp(_cameraRotX - cameraInput.y, -90f, 90f);
+            VerticalOrientation = _cameraRotX;
 
             Orientation.localRotation = Quaternion.Euler(0f, _cameraRotY, 0f);
             Camera.main.transform.localRotation = Quaternion.Euler(_cameraRotX, 0f, _cameraRotZ);

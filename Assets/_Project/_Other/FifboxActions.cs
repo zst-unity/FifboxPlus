@@ -74,6 +74,15 @@ namespace Fifbox.InputActions
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Noclip"",
+                    ""type"": ""Button"",
+                    ""id"": ""2d70a5a4-e0ec-4e69-8f5f-8a87280ba050"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -230,6 +239,28 @@ namespace Fifbox.InputActions
                     ""action"": ""Crouch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2caa930b-a9bf-4aeb-81e2-b4078492cd24"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Noclip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a8bd6560-3995-4aad-8690-551662320e4a"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Noclip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -304,6 +335,7 @@ namespace Fifbox.InputActions
             m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
             m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
             m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
+            m_Player_Noclip = m_Player.FindAction("Noclip", throwIfNotFound: true);
         }
 
         ~@FifboxActions()
@@ -375,6 +407,7 @@ namespace Fifbox.InputActions
         private readonly InputAction m_Player_Look;
         private readonly InputAction m_Player_Run;
         private readonly InputAction m_Player_Crouch;
+        private readonly InputAction m_Player_Noclip;
         public struct PlayerActions
         {
             private @FifboxActions m_Wrapper;
@@ -384,6 +417,7 @@ namespace Fifbox.InputActions
             public InputAction @Look => m_Wrapper.m_Player_Look;
             public InputAction @Run => m_Wrapper.m_Player_Run;
             public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
+            public InputAction @Noclip => m_Wrapper.m_Player_Noclip;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -408,6 +442,9 @@ namespace Fifbox.InputActions
                 @Crouch.started += instance.OnCrouch;
                 @Crouch.performed += instance.OnCrouch;
                 @Crouch.canceled += instance.OnCrouch;
+                @Noclip.started += instance.OnNoclip;
+                @Noclip.performed += instance.OnNoclip;
+                @Noclip.canceled += instance.OnNoclip;
             }
 
             private void UnregisterCallbacks(IPlayerActions instance)
@@ -427,6 +464,9 @@ namespace Fifbox.InputActions
                 @Crouch.started -= instance.OnCrouch;
                 @Crouch.performed -= instance.OnCrouch;
                 @Crouch.canceled -= instance.OnCrouch;
+                @Noclip.started -= instance.OnNoclip;
+                @Noclip.performed -= instance.OnNoclip;
+                @Noclip.canceled -= instance.OnNoclip;
             }
 
             public void RemoveCallbacks(IPlayerActions instance)
@@ -496,6 +536,7 @@ namespace Fifbox.InputActions
             void OnLook(InputAction.CallbackContext context);
             void OnRun(InputAction.CallbackContext context);
             void OnCrouch(InputAction.CallbackContext context);
+            void OnNoclip(InputAction.CallbackContext context);
         }
     }
 }
