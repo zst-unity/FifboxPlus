@@ -44,7 +44,6 @@ namespace Fifbox.Player
         [field: Space(9)]
 
         [field: SerializeField] public float JumpBufferTime { get; private set; }
-        [field: SerializeField, Tooltip("Debug purpose")] public bool AutoBHop { get; private set; }
 
         private float _jumpBufferTimer;
 
@@ -127,8 +126,6 @@ namespace Fifbox.Player
 
         protected void TryJump()
         {
-            if (AutoBHop) return;
-
             ResetJumpBuffer();
         }
 
@@ -206,12 +203,6 @@ namespace Fifbox.Player
 
         private void HandleJump()
         {
-            if (AutoBHop && Input.GetKey(KeyCode.Space) && Grounded)
-            {
-                Jump();
-                return;
-            }
-
             if (_jumpBufferTimer > 0)
             {
                 if (Grounded)

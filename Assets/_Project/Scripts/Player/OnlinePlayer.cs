@@ -10,6 +10,11 @@ namespace Fifbox.Player
         [SerializeField] private Transform _cameraHolder;
         [SerializeField] private GameObject[] _playerModels;
 
+        [Header("Inputs")]
+        [SerializeField] private bool _autoBHop;
+
+        private bool _holdingJump;
+
         private FifboxActions _actions;
         private float _cameraRotX;
         private float _cameraRotY;
@@ -58,11 +63,19 @@ namespace Fifbox.Player
             _actions.Player.Run.performed += ctx => WantsToRun = true;
             _actions.Player.Run.canceled += ctx => WantsToRun = false;
 
-            _actions.Player.Jump.performed += ctx => TryJump();
+            _actions.Player.Jump.performed += ctx =>
+            {
+                _holdingJump = true;
+
+                if (!_autoBHop) TryJump();
+            };
+
+            _actions.Player.Jump.canceled += ctx => _holdingJump = false;
         }
 
         protected override void OnUpdate()
         {
+            if (_autoBHop && _holdingJump) TryJump();
             var cameraInput = _actions.Player.Look.ReadValue<Vector2>();
 
             if (_actions.Player.Look.activeControl != null)
