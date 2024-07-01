@@ -1,5 +1,6 @@
 using Mirror;
 using UnityEngine;
+using ZSToolkit.ZSTUtility.Extensions;
 
 namespace Fifbox.Player
 {
@@ -48,7 +49,8 @@ namespace Fifbox.Player
         private float _jumpBufferTimer;
 
         [field: Header("Air handling")]
-        [field: SerializeField] public float AirAcceleration { get; private set; }
+        [field: SerializeField] public float AirAccelerationGain { get; private set; }
+        [field: SerializeField] public float MaxAirAcceleration { get; private set; }
         [field: SerializeField] public float AirSpeedCap { get; private set; }
 
         [field: Header("Ground handling")]
@@ -259,12 +261,15 @@ namespace Fifbox.Player
             }
         }
 
+        private float _lastGroundedTargetSpeed;
+
         private void HandleMoving()
         {
             var targetSpeed = _wantsToRun ? RunSpeed : WalkSpeed;
+            if (Grounded) _lastGroundedTargetSpeed = targetSpeed;
 
             var velocity = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z);
-            var wishVel = (Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y) * targetSpeed;
+            var wishVel = (Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y) * _lastGroundedTargetSpeed;
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
 
@@ -294,7 +299,8 @@ namespace Fifbox.Player
 
                 if (addSpeed <= 0) return;
 
-                var accelSpeed = AirAcceleration * Time.deltaTime * airWishSpeed;
+                var acceleration = Mathf.Min(velocity.magnitude * AirAccelerationGain, MaxAirAcceleration);
+                var accelSpeed = acceleration * Time.deltaTime * airWishSpeed;
                 accelSpeed = Mathf.Min(accelSpeed, addSpeed);
 
                 velocity += wishDir * accelSpeed;

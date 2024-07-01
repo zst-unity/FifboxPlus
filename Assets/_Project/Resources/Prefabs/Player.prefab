@@ -421,7 +421,7 @@ MonoBehaviour:
   <WalkSpeed>k__BackingField: 2
   <WalkAcceleration>k__BackingField: 15
   <WalkDeceleration>k__BackingField: 10
-  <RunSpeed>k__BackingField: 5.5
+  <RunSpeed>k__BackingField: 5.2
   <RunAcceleration>k__BackingField: 15
   <RunDeceleration>k__BackingField: 25
   <MaxSpeed>k__BackingField: 24
@@ -429,13 +429,14 @@ MonoBehaviour:
   <RunJumpForce>k__BackingField: 5.3
   <JumpBufferTime>k__BackingField: 0.1
   <AutoBHop>k__BackingField: 1
-  <AirAcceleration>k__BackingField: 18.5
-  <AirSpeedCap>k__BackingField: 3
+  <AirAccelerationGain>k__BackingField: 1.5
+  <MaxAirAcceleration>k__BackingField: 57.5
+  <AirSpeedCap>k__BackingField: 3.2
   <MapLayers>k__BackingField:
     serializedVersion: 2
     m_Bits: 136
   <MaxStepHeight>k__BackingField: 0.4
-  <StepDownBufferHeight>k__BackingField: 0.6
+  <StepDownBufferHeight>k__BackingField: 0.5
   <MaxGroundInfoCheckDistance>k__BackingField: 100
   <Grounded>k__BackingField: 1
   <Ceiled>k__BackingField: 0
