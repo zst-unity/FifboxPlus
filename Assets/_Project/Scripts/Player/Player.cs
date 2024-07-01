@@ -17,6 +17,9 @@ namespace Fifbox.Player
         [field: SerializeField] public float Mass { get; private set; }
         [field: SerializeField] public float Width { get; private set; }
         [field: SerializeField] public float Height { get; private set; }
+        [field: SerializeField] public float CrouchHeight { get; private set; }
+
+        private float _height;
 
         [field: Header("Physics properties")]
         [field: SerializeField] public float Friction { get; private set; }
@@ -35,11 +38,18 @@ namespace Fifbox.Player
 
         [field: Space(9)]
 
+        [field: SerializeField] public float CrouchSpeed { get; private set; }
+        [field: SerializeField] public float CrouchAcceleration { get; private set; }
+        [field: SerializeField] public float CrouchDeceleration { get; private set; }
+
+        [field: Space(9)]
+
         [field: SerializeField] public float MaxSpeed { get; private set; }
 
         [field: Header("Jump properties")]
         [field: SerializeField] public float WalkJumpForce { get; private set; }
         [field: SerializeField] public float RunJumpForce { get; private set; }
+        [field: SerializeField] public float CrouchJumpForce { get; private set; }
 
         [field: Space(9)]
 
@@ -64,6 +74,7 @@ namespace Fifbox.Player
 
         [field: SerializeField, ReadOnly] public bool Grounded { get; private set; }
         [field: SerializeField, ReadOnly] public bool Ceiled { get; private set; }
+        [field: SerializeField, ReadOnly] public bool CanStandUp { get; private set; }
         [field: SerializeField, ReadOnly] public Vector3 GroundNormal { get; private set; }
         [field: SerializeField, ReadOnly] public float GroundAngle { get; private set; }
         [field: SerializeField, ReadOnly] public float GroundHeight { get; private set; }
@@ -86,24 +97,34 @@ namespace Fifbox.Player
             if (Collider)
             {
                 Collider.isTrigger = false;
-                UpdatePlayerCollider(MaxStepHeight);
+
+                _maxStepHeight = MaxStepHeight;
+                _height = Height;
+                UpdatePlayerCollider();
             }
 
             if (Center)
             {
-                Center.localPosition = new Vector3(0, Height / 2, 0);
+                _height = Height;
+                UpdatePlayerCenter();
             }
         }
 
-        private void UpdatePlayerCollider(float maxStepHeight)
+        private void UpdatePlayerCollider()
         {
-            Collider.size = new Vector3(Width, Height - maxStepHeight, Width);
-            Collider.center = new Vector3(0, maxStepHeight / 2, 0);
+            Collider.size = new Vector3(Width, _height - _maxStepHeight, Width);
+            Collider.center = new Vector3(0, _maxStepHeight / 2, 0);
+        }
+
+        private void UpdatePlayerCenter()
+        {
+            Center.localPosition = new Vector3(0, _height / 2, 0);
         }
 
         private void Awake()
         {
             _maxStepHeight = MaxStepHeight;
+            _height = Height;
         }
 
         private void Start()
@@ -134,13 +155,30 @@ namespace Fifbox.Player
             _jumpBufferTimer = JumpBufferTime;
         }
 
+        [field: Header("States")]
+        [field: SerializeField, ReadOnly] public MovementState MoveState { get; private set; }
+        [field: SerializeField, ReadOnly] public MovementState LastMovingMoveState { get; private set; }
+        [field: SerializeField, ReadOnly] public bool Crouching { get; private set; }
+        [field: SerializeField, ReadOnly] public bool WasCrouchingLastFrame { get; private set; }
+
+        public enum MovementState
+        {
+            None,
+            Normal,
+            Fast,
+            Slow
+        }
+
         private void Update()
         {
             if (!isLocalPlayer) return;
+            HandleCrouching();
+
             CeilCheck();
             GroundCheck();
 
             OnUpdate();
+            UpdateStates();
 
             ApplyGravity();
             ApplyFriction();
@@ -156,9 +194,48 @@ namespace Fifbox.Player
             MoveToGround();
         }
 
+        private void HandleCrouching()
+        {
+            var width = Width - 0.001f;
+
+            var canStandUpCheckSize = new Vector3(width, Height - CrouchHeight, width);
+            var canStandUpCheckPosition = transform.position + Vector3.up * (Height + CrouchHeight) / 2;
+            CanStandUp = !Physics.CheckBox(canStandUpCheckPosition, canStandUpCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
+
+            WasCrouchingLastFrame = Crouching;
+            var crouching = _wantsToCrouch && MoveState != MovementState.Fast;
+            if (WasCrouchingLastFrame && !crouching && !CanStandUp) crouching = true;
+            Crouching = crouching;
+
+            if (Grounded)
+            {
+                _height = Crouching ? CrouchHeight : Height;
+                _maxStepHeight = MaxStepHeight;
+            }
+            else
+            {
+                _height = Height;
+                _maxStepHeight = Crouching ? MaxStepHeight / 2 + Height - CrouchHeight : MaxStepHeight;
+            }
+
+            UpdatePlayerCollider();
+            UpdatePlayerCenter();
+        }
+
+        private void CeilCheck()
+        {
+            var width = Width - 0.001f;
+            var ceiledCheckSize = new Vector3(width, 0.02f, width);
+            var ceiledCheckPosition = transform.position + Vector3.up * _height;
+            Ceiled = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
+
+            if (Grounded && Ceiled) _maxStepHeight = 0f;
+            UpdatePlayerCollider();
+        }
+
         private void GroundCheck()
         {
-            var width = Width - 0.01f;
+            var width = Width - 0.001f;
 
             var useBuffer = Rigidbody.linearVelocity.y == 0f;
             var groundedCheckPosition = useBuffer
@@ -191,14 +268,17 @@ namespace Fifbox.Player
             GroundAngle = Vector3.Angle(GroundNormal, Vector3.up);
         }
 
-        private void CeilCheck()
+        private void UpdateStates()
         {
-            var width = Width - 0.01f;
-            var ceiledCheckSize = new Vector3(width, 0.02f, width);
-            var ceiledCheckPosition = transform.position + Vector3.up * Height;
+            if (_rawMovementInput.magnitude > 0)
+            {
+                if (_wantsToRun) MoveState = MovementState.Fast;
+                else if (_wantsToCrouch) MoveState = MovementState.Slow;
+                else MoveState = MovementState.Normal;
+            }
+            else MoveState = MovementState.None;
 
-            Ceiled = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
-            UpdatePlayerCollider(Ceiled ? 0f : MaxStepHeight);
+            if (MoveState != MovementState.None) LastMovingMoveState = MoveState;
         }
 
         private void HandleJump()
@@ -219,7 +299,15 @@ namespace Fifbox.Player
 
         private void Jump()
         {
-            var targetForce = WantsToRun && _rawMovementInput.magnitude > 0 ? RunJumpForce : WalkJumpForce;
+            var targetForce = MoveState switch
+            {
+                MovementState.Normal => WalkJumpForce,
+                MovementState.Fast => RunJumpForce,
+                _ => WalkJumpForce
+            };
+
+            if (Crouching) targetForce = CanStandUp ? CrouchJumpForce : 0f;
+
             Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, targetForce, Rigidbody.linearVelocity.z);
         }
 
@@ -238,7 +326,14 @@ namespace Fifbox.Player
 
             if (Grounded)
             {
-                var deceleration = WantsToRun ? RunDeceleration : WalkDeceleration;
+                var deceleration = LastMovingMoveState switch
+                {
+                    MovementState.Normal => WalkDeceleration,
+                    MovementState.Fast => RunDeceleration,
+                    MovementState.Slow => CrouchDeceleration,
+                    _ => 0f
+                };
+
                 control = speed < deceleration ? deceleration : speed;
                 drop += control * Friction * Time.deltaTime;
             }
@@ -256,7 +351,13 @@ namespace Fifbox.Player
 
         private void HandleMoving()
         {
-            var targetSpeed = _wantsToRun ? RunSpeed : WalkSpeed;
+            var targetSpeed = MoveState switch
+            {
+                MovementState.Normal => WalkSpeed,
+                MovementState.Fast => RunSpeed,
+                MovementState.Slow => CrouchSpeed,
+                _ => 0f
+            };
             if (Grounded) _lastGroundedTargetSpeed = targetSpeed;
 
             var velocity = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z);
@@ -276,7 +377,13 @@ namespace Fifbox.Player
                 var addSpeed = wishSpeed - currentSpeed;
                 if (addSpeed <= 0) return;
 
-                var acceleration = WantsToRun ? RunAcceleration : WalkAcceleration;
+                var acceleration = MoveState switch
+                {
+                    MovementState.Normal => WalkAcceleration,
+                    MovementState.Fast => RunAcceleration,
+                    MovementState.Slow => CrouchAcceleration,
+                    _ => 0f
+                };
 
                 var accelSpeed = acceleration * Time.deltaTime * wishSpeed;
                 accelSpeed = Mathf.Min(accelSpeed, addSpeed);
@@ -310,13 +417,19 @@ namespace Fifbox.Player
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireCube(transform.position + Vector3.up * MaxStepHeight / 2, new(Width - 0.01f, MaxStepHeight, Width - 0.01f));
+            Gizmos.DrawWireCube(transform.position + Vector3.up * _maxStepHeight / 2, new(Width, _maxStepHeight, Width));
 
             Gizmos.color = Color.blue - Color.black * 0.65f;
-            Gizmos.DrawWireCube(transform.position - Vector3.up * StepDownBufferHeight / 2, new(Width - 0.01f, StepDownBufferHeight, Width - 0.01f));
+            Gizmos.DrawWireCube(transform.position - Vector3.up * StepDownBufferHeight / 2, new(Width, StepDownBufferHeight, Width));
 
             Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(transform.position + Vector3.up * Height, new(Width - 0.01f, 0.02f, Width - 0.01f));
+            Gizmos.DrawWireCube(transform.position + Vector3.up * _height, new(Width, 0.02f, Width));
+
+            if (!Crouching)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireCube(transform.position + Vector3.up * (MaxStepHeight / 2 + CrouchHeight / 2), new(Width, CrouchHeight - MaxStepHeight, Width));
+            }
         }
     }
 }

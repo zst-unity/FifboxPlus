@@ -3,12 +3,18 @@ using UnityEngine;
 
 namespace Fifbox.Player
 {
-    public class OnlinePlayer : Player
+    public sealed class OnlinePlayer : Player
     {
         [Header("Objects")]
         [SerializeField] private GameObject _mainCameraPrefab;
-        [SerializeField] private Transform _cameraHolder;
         [SerializeField] private GameObject[] _playerModels;
+
+        [Header("Camera")]
+        [SerializeField] private float _cameraDefaultHeight;
+        [SerializeField] private float _cameraCrouchHeight;
+        [SerializeField] private float _cameraHeightTransitionSpeed;
+
+        private float _cameraHeight;
 
         [Header("Inputs")]
         [SerializeField] private bool _autoBHop;
@@ -48,8 +54,8 @@ namespace Fifbox.Player
 
         private void InitializeCameras()
         {
-            Instantiate(_mainCameraPrefab, _cameraHolder);
-            Camera.main.transform.localPosition = Vector3.zero;
+            Instantiate(_mainCameraPrefab, Orientation);
+            Camera.main.transform.localPosition = Vector3.up * _cameraDefaultHeight;
         }
 
         private void InitializeInputs()
@@ -62,6 +68,9 @@ namespace Fifbox.Player
 
             _actions.Player.Run.performed += ctx => WantsToRun = true;
             _actions.Player.Run.canceled += ctx => WantsToRun = false;
+
+            _actions.Player.Crouch.performed += ctx => WantsToCrouch = true;
+            _actions.Player.Crouch.canceled += ctx => WantsToCrouch = false;
 
             _actions.Player.Jump.performed += ctx =>
             {
@@ -92,6 +101,10 @@ namespace Fifbox.Player
 
             Orientation.localRotation = Quaternion.Euler(0f, _cameraRotY, 0f);
             Camera.main.transform.localRotation = Quaternion.Euler(_cameraRotX, 0f, _cameraRotZ);
+
+            var targetCameraHeight = Grounded && Crouching ? _cameraCrouchHeight : _cameraDefaultHeight;
+            _cameraHeight = Mathf.Lerp(_cameraHeight, targetCameraHeight, Time.deltaTime * _cameraHeightTransitionSpeed);
+            Camera.main.transform.position = transform.position + Vector3.up * _cameraHeight;
         }
 
         private void OnDestroy()

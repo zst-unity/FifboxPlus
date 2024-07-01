@@ -202,7 +202,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3342691042170864155}
   - {fileID: 208472124099792066}
   - {fileID: 6039543826848986856}
   m_Father: {fileID: 7131114985885659597}
@@ -327,37 +326,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &6381393413278307694
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3342691042170864155}
-  m_Layer: 7
-  m_Name: CameraHolder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3342691042170864155
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381393413278307694}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.55, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1742562525474242588}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7103585966373533023
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,21 +384,25 @@ MonoBehaviour:
   <Mass>k__BackingField: 65
   <Width>k__BackingField: 0.41
   <Height>k__BackingField: 1.7
+  <CrouchHeight>k__BackingField: 1.15
   <Friction>k__BackingField: 2
   <GravityMultiplier>k__BackingField: 1.275
   <WalkSpeed>k__BackingField: 2
   <WalkAcceleration>k__BackingField: 15
   <WalkDeceleration>k__BackingField: 10
   <RunSpeed>k__BackingField: 5.2
-  <RunAcceleration>k__BackingField: 15
+  <RunAcceleration>k__BackingField: 12
   <RunDeceleration>k__BackingField: 25
+  <CrouchSpeed>k__BackingField: 1.2
+  <CrouchAcceleration>k__BackingField: 19
+  <CrouchDeceleration>k__BackingField: 10
   <MaxSpeed>k__BackingField: 24
   <WalkJumpForce>k__BackingField: 4.5
   <RunJumpForce>k__BackingField: 5.3
+  <CrouchJumpForce>k__BackingField: 3.9
   <JumpBufferTime>k__BackingField: 0.1
-  <AutoBHop>k__BackingField: 1
   <AirAccelerationGain>k__BackingField: 1.5
-  <MaxAirAcceleration>k__BackingField: 57.5
+  <MaxAirAcceleration>k__BackingField: 60
   <AirSpeedCap>k__BackingField: 3.2
   <MapLayers>k__BackingField:
     serializedVersion: 2
@@ -440,18 +412,23 @@ MonoBehaviour:
   <MaxGroundInfoCheckDistance>k__BackingField: 100
   <Grounded>k__BackingField: 1
   <Ceiled>k__BackingField: 0
-  <GroundNormal>k__BackingField: {x: 0.065462254, y: 0.99746066, z: -0.028055286}
-  <GroundAngle>k__BackingField: 4.0841336
-  <GroundHeight>k__BackingField: 3.8015802
-  <PreviousGroundHeight>k__BackingField: 3.8017108
+  <GroundNormal>k__BackingField: {x: 0, y: 1, z: 0}
+  <GroundAngle>k__BackingField: 0
+  <GroundHeight>k__BackingField: 0
+  <PreviousGroundHeight>k__BackingField: 2.401
   _rawMovementInput: {x: 0, y: 0}
   _wantsToRun: 0
   _wantsToCrouch: 0
+  <MoveState>k__BackingField: 0
+  <LastMovingMoveState>k__BackingField: 1
   _mainCameraPrefab: {fileID: 6722454577904573275, guid: f48ee45efdfb28347b67fd052395d735, type: 3}
-  _cameraHolder: {fileID: 3342691042170864155}
   _playerModels:
   - {fileID: 604378904611252223}
   - {fileID: 6191558274243083671}
+  _cameraDefaultHeight: 1.4
+  _cameraCrouchHeight: 0.85
+  _cameraHeightTransitionSpeed: 7
+  _autoBHop: 0
 --- !u!54 &577452263014476418
 Rigidbody:
   m_ObjectHideFlags: 0
