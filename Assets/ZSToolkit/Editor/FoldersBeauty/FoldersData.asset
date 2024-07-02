@@ -28,3 +28,36 @@ MonoBehaviour:
   - path: Assets/_Project/Materials
     darkThemeColor: {r: 0.5424528, g: 0.84831893, b: 1, a: 1}
     lightThemeColor: {r: 0, g: 0.30586612, b: 0.4575472, a: 1}
+  - path: Assets/Mirror
+    darkThemeColor: {r: 0, g: 0, b: 0, a: 1}
+    lightThemeColor: {r: 1, g: 1, b: 1, a: 1}
+  - path: Assets/_Project/_Other/PhysicsMaterials
+    darkThemeColor: {r: 0.36320752, g: 1, b: 0.39812472, a: 1}
+    lightThemeColor: {r: 0, g: 0.6367925, b: 0.0349172, a: 1}
+  - path: Assets/_Project/_Other
+    darkThemeColor: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
+    lightThemeColor: {r: 0.41509438, g: 0.41509438, b: 0.41509438, a: 1}
+  - path: Assets/_Project/Scenes
+    darkThemeColor: {r: 1, g: 1, b: 1, a: 1}
+    lightThemeColor: {r: 0, g: 0, b: 0, a: 1}
+  - path: Assets/_Project/_Other/URP
+    darkThemeColor: {r: 0.36320752, g: 0.7389152, b: 1, a: 1}
+    lightThemeColor: {r: 0, g: 0.37570766, b: 0.6367925, a: 1}
+  - path: Assets/_Project/Resources/Audio
+    darkThemeColor: {r: 1, g: 0.56079817, b: 0.3254717, a: 1}
+    lightThemeColor: {r: 0.6745283, g: 0.2353265, b: 0, a: 1}
+  - path: Assets/_Project/Resources/Prefabs
+    darkThemeColor: {r: 0.30588233, g: 0.7676071, b: 1, a: 1}
+    lightThemeColor: {r: 0, g: 0.46172476, b: 0.69411767, a: 1}
+  - path: Assets/TextMesh Pro
+    darkThemeColor: {r: 0, g: 0, b: 0, a: 1}
+    lightThemeColor: {r: 1, g: 1, b: 1, a: 1}
+  - path: Assets/ZSToolkit
+    darkThemeColor: {r: 0, g: 0, b: 0, a: 1}
+    lightThemeColor: {r: 1, g: 1, b: 1, a: 1}
+  - path: Assets/_Project/_Other/Terrains
+    darkThemeColor: {r: 0.75801426, g: 1, b: 0.33490568, a: 1}
+    lightThemeColor: {r: 0.42310855, g: 0.6650943, b: 0, a: 1}
+  - path: Assets/_Project/Shaders
+    darkThemeColor: {r: 0.25743148, g: 0.42943302, b: 0.8396226, a: 1}
+    lightThemeColor: {r: 0.16037737, g: 0.33237877, b: 0.7425685, a: 1}
