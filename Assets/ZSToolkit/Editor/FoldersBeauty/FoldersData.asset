@@ -28,3 +28,9 @@ MonoBehaviour:
   - path: Assets/_Project/Materials
     darkThemeColor: {r: 0.5424528, g: 0.84831893, b: 1, a: 1}
     lightThemeColor: {r: 0, g: 0.30586612, b: 0.4575472, a: 1}
+  - path: Assets/_Project/_Other/PhysicsMaterial
+    darkThemeColor: {r: 0.4655182, g: 1, b: 0.4009434, a: 1}
+    lightThemeColor: {r: 0.06457481, g: 0.5990566, b: 0, a: 1}
+  - path: Assets/_Project/_Other/Fonts
+    darkThemeColor: {r: 0.48627448, g: 0.73360693, b: 1, a: 1}
+    lightThemeColor: {r: 0, g: 0.24733245, b: 0.5137255, a: 1}
