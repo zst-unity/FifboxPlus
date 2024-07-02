@@ -1,13 +1,15 @@
 using Mirror;
+using UnityEngine;
 
 namespace Fifbox.Systems
 {
+    [RequireComponent(typeof(NetworkIdentity))]
     public abstract class FifboxSystem<T> : NetworkBehaviour where T : FifboxSystem<T>
     {
         private static FifboxSystem<T> _singleton;
         public static T Singleton => (T)_singleton;
 
-        protected virtual void OnStartup() { }
+        protected virtual void OnStart() { }
         protected virtual void OnStop() { }
         protected virtual void OnUpdate() { }
 
@@ -22,7 +24,7 @@ namespace Fifbox.Systems
             else
             {
                 _singleton = this;
-                OnStartup();
+                OnStart();
             }
         }
 

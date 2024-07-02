@@ -26,8 +26,11 @@ namespace Fifbox.Player
         private float _cameraRotY;
         private float _cameraRotZ;
 
+        public static OnlinePlayer LocalPlayer { get; private set; }
+
         protected override void OnStart()
         {
+            LocalPlayer = this;
             Cursor.lockState = CursorLockMode.Locked;
 
             foreach (var model in _playerModels)

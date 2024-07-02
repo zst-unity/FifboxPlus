@@ -1,3 +1,4 @@
+using Fifbox.UI.GameplayUI;
 using Mirror;
 
 namespace Fifbox.Network
@@ -7,11 +8,15 @@ namespace Fifbox.Network
         public override void OnClientConnect()
         {
             base.OnClientConnect();
+
+            GameplayUI.Singleton.SetUIActive(true);
         }
 
         public override void OnClientDisconnect()
         {
             base.OnClientDisconnect();
+
+            GameplayUI.Singleton.SetUIActive(false);
         }
     }
 }
