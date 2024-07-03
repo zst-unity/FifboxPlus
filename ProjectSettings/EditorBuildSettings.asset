@@ -6,10 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Project/Scenes/Entrypoint.unity
+    guid: 8def4b64701637246bcd172116c58059
+  - enabled: 1
     path: Assets/_Project/Scenes/Menu.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/_Project/Scenes/Flatsand.unity
+    path: Assets/_Project/Scenes/Maps/Flatsand.unity
     guid: 4c63ef560ea4cf34aa94c89a02a994b9
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

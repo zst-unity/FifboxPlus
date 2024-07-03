@@ -19,9 +19,6 @@ MonoBehaviour:
   - path: Assets/_Project/Models
     darkThemeColor: {r: 0.5730286, g: 0.41037738, b: 1, a: 1}
     lightThemeColor: {r: 0.16265123, g: 0, b: 0.5896226, a: 1}
-  - path: Assets/_Project/Resources
-    darkThemeColor: {r: 1, g: 0.912032, b: 0.3537736, a: 1}
-    lightThemeColor: {r: 0.6462264, g: 0.5582585, b: 0, a: 1}
   - path: Assets/_Project/Textures
     darkThemeColor: {r: 1, g: 0.2971698, b: 0.2971698, a: 1}
     lightThemeColor: {r: 0.7028302, g: 0, b: 0, a: 1}
@@ -46,7 +43,7 @@ MonoBehaviour:
   - path: Assets/_Project/Resources/Audio
     darkThemeColor: {r: 1, g: 0.56079817, b: 0.3254717, a: 1}
     lightThemeColor: {r: 0.6745283, g: 0.2353265, b: 0, a: 1}
-  - path: Assets/_Project/Resources/Prefabs
+  - path: Assets/_Project/Prefabs
     darkThemeColor: {r: 0.30588233, g: 0.7676071, b: 1, a: 1}
     lightThemeColor: {r: 0, g: 0.46172476, b: 0.69411767, a: 1}
   - path: Assets/TextMesh Pro
@@ -61,3 +58,6 @@ MonoBehaviour:
   - path: Assets/_Project/Shaders
     darkThemeColor: {r: 0.25743148, g: 0.42943302, b: 0.8396226, a: 1}
     lightThemeColor: {r: 0.16037737, g: 0.33237877, b: 0.7425685, a: 1}
+  - path: Assets/_Project/_Other/Fonts
+    darkThemeColor: {r: 0.36320752, g: 0.54821646, b: 1, a: 1}
+    lightThemeColor: {r: 0, g: 0.18500897, b: 0.6367925, a: 1}
