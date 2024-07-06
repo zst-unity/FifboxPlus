@@ -1,62 +1,62 @@
-using Fifbox.Content.Base;
+using Fifbox.FrontEnd.Configs;
 using UnityEngine;
 
 namespace Fifbox.Content.Player
 {
-    [CreateAssetMenu(fileName = "Player Config", menuName = "Fifbox/Configs/PlayerConfig", order = 0)]
+    [CreateAssetMenu(fileName = "PlayerConfig", menuName = "Fifbox/Configs/Player Config", order = 0)]
     public class PlayerConfig : Config<PlayerConfig>
     {
         [Header("Body properties")]
-        public float mass = 65f;
-        public float width = 0.41f;
-        public float fullHeight = 1.7f;
-        public float crouchHeight = 1.15f;
+        public float mass;
+        public float width;
+        public float fullHeight;
+        public float crouchHeight;
 
         [Header("Physics properties")]
-        public float gravityMultiplier = 1.275f;
-        public float friction = 8f;
+        public float gravityMultiplier;
+        public float friction;
 
         [Header("Move properties")]
-        public float walkSpeed = 2f;
-        public float walkAcceleration = 12f;
-        public float walkDeceleration = 2f;
+        public float walkSpeed;
+        public float walkAcceleration;
+        public float walkDeceleration;
 
         [Space(9)]
 
-        public float runSpeed = 5.2f;
-        public float runAcceleration = 8f;
-        public float runDeceleration = 2.7f;
+        public float runSpeed;
+        public float runAcceleration;
+        public float runDeceleration;
 
         [Space(9)]
 
-        public float crouchSpeed = 1.2f;
-        public float crouchAcceleration = 17f;
-        public float crouchDeceleration = 2f;
+        public float crouchSpeed;
+        public float crouchAcceleration;
+        public float crouchDeceleration;
 
         [Space(9)]
 
-        public float maxSpeed = 24f;
+        public float maxSpeed;
 
         [Header("Jump properties")]
-        public float walkJumpForce = 4f;
-        public float runJumpForce = 4.9f;
-        public float crouchJumpForce = 3.5f;
+        public float walkJumpForce;
+        public float runJumpForce;
+        public float crouchJumpForce;
 
         [Space(9)]
 
-        public float jumpBufferTime = 0.1f;
+        public float jumpBufferTime;
 
         [Header("Air handling")]
-        public float airAcceleration = 28f;
-        public float airSpeedCap = 3.1f;
+        public float airAcceleration;
+        public float airSpeedCap;
 
         [Header("Noclip")]
-        public float noclipNormalFlySpeed = 15f;
-        public float noclipFastFlySpeed = 27.3f;
-        public float noclipVerticalModifierSpeed = 15f;
+        public float noclipNormalFlySpeed;
+        public float noclipFastFlySpeed;
+        public float noclipVerticalModifierSpeed;
 
         [Header("Ground handling")]
-        public float maxStepHeight = 0.4f;
-        public float stepDownBufferHeight = 0.5f;
+        public float maxStepHeight;
+        public float stepDownBufferHeight;
     }
 }

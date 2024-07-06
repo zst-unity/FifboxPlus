@@ -1,10 +1,18 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
-namespace Fifbox.Content.Base
+namespace Fifbox.FrontEnd.Configs
 {
-    public abstract class Config<T1> : ScriptableObject where T1 : Config<T1>
+    public abstract class ConfigBase : ScriptableObject
     {
+        public abstract Type ConfigType { get; }
+    }
+
+    public abstract class Config<T1> : ConfigBase where T1 : Config<T1>
+    {
+        public override Type ConfigType => typeof(T1);
+
         public static T2 Create<T2>() where T2 : Config<T2>
         {
             return CreateInstance<T2>();
