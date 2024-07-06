@@ -6,6 +6,8 @@ namespace Fifbox.Player
     [RequireComponent(typeof(Rigidbody))]
     public abstract class Player : NetworkBehaviour
     {
+        public const float MAX_GROUND_INFO_CHECK_DISTANCE = 100f;
+
         [field: Header("Objects")]
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
         [field: SerializeField] public BoxCollider Collider { get; private set; }
@@ -57,8 +59,7 @@ namespace Fifbox.Player
         private float _jumpBufferTimer;
 
         [field: Header("Air handling")]
-        [field: SerializeField] public float AirAccelerationGain { get; private set; }
-        [field: SerializeField] public float MaxAirAcceleration { get; private set; }
+        [field: SerializeField] public float AirAcceleration { get; private set; }
         [field: SerializeField] public float AirSpeedCap { get; private set; }
 
         [field: Header("Noclip")]
@@ -70,7 +71,6 @@ namespace Fifbox.Player
         [field: SerializeField] public LayerMask MapLayers { get; private set; }
         [field: SerializeField] public float MaxStepHeight { get; private set; }
         [field: SerializeField] public float StepDownBufferHeight { get; private set; }
-        [field: SerializeField] public float MaxGroundInfoCheckDistance { get; private set; }
 
         private float _maxStepHeight;
         private float _stepDownBufferHeight;
@@ -300,7 +300,7 @@ namespace Fifbox.Player
                 Vector3.down,
                 out var hit,
                 Quaternion.identity,
-                MaxGroundInfoCheckDistance,
+                MAX_GROUND_INFO_CHECK_DISTANCE,
                 MapLayers
             );
 
@@ -401,6 +401,7 @@ namespace Fifbox.Player
 
             if (Grounded)
             {
+
                 var deceleration = LastMovingMoveState switch
                 {
                     MovementState.Walk => WalkDeceleration,
@@ -451,6 +452,8 @@ namespace Fifbox.Player
             Rigidbody.linearVelocity = (targetSpeed * direction) + Vector3.up * verticalModifierForce;
         }
 
+        private float ddd;
+
         private void Accelerate()
         {
             var targetSpeed = MoveState switch
@@ -461,9 +464,11 @@ namespace Fifbox.Player
             };
             if (Crouching) targetSpeed = CrouchSpeed;
 
-            if (Grounded) _lastGroundedTargetSpeed = targetSpeed;
-
             var velocity = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z);
+
+            if (Grounded) { _lastGroundedTargetSpeed = targetSpeed; ddd = velocity.magnitude; }
+            else _lastGroundedTargetSpeed = ddd;
+
             var wishVel = (Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y) * _lastGroundedTargetSpeed;
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
@@ -507,8 +512,7 @@ namespace Fifbox.Player
 
             if (addSpeed <= 0) return Vector2.zero;
 
-            var acceleration = Mathf.Min(velocity.magnitude * AirAccelerationGain, MaxAirAcceleration);
-            var accelSpeed = acceleration * Time.deltaTime * airWishSpeed;
+            var accelSpeed = AirAcceleration * Time.deltaTime * wishSpeed;
             accelSpeed = Mathf.Min(accelSpeed, addSpeed);
 
             return wishDir * accelSpeed;
