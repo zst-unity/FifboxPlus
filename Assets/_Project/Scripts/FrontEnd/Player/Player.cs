@@ -142,8 +142,7 @@ namespace Fifbox.FrontEnd.Player
         protected virtual void OnUpdate() { }
 
         [field: Header("Inputs")]
-        [field: SerializeField] public PlayerInputs Inputs { get; private set; }
-
+        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInputs Inputs { get; private set; }
         [SerializeField, ReadOnly, AllowNesting] private bool _nocliping;
 
         private void Awake()
