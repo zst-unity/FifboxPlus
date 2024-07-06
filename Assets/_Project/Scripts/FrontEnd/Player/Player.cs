@@ -199,6 +199,8 @@ namespace Fifbox.FrontEnd.Player
         [field: SerializeField, ReadOnly] public bool Crouching { get; private set; }
         [field: SerializeField, ReadOnly] public bool WasCrouchingLastFrame { get; private set; }
 
+        private Vector2 _lastGroundedVelocity;
+
         public enum PlayerState
         {
             OnGround,
@@ -432,8 +434,6 @@ namespace Fifbox.FrontEnd.Player
             }
         }
 
-        private float _lastGroundedTargetSpeed;
-
         private void HandleMoving()
         {
             if (_nocliping) NoclipMovement();
@@ -460,24 +460,26 @@ namespace Fifbox.FrontEnd.Player
             Rigidbody.linearVelocity = (targetSpeed * direction) + Vector3.up * verticalModifierForce;
         }
 
-        private float ddd;
-
         private void Accelerate()
         {
-            var targetSpeed = MoveState switch
-            {
-                MovementState.Walk => WalkSpeed,
-                MovementState.Run => RunSpeed,
-                _ => 0f
-            };
-            if (Crouching) targetSpeed = CrouchSpeed;
-
             var velocity = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z);
 
-            if (Grounded) { _lastGroundedTargetSpeed = targetSpeed; ddd = velocity.magnitude; }
-            else _lastGroundedTargetSpeed = ddd;
+            float targetSpeed;
+            if (Grounded)
+            {
+                _lastGroundedVelocity = velocity;
 
-            var wishVel = (Orientation.right * MoveVector.x + Orientation.forward * MoveVector.y) * _lastGroundedTargetSpeed;
+                targetSpeed = MoveState switch
+                {
+                    MovementState.Walk => WalkSpeed,
+                    MovementState.Run => RunSpeed,
+                    _ => 0f
+                };
+                if (Crouching) targetSpeed = CrouchSpeed;
+            }
+            else targetSpeed = _lastGroundedVelocity.magnitude;
+
+            var wishVel = (Orientation.right * MoveVector.x + Orientation.forward * MoveVector.y) * targetSpeed;
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
 
