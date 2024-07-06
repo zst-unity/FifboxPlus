@@ -57,8 +57,8 @@ namespace Fifbox.FrontEnd.Player
         {
             FifboxGlobal.ActionAsset.Player.Enable();
 
-            FifboxGlobal.ActionAsset.Player.Move.performed += ctx => RawMovementInput = ctx.ReadValue<Vector2>();
-            FifboxGlobal.ActionAsset.Player.Move.canceled += ctx => RawMovementInput = Vector2.zero;
+            FifboxGlobal.ActionAsset.Player.Move.performed += ctx => MoveVector = ctx.ReadValue<Vector2>();
+            FifboxGlobal.ActionAsset.Player.Move.canceled += ctx => MoveVector = Vector2.zero;
 
             FifboxGlobal.ActionAsset.Player.Run.performed += ctx => WantsToRun = true;
             FifboxGlobal.ActionAsset.Player.Run.canceled += ctx => WantsToRun = false;
@@ -69,18 +69,21 @@ namespace Fifbox.FrontEnd.Player
             FifboxGlobal.ActionAsset.Player.Jump.performed += ctx =>
             {
                 _holdingJump = true;
-                WantsToAscend = true;
-
                 if (!_autoBHop) TryJump();
             };
 
-            FifboxGlobal.ActionAsset.Player.Jump.canceled += ctx =>
-            {
-                _holdingJump = false;
-                WantsToAscend = false;
-            };
+            FifboxGlobal.ActionAsset.Player.Jump.canceled += ctx => _holdingJump = false;
 
-            FifboxGlobal.ActionAsset.Player.Noclip.performed += ctx => WantsToNoclip = !WantsToNoclip;
+            FifboxGlobal.ActionAsset.Player.FastFly.performed += ctx => WantsToFlyFast = true;
+            FifboxGlobal.ActionAsset.Player.FastFly.canceled += ctx => WantsToFlyFast = false;
+
+            FifboxGlobal.ActionAsset.Player.Ascend.performed += ctx => WantsToAscend = true;
+            FifboxGlobal.ActionAsset.Player.Ascend.canceled += ctx => WantsToAscend = false;
+
+            FifboxGlobal.ActionAsset.Player.Descend.performed += ctx => WantsToDescend = true;
+            FifboxGlobal.ActionAsset.Player.Descend.canceled += ctx => WantsToDescend = false;
+
+            FifboxGlobal.ActionAsset.Player.Noclip.performed += ctx => ToggleNoclip();
         }
 
         protected override void OnUpdate()

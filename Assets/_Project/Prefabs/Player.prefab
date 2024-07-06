@@ -403,15 +403,14 @@ MonoBehaviour:
   <JumpBufferTime>k__BackingField: 0.1
   <AirAcceleration>k__BackingField: 28
   <AirSpeedCap>k__BackingField: 3.1
-  <NoclipNormalFlySpeed>k__BackingField: 8
-  <NoclipFastFlySpeed>k__BackingField: 24.2
-  <NoclipVerticalModifierSpeed>k__BackingField: 13.5
+  <NoclipNormalFlySpeed>k__BackingField: 15.6
+  <NoclipFastFlySpeed>k__BackingField: 28.2
+  <NoclipVerticalModifierSpeed>k__BackingField: 15.2
   <MapLayers>k__BackingField:
     serializedVersion: 2
     m_Bits: 136
   <MaxStepHeight>k__BackingField: 0.4
   <StepDownBufferHeight>k__BackingField: 0.5
-  <MaxGroundInfoCheckDistance>k__BackingField: 100
   <Grounded>k__BackingField: 1
   <Ceiled>k__BackingField: 0
   <CanStandUp>k__BackingField: 1
@@ -419,12 +418,14 @@ MonoBehaviour:
   <GroundAngle>k__BackingField: 0
   <GroundHeight>k__BackingField: 0
   <PreviousGroundHeight>k__BackingField: 2.401
-  _rawMovementInput: {x: 0, y: 0}
+  _moveVector: {x: 0, y: 0}
   _wantsToRun: 0
   _wantsToCrouch: 0
-  _nocliping: 0
+  _wantsToFlyFast: 0
   _wantsToAscend: 0
+  _wantsToDescend: 0
   _verticalOrientation: -13.499965
+  _nocliping: 0
   <State>k__BackingField: 0
   <MoveState>k__BackingField: 0
   <LastMovingMoveState>k__BackingField: 1

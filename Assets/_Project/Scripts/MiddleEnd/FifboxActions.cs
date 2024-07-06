@@ -49,15 +49,6 @@ namespace Fifbox.MiddleEnd
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Look"",
-                    ""type"": ""Value"",
-                    ""id"": ""eed35767-3242-45de-8170-cf17d912f814"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
                     ""name"": ""Run"",
                     ""type"": ""Button"",
                     ""id"": ""48df9634-fe16-4ead-939e-c0dd97c2ab06"",
@@ -83,6 +74,42 @@ namespace Fifbox.MiddleEnd
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FastFly"",
+                    ""type"": ""Button"",
+                    ""id"": ""4ca611f2-e9a9-40b0-9596-09c155491022"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Ascend"",
+                    ""type"": ""Button"",
+                    ""id"": ""0ffe8ac8-8918-4ae4-9e45-cb9942d3476b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Descend"",
+                    ""type"": ""Button"",
+                    ""id"": ""c2902d9f-8093-48d3-8000-dc30245f57e2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""eed35767-3242-45de-8170-cf17d912f814"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -176,6 +203,28 @@ namespace Fifbox.MiddleEnd
                 },
                 {
                     ""name"": """",
+                    ""id"": ""5a24edcb-c391-4d59-b7d6-75a38860b886"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Ascend"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""091da141-14f5-4ef1-9456-f44daf4e5870"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Ascend"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""d7fb95d2-bf41-4036-a84f-292df67c08ca"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
@@ -220,6 +269,28 @@ namespace Fifbox.MiddleEnd
                 },
                 {
                     ""name"": """",
+                    ""id"": ""8b47ed99-a42f-43eb-998f-80038f5892ec"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FastFly"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3d641cfa-10f7-44a7-9553-76a16a16809e"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FastFly"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""fc993bd4-6332-46d1-88e4-631324fbec35"",
                     ""path"": ""<Keyboard>/ctrl"",
                     ""interactions"": """",
@@ -237,6 +308,28 @@ namespace Fifbox.MiddleEnd
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2f9313f0-d715-4f8f-a660-83d2e32b3e9c"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Descend"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7abb7fd-5afb-4279-a76c-c21c4a159e04"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Descend"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -332,10 +425,13 @@ namespace Fifbox.MiddleEnd
             m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
             m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
-            m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
             m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
             m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
             m_Player_Noclip = m_Player.FindAction("Noclip", throwIfNotFound: true);
+            m_Player_FastFly = m_Player.FindAction("FastFly", throwIfNotFound: true);
+            m_Player_Ascend = m_Player.FindAction("Ascend", throwIfNotFound: true);
+            m_Player_Descend = m_Player.FindAction("Descend", throwIfNotFound: true);
+            m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         }
 
         ~@FifboxActions()
@@ -404,20 +500,26 @@ namespace Fifbox.MiddleEnd
         private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
         private readonly InputAction m_Player_Move;
         private readonly InputAction m_Player_Jump;
-        private readonly InputAction m_Player_Look;
         private readonly InputAction m_Player_Run;
         private readonly InputAction m_Player_Crouch;
         private readonly InputAction m_Player_Noclip;
+        private readonly InputAction m_Player_FastFly;
+        private readonly InputAction m_Player_Ascend;
+        private readonly InputAction m_Player_Descend;
+        private readonly InputAction m_Player_Look;
         public struct PlayerActions
         {
             private @FifboxActions m_Wrapper;
             public PlayerActions(@FifboxActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Move => m_Wrapper.m_Player_Move;
             public InputAction @Jump => m_Wrapper.m_Player_Jump;
-            public InputAction @Look => m_Wrapper.m_Player_Look;
             public InputAction @Run => m_Wrapper.m_Player_Run;
             public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
             public InputAction @Noclip => m_Wrapper.m_Player_Noclip;
+            public InputAction @FastFly => m_Wrapper.m_Player_FastFly;
+            public InputAction @Ascend => m_Wrapper.m_Player_Ascend;
+            public InputAction @Descend => m_Wrapper.m_Player_Descend;
+            public InputAction @Look => m_Wrapper.m_Player_Look;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -433,9 +535,6 @@ namespace Fifbox.MiddleEnd
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
-                @Look.started += instance.OnLook;
-                @Look.performed += instance.OnLook;
-                @Look.canceled += instance.OnLook;
                 @Run.started += instance.OnRun;
                 @Run.performed += instance.OnRun;
                 @Run.canceled += instance.OnRun;
@@ -445,6 +544,18 @@ namespace Fifbox.MiddleEnd
                 @Noclip.started += instance.OnNoclip;
                 @Noclip.performed += instance.OnNoclip;
                 @Noclip.canceled += instance.OnNoclip;
+                @FastFly.started += instance.OnFastFly;
+                @FastFly.performed += instance.OnFastFly;
+                @FastFly.canceled += instance.OnFastFly;
+                @Ascend.started += instance.OnAscend;
+                @Ascend.performed += instance.OnAscend;
+                @Ascend.canceled += instance.OnAscend;
+                @Descend.started += instance.OnDescend;
+                @Descend.performed += instance.OnDescend;
+                @Descend.canceled += instance.OnDescend;
+                @Look.started += instance.OnLook;
+                @Look.performed += instance.OnLook;
+                @Look.canceled += instance.OnLook;
             }
 
             private void UnregisterCallbacks(IPlayerActions instance)
@@ -455,9 +566,6 @@ namespace Fifbox.MiddleEnd
                 @Jump.started -= instance.OnJump;
                 @Jump.performed -= instance.OnJump;
                 @Jump.canceled -= instance.OnJump;
-                @Look.started -= instance.OnLook;
-                @Look.performed -= instance.OnLook;
-                @Look.canceled -= instance.OnLook;
                 @Run.started -= instance.OnRun;
                 @Run.performed -= instance.OnRun;
                 @Run.canceled -= instance.OnRun;
@@ -467,6 +575,18 @@ namespace Fifbox.MiddleEnd
                 @Noclip.started -= instance.OnNoclip;
                 @Noclip.performed -= instance.OnNoclip;
                 @Noclip.canceled -= instance.OnNoclip;
+                @FastFly.started -= instance.OnFastFly;
+                @FastFly.performed -= instance.OnFastFly;
+                @FastFly.canceled -= instance.OnFastFly;
+                @Ascend.started -= instance.OnAscend;
+                @Ascend.performed -= instance.OnAscend;
+                @Ascend.canceled -= instance.OnAscend;
+                @Descend.started -= instance.OnDescend;
+                @Descend.performed -= instance.OnDescend;
+                @Descend.canceled -= instance.OnDescend;
+                @Look.started -= instance.OnLook;
+                @Look.performed -= instance.OnLook;
+                @Look.canceled -= instance.OnLook;
             }
 
             public void RemoveCallbacks(IPlayerActions instance)
@@ -533,10 +653,13 @@ namespace Fifbox.MiddleEnd
         {
             void OnMove(InputAction.CallbackContext context);
             void OnJump(InputAction.CallbackContext context);
-            void OnLook(InputAction.CallbackContext context);
             void OnRun(InputAction.CallbackContext context);
             void OnCrouch(InputAction.CallbackContext context);
             void OnNoclip(InputAction.CallbackContext context);
+            void OnFastFly(InputAction.CallbackContext context);
+            void OnAscend(InputAction.CallbackContext context);
+            void OnDescend(InputAction.CallbackContext context);
+            void OnLook(InputAction.CallbackContext context);
         }
     }
 }

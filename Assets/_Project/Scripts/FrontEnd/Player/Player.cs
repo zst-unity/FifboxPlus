@@ -141,7 +141,7 @@ namespace Fifbox.FrontEnd.Player
             _stepDownBufferHeight = StepDownBufferHeight;
             _maxStepHeight = MaxStepHeight;
             _height = Height;
-            _initialLayer = 5;
+            _initialLayer = 7;
         }
 
         private void Start()
@@ -155,23 +155,33 @@ namespace Fifbox.FrontEnd.Player
         protected virtual void OnUpdate() { }
 
         [Header("Inputs")]
-        [SerializeField, ReadOnly] private Vector2 _rawMovementInput;
+        [SerializeField, ReadOnly] private Vector2 _moveVector;
         [SerializeField, ReadOnly] private bool _wantsToRun;
         [SerializeField, ReadOnly] private bool _wantsToCrouch;
-        [SerializeField, ReadOnly] private bool _nocliping;
+        [SerializeField, ReadOnly] private bool _wantsToFlyFast;
         [SerializeField, ReadOnly] private bool _wantsToAscend;
+        [SerializeField, ReadOnly] private bool _wantsToDescend;
         [SerializeField, ReadOnly] private float _verticalOrientation;
 
-        public Vector2 RawMovementInput { get => _rawMovementInput; protected set => _rawMovementInput = value; }
+        public Vector2 MoveVector { get => _moveVector; protected set => _moveVector = value; }
         public bool WantsToRun { get => _wantsToRun; protected set => _wantsToRun = value; }
         public bool WantsToCrouch { get => _wantsToCrouch; protected set => _wantsToCrouch = value; }
-        public bool WantsToNoclip { get => _nocliping; protected set => _nocliping = value; }
+        public bool WantsToFlyFast { get => _wantsToFlyFast; protected set => _wantsToFlyFast = value; }
         public bool WantsToAscend { get => _wantsToAscend; protected set => _wantsToAscend = value; }
+        public bool WantsToDescend { get => _wantsToDescend; protected set => _wantsToDescend = value; }
         public float VerticalOrientation { get => _verticalOrientation; protected set => _verticalOrientation = value; }
+
+        [SerializeField, ReadOnly] private bool _nocliping;
 
         protected void TryJump()
         {
             ResetJumpBuffer();
+        }
+
+        protected void ToggleNoclip()
+        {
+            _nocliping = !_nocliping;
+            SetLayer(_nocliping ? 8 : _initialLayer);
         }
 
         private void ResetJumpBuffer()
@@ -324,12 +334,10 @@ namespace Fifbox.FrontEnd.Player
         {
             if (_nocliping)
             {
-                SetLayer(8);
                 State = PlayerState.Nocliping;
             }
             else
             {
-                SetLayer(_initialLayer);
                 if (Grounded) State = PlayerState.OnGround;
                 else State = PlayerState.InAir;
             }
@@ -343,7 +351,7 @@ namespace Fifbox.FrontEnd.Player
                 return;
             }
 
-            if (_rawMovementInput.magnitude > 0)
+            if (_moveVector.magnitude > 0)
             {
                 if (_wantsToRun) MoveState = MovementState.Run;
                 else if (_wantsToCrouch) MoveState = MovementState.Crouch;
@@ -442,7 +450,7 @@ namespace Fifbox.FrontEnd.Player
             var fullOrientation = Quaternion.Euler(_verticalOrientation, Orientation.eulerAngles.y, 0f);
             var forward = fullOrientation * Vector3.forward;
             var right = fullOrientation * Vector3.right;
-            var direction = right * RawMovementInput.x + forward * RawMovementInput.y;
+            var direction = right * MoveVector.x + forward * MoveVector.y;
 
             var verticalModifierDirection = 0f;
             if (_wantsToCrouch) verticalModifierDirection -= 1f;
@@ -469,7 +477,7 @@ namespace Fifbox.FrontEnd.Player
             if (Grounded) { _lastGroundedTargetSpeed = targetSpeed; ddd = velocity.magnitude; }
             else _lastGroundedTargetSpeed = ddd;
 
-            var wishVel = (Orientation.right * RawMovementInput.x + Orientation.forward * RawMovementInput.y) * _lastGroundedTargetSpeed;
+            var wishVel = (Orientation.right * MoveVector.x + Orientation.forward * MoveVector.y) * _lastGroundedTargetSpeed;
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
 
