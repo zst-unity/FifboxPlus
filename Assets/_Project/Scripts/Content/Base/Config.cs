@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Fifbox.FrontEnd.Base
+namespace Fifbox.Content.Base
 {
     public abstract class Config<T1> : ScriptableObject where T1 : Config<T1>
     {

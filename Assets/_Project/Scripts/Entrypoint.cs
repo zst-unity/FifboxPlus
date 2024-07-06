@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using ZSToolkit.ZSTUtility.Extensions;
 
-namespace Fifbox.BackEnd
+namespace Fifbox
 {
     public class Entrypoint : MonoBehaviour
     {
