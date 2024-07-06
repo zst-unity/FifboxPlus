@@ -418,13 +418,14 @@ MonoBehaviour:
   <GroundAngle>k__BackingField: 0
   <GroundHeight>k__BackingField: 0
   <PreviousGroundHeight>k__BackingField: 2.401
-  _moveVector: {x: 0, y: 0}
-  _wantsToRun: 0
-  _wantsToCrouch: 0
-  _wantsToFlyFast: 0
-  _wantsToAscend: 0
-  _wantsToDescend: 0
-  _verticalOrientation: -13.499965
+  <Inputs>k__BackingField:
+    moveVector: {x: 0, y: 0}
+    wantsToRun: 0
+    wantsToCrouch: 0
+    wantsToFlyFast: 0
+    wantsToAscend: 0
+    wantsToDescend: 0
+    orientationEulerAngles: {x: 0, y: 0, z: 0}
   _nocliping: 0
   <State>k__BackingField: 0
   <MoveState>k__BackingField: 0

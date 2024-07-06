@@ -23,7 +23,6 @@ namespace Fifbox.FrontEnd.Player
 
         private float _cameraRotX;
         private float _cameraRotY;
-        private float _cameraRotZ;
 
         protected override void OnStart()
         {
@@ -57,38 +56,38 @@ namespace Fifbox.FrontEnd.Player
         {
             FifboxGlobal.ActionAsset.Player.Enable();
 
-            FifboxGlobal.ActionAsset.Player.Move.performed += ctx => MoveVector = ctx.ReadValue<Vector2>();
-            FifboxGlobal.ActionAsset.Player.Move.canceled += ctx => MoveVector = Vector2.zero;
+            FifboxGlobal.ActionAsset.Player.Move.performed += ctx => Inputs.moveVector = ctx.ReadValue<Vector2>();
+            FifboxGlobal.ActionAsset.Player.Move.canceled += ctx => Inputs.moveVector = Vector2.zero;
 
-            FifboxGlobal.ActionAsset.Player.Run.performed += ctx => WantsToRun = true;
-            FifboxGlobal.ActionAsset.Player.Run.canceled += ctx => WantsToRun = false;
+            FifboxGlobal.ActionAsset.Player.Run.performed += ctx => Inputs.wantsToRun = true;
+            FifboxGlobal.ActionAsset.Player.Run.canceled += ctx => Inputs.wantsToRun = false;
 
-            FifboxGlobal.ActionAsset.Player.Crouch.performed += ctx => WantsToCrouch = true;
-            FifboxGlobal.ActionAsset.Player.Crouch.canceled += ctx => WantsToCrouch = false;
+            FifboxGlobal.ActionAsset.Player.Crouch.performed += ctx => Inputs.wantsToCrouch = true;
+            FifboxGlobal.ActionAsset.Player.Crouch.canceled += ctx => Inputs.wantsToCrouch = false;
 
             FifboxGlobal.ActionAsset.Player.Jump.performed += ctx =>
             {
                 _holdingJump = true;
-                if (!_autoBHop) TryJump();
+                if (!_autoBHop) Inputs.tryJump();
             };
 
             FifboxGlobal.ActionAsset.Player.Jump.canceled += ctx => _holdingJump = false;
 
-            FifboxGlobal.ActionAsset.Player.FastFly.performed += ctx => WantsToFlyFast = true;
-            FifboxGlobal.ActionAsset.Player.FastFly.canceled += ctx => WantsToFlyFast = false;
+            FifboxGlobal.ActionAsset.Player.FastFly.performed += ctx => Inputs.wantsToFlyFast = true;
+            FifboxGlobal.ActionAsset.Player.FastFly.canceled += ctx => Inputs.wantsToFlyFast = false;
 
-            FifboxGlobal.ActionAsset.Player.Ascend.performed += ctx => WantsToAscend = true;
-            FifboxGlobal.ActionAsset.Player.Ascend.canceled += ctx => WantsToAscend = false;
+            FifboxGlobal.ActionAsset.Player.Ascend.performed += ctx => Inputs.wantsToAscend = true;
+            FifboxGlobal.ActionAsset.Player.Ascend.canceled += ctx => Inputs.wantsToAscend = false;
 
-            FifboxGlobal.ActionAsset.Player.Descend.performed += ctx => WantsToDescend = true;
-            FifboxGlobal.ActionAsset.Player.Descend.canceled += ctx => WantsToDescend = false;
+            FifboxGlobal.ActionAsset.Player.Descend.performed += ctx => Inputs.wantsToDescend = true;
+            FifboxGlobal.ActionAsset.Player.Descend.canceled += ctx => Inputs.wantsToDescend = false;
 
-            FifboxGlobal.ActionAsset.Player.Noclip.performed += ctx => ToggleNoclip();
+            FifboxGlobal.ActionAsset.Player.Noclip.performed += ctx => Inputs.toggleNoclip();
         }
 
         protected override void OnUpdate()
         {
-            if (_autoBHop && _holdingJump) TryJump();
+            if (_autoBHop && _holdingJump) Inputs.tryJump();
             var cameraInput = FifboxGlobal.ActionAsset.Player.Look.ReadValue<Vector2>();
 
             if (FifboxGlobal.ActionAsset.Player.Look.activeControl != null)
@@ -102,10 +101,9 @@ namespace Fifbox.FrontEnd.Player
 
             _cameraRotY += cameraInput.x;
             _cameraRotX = Mathf.Clamp(_cameraRotX - cameraInput.y, -90f, 90f);
-            VerticalOrientation = _cameraRotX;
 
-            Orientation.localRotation = Quaternion.Euler(0f, _cameraRotY, 0f);
-            Camera.main.transform.localRotation = Quaternion.Euler(_cameraRotX, 0f, _cameraRotZ);
+            Inputs.orientationEulerAngles = new(_cameraRotX, _cameraRotY, 0f);
+            Camera.main.transform.localRotation = Quaternion.Euler(_cameraRotX, 0f, 0f);
 
             var targetCameraHeight = Grounded && Crouching ? _cameraCrouchHeight : _cameraDefaultHeight;
             _cameraHeight = Mathf.Lerp(_cameraHeight, targetCameraHeight, Time.deltaTime * _cameraHeightTransitionSpeed);

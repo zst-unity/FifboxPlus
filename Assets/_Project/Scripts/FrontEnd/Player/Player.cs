@@ -1,5 +1,7 @@
 using Mirror;
 using UnityEngine;
+using NaughtyAttributes;
+using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
 
 namespace Fifbox.FrontEnd.Player
 {
@@ -77,13 +79,13 @@ namespace Fifbox.FrontEnd.Player
 
         [field: Space(9)]
 
-        [field: SerializeField, ReadOnly] public bool Grounded { get; private set; }
-        [field: SerializeField, ReadOnly] public bool Ceiled { get; private set; }
-        [field: SerializeField, ReadOnly] public bool CanStandUp { get; private set; }
-        [field: SerializeField, ReadOnly] public Vector3 GroundNormal { get; private set; }
-        [field: SerializeField, ReadOnly] public float GroundAngle { get; private set; }
-        [field: SerializeField, ReadOnly] public float GroundHeight { get; private set; }
-        [field: SerializeField, ReadOnly] public float PreviousGroundHeight { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public bool Grounded { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public bool Ceiled { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public bool CanStandUp { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public Vector3 GroundNormal { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public float GroundAngle { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public float GroundHeight { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public float PreviousGroundHeight { get; private set; }
 
         protected override void OnValidate()
         {
@@ -136,6 +138,14 @@ namespace Fifbox.FrontEnd.Player
             }
         }
 
+        protected virtual void OnStart() { }
+        protected virtual void OnUpdate() { }
+
+        [field: Header("Inputs")]
+        [field: SerializeField] public PlayerInputs Inputs { get; private set; }
+
+        [SerializeField, ReadOnly, AllowNesting] private bool _nocliping;
+
         private void Awake()
         {
             _stepDownBufferHeight = StepDownBufferHeight;
@@ -149,36 +159,25 @@ namespace Fifbox.FrontEnd.Player
             if (!isLocalPlayer) return;
             OnStart();
             SetLayer(_initialLayer);
+
+            Inputs.tryJump += TryJump;
+            Inputs.toggleNoclip += ToggleNoclip;
         }
 
-        protected virtual void OnStart() { }
-        protected virtual void OnUpdate() { }
+        private void OnDestroy()
+        {
+            if (!isLocalPlayer) return;
 
-        [Header("Inputs")]
-        [SerializeField, ReadOnly] private Vector2 _moveVector;
-        [SerializeField, ReadOnly] private bool _wantsToRun;
-        [SerializeField, ReadOnly] private bool _wantsToCrouch;
-        [SerializeField, ReadOnly] private bool _wantsToFlyFast;
-        [SerializeField, ReadOnly] private bool _wantsToAscend;
-        [SerializeField, ReadOnly] private bool _wantsToDescend;
-        [SerializeField, ReadOnly] private float _verticalOrientation;
+            Inputs.tryJump -= TryJump;
+            Inputs.toggleNoclip -= ToggleNoclip;
+        }
 
-        public Vector2 MoveVector { get => _moveVector; protected set => _moveVector = value; }
-        public bool WantsToRun { get => _wantsToRun; protected set => _wantsToRun = value; }
-        public bool WantsToCrouch { get => _wantsToCrouch; protected set => _wantsToCrouch = value; }
-        public bool WantsToFlyFast { get => _wantsToFlyFast; protected set => _wantsToFlyFast = value; }
-        public bool WantsToAscend { get => _wantsToAscend; protected set => _wantsToAscend = value; }
-        public bool WantsToDescend { get => _wantsToDescend; protected set => _wantsToDescend = value; }
-        public float VerticalOrientation { get => _verticalOrientation; protected set => _verticalOrientation = value; }
-
-        [SerializeField, ReadOnly] private bool _nocliping;
-
-        protected void TryJump()
+        private void TryJump()
         {
             ResetJumpBuffer();
         }
 
-        protected void ToggleNoclip()
+        private void ToggleNoclip()
         {
             _nocliping = !_nocliping;
             SetLayer(_nocliping ? 8 : _initialLayer);
@@ -190,14 +189,14 @@ namespace Fifbox.FrontEnd.Player
         }
 
         [field: Header("States")]
-        [field: SerializeField, ReadOnly] public PlayerState State { get; private set; }
-        [field: SerializeField, ReadOnly] public MovementState MoveState { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public PlayerState State { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public MovementState MoveState { get; private set; }
 
         [field: Space(9)]
 
-        [field: SerializeField, ReadOnly] public MovementState LastMovingMoveState { get; private set; }
-        [field: SerializeField, ReadOnly] public bool Crouching { get; private set; }
-        [field: SerializeField, ReadOnly] public bool WasCrouchingLastFrame { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public MovementState LastMovingMoveState { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public bool Crouching { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public bool WasCrouchingLastFrame { get; private set; }
 
         private Vector2 _lastGroundedVelocity;
 
@@ -230,6 +229,8 @@ namespace Fifbox.FrontEnd.Player
             ApplyGravity();
             ApplyFriction();
 
+            Orientation.localRotation = Quaternion.Euler(0, Inputs.orientationEulerAngles.y, 0);
+
             HandleJump();
             HandleMoving();
         }
@@ -257,7 +258,7 @@ namespace Fifbox.FrontEnd.Player
             CanStandUp = !Physics.CheckBox(canStandUpCheckPosition, canStandUpCheckSize / 2f, Quaternion.identity, MapLayers, QueryTriggerInteraction.Ignore);
 
             WasCrouchingLastFrame = Crouching;
-            var crouching = _wantsToCrouch && MoveState != MovementState.Run;
+            var crouching = Inputs.wantsToCrouch && MoveState != MovementState.Run;
             if (WasCrouchingLastFrame && !crouching && !CanStandUp) crouching = true;
             Crouching = crouching;
 
@@ -353,10 +354,10 @@ namespace Fifbox.FrontEnd.Player
                 return;
             }
 
-            if (_moveVector.magnitude > 0)
+            if (Inputs.moveVector.magnitude > 0)
             {
-                if (_wantsToRun) MoveState = MovementState.Run;
-                else if (_wantsToCrouch) MoveState = MovementState.Crouch;
+                if (Inputs.wantsToRun) MoveState = MovementState.Run;
+                else if (Inputs.wantsToCrouch) MoveState = MovementState.Crouch;
                 else MoveState = MovementState.Walk;
             }
             else MoveState = MovementState.None;
@@ -445,16 +446,16 @@ namespace Fifbox.FrontEnd.Player
             _maxStepHeight = 0f;
             UpdatePlayerCollider();
 
-            var targetSpeed = _wantsToRun ? NoclipFastFlySpeed : NoclipNormalFlySpeed;
+            var targetSpeed = Inputs.wantsToRun ? NoclipFastFlySpeed : NoclipNormalFlySpeed;
 
-            var fullOrientation = Quaternion.Euler(_verticalOrientation, Orientation.eulerAngles.y, 0f);
+            var fullOrientation = Quaternion.Euler(Inputs.orientationEulerAngles.x, Inputs.orientationEulerAngles.y, 0f);
             var forward = fullOrientation * Vector3.forward;
             var right = fullOrientation * Vector3.right;
-            var direction = right * MoveVector.x + forward * MoveVector.y;
+            var direction = right * Inputs.moveVector.x + forward * Inputs.moveVector.y;
 
             var verticalModifierDirection = 0f;
-            if (_wantsToCrouch) verticalModifierDirection -= 1f;
-            if (_wantsToAscend) verticalModifierDirection += 1f;
+            if (Inputs.wantsToCrouch) verticalModifierDirection -= 1f;
+            if (Inputs.wantsToAscend) verticalModifierDirection += 1f;
             var verticalModifierForce = verticalModifierDirection * NoclipVerticalModifierSpeed;
 
             Rigidbody.linearVelocity = (targetSpeed * direction) + Vector3.up * verticalModifierForce;
@@ -479,7 +480,7 @@ namespace Fifbox.FrontEnd.Player
             }
             else targetSpeed = _lastGroundedVelocity.magnitude;
 
-            var wishVel = (Orientation.right * MoveVector.x + Orientation.forward * MoveVector.y) * targetSpeed;
+            var wishVel = (Orientation.right * Inputs.moveVector.x + Orientation.forward * Inputs.moveVector.y) * targetSpeed;
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
 
