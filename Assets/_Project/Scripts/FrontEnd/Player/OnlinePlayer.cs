@@ -55,18 +55,18 @@ namespace Fifbox.FrontEnd.Player
 
         private void InitializeInputs()
         {
-            FifboxGlobal.ActionMap.Player.Enable();
+            FifboxGlobal.ActionAsset.Player.Enable();
 
-            FifboxGlobal.ActionMap.Player.Move.performed += ctx => RawMovementInput = ctx.ReadValue<Vector2>();
-            FifboxGlobal.ActionMap.Player.Move.canceled += ctx => RawMovementInput = Vector2.zero;
+            FifboxGlobal.ActionAsset.Player.Move.performed += ctx => RawMovementInput = ctx.ReadValue<Vector2>();
+            FifboxGlobal.ActionAsset.Player.Move.canceled += ctx => RawMovementInput = Vector2.zero;
 
-            FifboxGlobal.ActionMap.Player.Run.performed += ctx => WantsToRun = true;
-            FifboxGlobal.ActionMap.Player.Run.canceled += ctx => WantsToRun = false;
+            FifboxGlobal.ActionAsset.Player.Run.performed += ctx => WantsToRun = true;
+            FifboxGlobal.ActionAsset.Player.Run.canceled += ctx => WantsToRun = false;
 
-            FifboxGlobal.ActionMap.Player.Crouch.performed += ctx => WantsToCrouch = true;
-            FifboxGlobal.ActionMap.Player.Crouch.canceled += ctx => WantsToCrouch = false;
+            FifboxGlobal.ActionAsset.Player.Crouch.performed += ctx => WantsToCrouch = true;
+            FifboxGlobal.ActionAsset.Player.Crouch.canceled += ctx => WantsToCrouch = false;
 
-            FifboxGlobal.ActionMap.Player.Jump.performed += ctx =>
+            FifboxGlobal.ActionAsset.Player.Jump.performed += ctx =>
             {
                 _holdingJump = true;
                 WantsToAscend = true;
@@ -74,23 +74,23 @@ namespace Fifbox.FrontEnd.Player
                 if (!_autoBHop) TryJump();
             };
 
-            FifboxGlobal.ActionMap.Player.Jump.canceled += ctx =>
+            FifboxGlobal.ActionAsset.Player.Jump.canceled += ctx =>
             {
                 _holdingJump = false;
                 WantsToAscend = false;
             };
 
-            FifboxGlobal.ActionMap.Player.Noclip.performed += ctx => WantsToNoclip = !WantsToNoclip;
+            FifboxGlobal.ActionAsset.Player.Noclip.performed += ctx => WantsToNoclip = !WantsToNoclip;
         }
 
         protected override void OnUpdate()
         {
             if (_autoBHop && _holdingJump) TryJump();
-            var cameraInput = FifboxGlobal.ActionMap.Player.Look.ReadValue<Vector2>();
+            var cameraInput = FifboxGlobal.ActionAsset.Player.Look.ReadValue<Vector2>();
 
-            if (FifboxGlobal.ActionMap.Player.Look.activeControl != null)
+            if (FifboxGlobal.ActionAsset.Player.Look.activeControl != null)
             {
-                var deviceName = FifboxGlobal.ActionMap.Player.Look.activeControl.device.name.ToLower();
+                var deviceName = FifboxGlobal.ActionAsset.Player.Look.activeControl.device.name.ToLower();
                 if (deviceName.Contains("controller") || deviceName.Contains("gameped") || deviceName.Contains("joystick"))
                 {
                     cameraInput *= Time.deltaTime * 80;
@@ -112,7 +112,7 @@ namespace Fifbox.FrontEnd.Player
         private void OnDestroy()
         {
             if (!isLocalPlayer) return;
-            FifboxGlobal.ActionMap.Player.Disable();
+            FifboxGlobal.ActionAsset.Player.Disable();
         }
     }
 }

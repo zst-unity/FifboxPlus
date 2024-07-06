@@ -4,7 +4,7 @@ namespace Fifbox.MiddleEnd
 {
     public static class FifboxGlobal
     {
-        public static FifboxActions ActionMap { get; private set; }
+        public static FifboxActions ActionAsset { get; private set; }
         private static bool _initialized = false;
 
         public static void Init()
@@ -20,9 +20,9 @@ namespace Fifbox.MiddleEnd
 
         private static void InitActions()
         {
-            Debug.Log("Initializing action map");
-            ActionMap = new();
-            ActionMap.Enable();
+            Debug.Log("Initializing action asset singleton");
+            ActionAsset = new();
+            ActionAsset.Enable();
         }
     }
 }
