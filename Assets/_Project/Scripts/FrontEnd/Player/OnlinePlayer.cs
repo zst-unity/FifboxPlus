@@ -1,7 +1,7 @@
-using Fifbox.InputActions;
+using Fifbox.MiddleEnd;
 using UnityEngine;
 
-namespace Fifbox.Player
+namespace Fifbox.FrontEnd.Player
 {
     public sealed class OnlinePlayer : Player
     {
@@ -21,7 +21,6 @@ namespace Fifbox.Player
 
         private bool _holdingJump;
 
-        private FifboxActions _actions;
         private float _cameraRotX;
         private float _cameraRotY;
         private float _cameraRotZ;
@@ -56,19 +55,18 @@ namespace Fifbox.Player
 
         private void InitializeInputs()
         {
-            _actions = new();
-            _actions.Enable();
+            FifboxGlobal.ActionMap.Player.Enable();
 
-            _actions.Player.Move.performed += ctx => RawMovementInput = ctx.ReadValue<Vector2>();
-            _actions.Player.Move.canceled += ctx => RawMovementInput = Vector2.zero;
+            FifboxGlobal.ActionMap.Player.Move.performed += ctx => RawMovementInput = ctx.ReadValue<Vector2>();
+            FifboxGlobal.ActionMap.Player.Move.canceled += ctx => RawMovementInput = Vector2.zero;
 
-            _actions.Player.Run.performed += ctx => WantsToRun = true;
-            _actions.Player.Run.canceled += ctx => WantsToRun = false;
+            FifboxGlobal.ActionMap.Player.Run.performed += ctx => WantsToRun = true;
+            FifboxGlobal.ActionMap.Player.Run.canceled += ctx => WantsToRun = false;
 
-            _actions.Player.Crouch.performed += ctx => WantsToCrouch = true;
-            _actions.Player.Crouch.canceled += ctx => WantsToCrouch = false;
+            FifboxGlobal.ActionMap.Player.Crouch.performed += ctx => WantsToCrouch = true;
+            FifboxGlobal.ActionMap.Player.Crouch.canceled += ctx => WantsToCrouch = false;
 
-            _actions.Player.Jump.performed += ctx =>
+            FifboxGlobal.ActionMap.Player.Jump.performed += ctx =>
             {
                 _holdingJump = true;
                 WantsToAscend = true;
@@ -76,23 +74,23 @@ namespace Fifbox.Player
                 if (!_autoBHop) TryJump();
             };
 
-            _actions.Player.Jump.canceled += ctx =>
+            FifboxGlobal.ActionMap.Player.Jump.canceled += ctx =>
             {
                 _holdingJump = false;
                 WantsToAscend = false;
             };
 
-            _actions.Player.Noclip.performed += ctx => WantsToNoclip = !WantsToNoclip;
+            FifboxGlobal.ActionMap.Player.Noclip.performed += ctx => WantsToNoclip = !WantsToNoclip;
         }
 
         protected override void OnUpdate()
         {
             if (_autoBHop && _holdingJump) TryJump();
-            var cameraInput = _actions.Player.Look.ReadValue<Vector2>();
+            var cameraInput = FifboxGlobal.ActionMap.Player.Look.ReadValue<Vector2>();
 
-            if (_actions.Player.Look.activeControl != null)
+            if (FifboxGlobal.ActionMap.Player.Look.activeControl != null)
             {
-                var deviceName = _actions.Player.Look.activeControl.device.name.ToLower();
+                var deviceName = FifboxGlobal.ActionMap.Player.Look.activeControl.device.name.ToLower();
                 if (deviceName.Contains("controller") || deviceName.Contains("gameped") || deviceName.Contains("joystick"))
                 {
                     cameraInput *= Time.deltaTime * 80;
@@ -114,7 +112,7 @@ namespace Fifbox.Player
         private void OnDestroy()
         {
             if (!isLocalPlayer) return;
-            _actions.Disable();
+            FifboxGlobal.ActionMap.Player.Disable();
         }
     }
 }

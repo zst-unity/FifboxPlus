@@ -127,7 +127,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 591959727}
-  - component: {fileID: 591959726}
+  - component: {fileID: 591959728}
   m_Layer: 0
   m_Name: Entrypoint
   m_TagString: Untagged
@@ -135,20 +135,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &591959726
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 591959725}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 976d0bbb28623ee459a06ff605fcfbd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _menuScene: Assets/_Project/Scenes/Menu.unity
-  _networkManager: {fileID: 2683873194132009017, guid: ef84e814ff6cb8e4d96cf4e2909ff9f2, type: 3}
 --- !u!4 &591959727
 Transform:
   m_ObjectHideFlags: 0
@@ -164,6 +150,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &591959728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591959725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 976d0bbb28623ee459a06ff605fcfbd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _menuScene: Assets/_Project/Scenes/Menu.unity
+  _networkManager: {fileID: 2683873194132009017, guid: ef84e814ff6cb8e4d96cf4e2909ff9f2, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

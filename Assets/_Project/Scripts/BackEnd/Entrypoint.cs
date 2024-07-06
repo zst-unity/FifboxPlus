@@ -1,19 +1,22 @@
-using Fifbox.Attributes;
+using Fifbox.MiddleEnd;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using ZSToolkit.ZSTUtility.Extensions;
 
-namespace Fifbox
+namespace Fifbox.BackEnd
 {
     public class Entrypoint : MonoBehaviour
     {
         [SerializeField, Scene] private string _menuScene;
-        [SerializeField, WithComponent(typeof(NetworkManager))] private GameObject _networkManager;
+        [SerializeField] private GameObject _networkManager;
 
         private void Awake()
         {
             Debug.Log("Entrypoint awake");
+
+            FifboxGlobal.Init();
+
             Debug.Log("Spawning network manager");
             _networkManager.gameObject.Spawn();
         }

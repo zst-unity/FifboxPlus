@@ -1,7 +1,7 @@
 using Mirror;
 using UnityEngine;
 
-namespace Fifbox.Player
+namespace Fifbox.FrontEnd.Player
 {
     [RequireComponent(typeof(Rigidbody))]
     public abstract class Player : NetworkBehaviour
