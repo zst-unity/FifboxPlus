@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Fifbox.MiddleEnd
+namespace Fifbox.FrontEnd
 {
     public static class FifboxGlobal
     {

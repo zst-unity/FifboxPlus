@@ -1,4 +1,4 @@
-using Fifbox.MiddleEnd;
+using Fifbox.FrontEnd;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6100b90ab6a04064bab247e97890243c, type: 3}
+  m_Name: DefaultPlayerConfig
+  m_EditorClassIdentifier: 
+  mass: 65
+  width: 0.41
+  fullHeight: 1.7
+  crouchHeight: 1.15
+  gravityMultiplier: 1.275
+  friction: 8
+  walkSpeed: 2
+  walkAcceleration: 12
+  walkDeceleration: 2
+  runSpeed: 5.2
+  runAcceleration: 8
+  runDeceleration: 2.7
+  crouchSpeed: 1.2
+  crouchAcceleration: 17
+  crouchDeceleration: 2
+  maxSpeed: 24
+  walkJumpForce: 4
+  runJumpForce: 4.9
+  crouchJumpForce: 3.5
+  jumpBufferTime: 0.1
+  airAcceleration: 28
+  airSpeedCap: 3.1
+  noclipNormalFlySpeed: 15
+  noclipFastFlySpeed: 27.3
+  noclipVerticalModifierSpeed: 15
+  maxStepHeight: 0.4
+  stepDownBufferHeight: 0.5

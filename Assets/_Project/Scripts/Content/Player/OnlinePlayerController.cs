@@ -1,8 +1,8 @@
-using Fifbox.MiddleEnd;
+using Fifbox.FrontEnd;
 using Mirror;
 using UnityEngine;
 
-namespace Fifbox.FrontEnd.Player
+namespace Fifbox.Content.Player
 {
     public class OnlinePlayerController : NetworkBehaviour
     {

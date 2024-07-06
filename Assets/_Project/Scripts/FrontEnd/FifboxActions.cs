@@ -16,7 +16,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 using UnityEngine;
 
-namespace Fifbox.FrontEnd
+namespace Fifbox.MiddleEnd
 {
     public partial class @FifboxActions: IInputActionCollection2, IDisposable
     {
