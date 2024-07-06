@@ -6,13 +6,14 @@ using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
 namespace Fifbox.FrontEnd.Player
 {
     [RequireComponent(typeof(Rigidbody))]
-    public abstract class Player : NetworkBehaviour
+    public class Player : NetworkBehaviour
     {
         public const float MAX_GROUND_INFO_CHECK_DISTANCE = 100f;
 
-        [field: Header("Objects")]
+        [field: Header("References")]
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
         [field: SerializeField] public BoxCollider Collider { get; private set; }
+        [field: SerializeField] public GameObject Model { get; private set; }
         [field: SerializeField] public Transform Center { get; private set; }
         [field: SerializeField] public Transform Orientation { get; private set; }
 
@@ -87,6 +88,8 @@ namespace Fifbox.FrontEnd.Player
         [field: SerializeField, ReadOnly, AllowNesting] public float GroundHeight { get; private set; }
         [field: SerializeField, ReadOnly, AllowNesting] public float PreviousGroundHeight { get; private set; }
 
+        private int _initialLayer;
+
         protected override void OnValidate()
         {
             base.OnValidate();
@@ -128,39 +131,44 @@ namespace Fifbox.FrontEnd.Player
             Center.localPosition = new Vector3(0, _height / 2, 0);
         }
 
-        protected int _initialLayer;
-
-        protected void SetLayer(int layer)
-        {
-            foreach (Transform child in GetComponentsInChildren<Transform>())
-            {
-                child.gameObject.layer = layer;
-            }
-        }
-
-        protected virtual void OnStart() { }
-        protected virtual void OnUpdate() { }
-
-        [field: Header("Inputs")]
-        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInputs Inputs { get; private set; }
-        [SerializeField, ReadOnly, AllowNesting] private bool _nocliping;
-
         private void Awake()
         {
             _stepDownBufferHeight = StepDownBufferHeight;
             _maxStepHeight = MaxStepHeight;
             _height = Height;
-            _initialLayer = 7;
         }
+
+        [field: Header("Inputs")]
+        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInputs Inputs { get; private set; }
+        [SerializeField, ReadOnly, AllowNesting] private bool _nocliping;
 
         private void Start()
         {
-            if (!isLocalPlayer) return;
-            OnStart();
+            if (isLocalPlayer)
+            {
+                _initialLayer = 6;
+                LocalStart();
+            }
+            else _initialLayer = 7;
+
             SetLayer(_initialLayer);
+        }
+
+        private void LocalStart()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Model.SetActive(false);
 
             Inputs.tryJump += TryJump;
             Inputs.toggleNoclip += ToggleNoclip;
+        }
+
+        private void SetLayer(int layer)
+        {
+            foreach (Transform child in GetComponentsInChildren<Transform>())
+            {
+                child.gameObject.layer = layer;
+            }
         }
 
         private void OnDestroy()
@@ -173,18 +181,13 @@ namespace Fifbox.FrontEnd.Player
 
         private void TryJump()
         {
-            ResetJumpBuffer();
+            _jumpBufferTimer = JumpBufferTime;
         }
 
         private void ToggleNoclip()
         {
             _nocliping = !_nocliping;
             SetLayer(_nocliping ? 8 : _initialLayer);
-        }
-
-        private void ResetJumpBuffer()
-        {
-            _jumpBufferTimer = JumpBufferTime;
         }
 
         [field: Header("States")]
@@ -221,8 +224,6 @@ namespace Fifbox.FrontEnd.Player
 
             CeilCheck();
             GroundCheck();
-
-            OnUpdate();
             UpdateStates();
 
             ApplyGravity();
