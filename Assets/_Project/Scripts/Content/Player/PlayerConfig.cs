@@ -1,4 +1,4 @@
-using Fifbox.API.Configs;
+using Fifbox.API.ScriptableObjects.Configs;
 using UnityEngine;
 
 namespace Fifbox.Content.Player

@@ -67,3 +67,6 @@ MonoBehaviour:
   - path: Assets/_Project/Resources
     darkThemeColor: {r: 1, g: 0.83385676, b: 0.3443396, a: 1}
     lightThemeColor: {r: 0.6556604, g: 0.489517, b: 0, a: 1}
+  - path: Assets/_Project/Resources/ScriptableObjects
+    darkThemeColor: {r: 1, g: 0.59934217, b: 0.33490568, a: 1}
+    lightThemeColor: {r: 0.6650943, g: 0.26443645, b: 0, a: 1}

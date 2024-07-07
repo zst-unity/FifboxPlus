@@ -1,8 +1,9 @@
 using Mirror;
 using UnityEngine;
 using NaughtyAttributes;
-using Fifbox.API.Configs;
 using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
+using Fifbox.API.ScriptableObjects.Configs;
+using Fifbox.API.ScriptableObjects;
 
 namespace Fifbox.Content.Player
 {
@@ -133,10 +134,10 @@ namespace Fifbox.Content.Player
         {
             if (isLocalPlayer)
             {
-                _initialLayer = FifboxLayers.LOCAL_PLAYER_LAYER;
+                _initialLayer = FifboxLayers.LocalPlayerLayer.LayerIndex;
                 LocalStart();
             }
-            else _initialLayer = FifboxLayers.PLAYER_LAYER;
+            else _initialLayer = FifboxLayers.PlayerLayer.LayerIndex;
 
             SetLayer(_initialLayer);
         }
@@ -175,7 +176,7 @@ namespace Fifbox.Content.Player
         private void ToggleNoclip()
         {
             _nocliping = !_nocliping;
-            SetLayer(_nocliping ? FifboxLayers.NOCLIPING_PLAYER_LAYER : _initialLayer);
+            SetLayer(_nocliping ? FifboxLayers.NoclipingPlayerLayer.LayerIndex : _initialLayer);
         }
 
         private void Update()
@@ -216,7 +217,7 @@ namespace Fifbox.Content.Player
 
             var canStandUpCheckSize = new Vector3(WidthForChecking, _currentConfig.fullHeight - _currentConfig.crouchHeight, WidthForChecking);
             var canStandUpCheckPosition = transform.position + Vector3.up * (_currentConfig.fullHeight + _currentConfig.crouchHeight) / 2;
-            CanStandUp = !Physics.CheckBox(canStandUpCheckPosition, canStandUpCheckSize / 2f, Quaternion.identity, FifboxLayers.MapLayers, QueryTriggerInteraction.Ignore);
+            CanStandUp = !Physics.CheckBox(canStandUpCheckPosition, canStandUpCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers, QueryTriggerInteraction.Ignore);
 
             WasCrouchingLastFrame = Crouching;
             var crouching = Inputs.wantsToCrouch && MoveState != MovementState.Run;
@@ -242,7 +243,7 @@ namespace Fifbox.Content.Player
         {
             var ceiledCheckSize = new Vector3(WidthForChecking, 0.02f, WidthForChecking);
             var ceiledCheckPosition = transform.position + Vector3.up * _height;
-            Ceiled = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, FifboxLayers.MapLayers, QueryTriggerInteraction.Ignore);
+            Ceiled = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers, QueryTriggerInteraction.Ignore);
 
             if (Grounded && Ceiled && !_nocliping)
             {
@@ -260,7 +261,7 @@ namespace Fifbox.Content.Player
                 : transform.position + Vector3.up * _maxStepHeight / 2;
 
             var groundedCheckSize = new Vector3(WidthForChecking, useBuffer ? _maxStepHeight + _stepDownBufferHeight : _maxStepHeight, WidthForChecking);
-            Grounded = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.MapLayers, QueryTriggerInteraction.Ignore);
+            Grounded = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers, QueryTriggerInteraction.Ignore);
 
             var groundInfoCheckPosition = transform.position + 2f * _maxStepHeight * Vector3.up;
             var groundInfoCheckSize = new Vector3(WidthForChecking, 0.1f, WidthForChecking);
@@ -272,7 +273,7 @@ namespace Fifbox.Content.Player
                 out var hit,
                 Quaternion.identity,
                 MAX_GROUND_INFO_CHECK_DISTANCE,
-                FifboxLayers.MapLayers
+                FifboxLayers.GroundLayers
             );
 
             if (GroundHeight != hit.point.y)

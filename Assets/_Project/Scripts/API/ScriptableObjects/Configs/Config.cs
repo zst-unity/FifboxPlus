@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-namespace Fifbox.API.Configs
+namespace Fifbox.API.ScriptableObjects.Configs
 {
     public abstract class ConfigBase : ScriptableObject
     {

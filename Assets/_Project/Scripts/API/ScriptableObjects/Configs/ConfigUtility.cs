@@ -1,6 +1,4 @@
-using UnityEngine;
-
-namespace Fifbox.API.Configs
+namespace Fifbox.API.ScriptableObjects.Configs
 {
     public static class ConfigUtility
     {
