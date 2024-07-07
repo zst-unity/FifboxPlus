@@ -1,6 +1,7 @@
 using Fifbox.Input;
 using Mirror;
 using UnityEngine;
+using static UnityEngine.InputSystem.InputAction;
 
 namespace Fifbox.Game.Player
 {
@@ -97,7 +98,7 @@ namespace Fifbox.Game.Player
             _cameraRotY += cameraInput.x;
             _cameraRotX = Mathf.Clamp(_cameraRotX - cameraInput.y, -90f, 90f);
 
-            _player.Inputs.orientationEulerAngles = new(_cameraRotX, _cameraRotY, 0f);
+            _player.Inputs.setOrientationEulerAngles(new(_cameraRotX, _cameraRotY, 0f));
             Camera.main.transform.localRotation = Quaternion.Euler(_cameraRotX, 0f, 0f);
 
             var targetCameraHeight = _player.Grounded && _player.Crouching ? _cameraCrouchHeight : _cameraDefaultHeight;

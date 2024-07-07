@@ -13,8 +13,7 @@ namespace Fifbox.Game.Player
         public bool wantsToAscend;
         public bool wantsToDescend;
 
-        public Vector3 orientationEulerAngles;
-
+        public Action<Vector3> setOrientationEulerAngles;
         public Action tryJump;
         public Action toggleNoclip;
     }

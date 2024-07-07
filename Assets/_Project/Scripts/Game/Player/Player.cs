@@ -35,7 +35,7 @@ namespace Fifbox.Game.Player
         [field: SerializeField, ReadOnly, AllowNesting] public float PreviousGroundHeight { get; private set; }
 
         [field: Header("Inputs")]
-        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInputs Inputs { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInputs Inputs { get; private set; } = new();
 
         [field: Header("States")]
         [field: SerializeField, ReadOnly, AllowNesting] public bool Crouching { get; private set; }
@@ -48,6 +48,7 @@ namespace Fifbox.Game.Player
         protected float _jumpBufferTimer;
         protected Vector2 _lastGroundedVelocity;
         protected float _lastMovingDeceleration;
+        protected Vector3 _fullOrientationEulerAngles;
 
         public float WidthForChecking => _currentConfig.width - 0.001f;
         protected PlayerConfig _currentConfig;
@@ -113,6 +114,8 @@ namespace Fifbox.Game.Player
             gameObject.SetLayerForChildren(_initialLayer);
 
             if (!ShouldProcessPlayer) return;
+
+            Inputs.setOrientationEulerAngles += SetOrientation;
             Inputs.tryJump += TryJump;
             Inputs.toggleNoclip += ToggleNoclip;
         }
@@ -121,6 +124,7 @@ namespace Fifbox.Game.Player
         {
             if (!ShouldProcessPlayer) return;
 
+            Inputs.setOrientationEulerAngles -= SetOrientation;
             Inputs.tryJump -= TryJump;
             Inputs.toggleNoclip -= ToggleNoclip;
         }
@@ -139,9 +143,6 @@ namespace Fifbox.Game.Player
             ApplyGravity();
             ApplyFriction();
 
-            // TODO: дергано
-            Orientation.localRotation = Quaternion.Euler(0, Inputs.orientationEulerAngles.y, 0);
-
             HandleJump();
             HandleMoving();
         }
@@ -152,6 +153,14 @@ namespace Fifbox.Game.Player
 
             GroundCheck();
             MoveToGround();
+        }
+
+        private void SetOrientation(Vector3 eulerAngles)
+        {
+            if (!ShouldProcessPlayer) return;
+
+            _fullOrientationEulerAngles = eulerAngles;
+            Orientation.localRotation = Quaternion.Euler(0f, eulerAngles.y, 0f);
         }
 
         private void TryJump()
@@ -346,7 +355,7 @@ namespace Fifbox.Game.Player
 
             var targetSpeed = Inputs.wantsToRun ? _currentConfig.noclipFastFlySpeed : _currentConfig.noclipNormalFlySpeed;
 
-            var fullOrientation = Quaternion.Euler(Inputs.orientationEulerAngles.x, Inputs.orientationEulerAngles.y, 0f);
+            var fullOrientation = Quaternion.Euler(_fullOrientationEulerAngles.x, _fullOrientationEulerAngles.y, 0f);
             var forward = fullOrientation * Vector3.forward;
             var right = fullOrientation * Vector3.right;
             var direction = right * Inputs.moveVector.x + forward * Inputs.moveVector.y;
