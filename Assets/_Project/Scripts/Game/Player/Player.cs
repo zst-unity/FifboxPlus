@@ -5,11 +5,12 @@ using Fifbox.ScriptableObjects.Configs;
 using Fifbox.ScriptableObjects;
 
 using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
+using ZSToolkit.ZSTUtility.Extensions;
 
 namespace Fifbox.Game.Player
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class Player : NetworkBehaviour
+    public abstract class Player : NetworkBehaviour
     {
         public const float MAX_GROUND_INFO_CHECK_DISTANCE = 100f;
 
@@ -61,17 +62,17 @@ namespace Fifbox.Game.Player
             Crouch
         }
 
-        private int _initialLayer;
-        private float _height;
-        private float _jumpBufferTimer;
-        private float _maxStepHeight;
-        private float _stepDownBufferHeight;
-        private Vector2 _lastGroundedVelocity;
+        protected int _initialLayer;
+        protected float _height;
+        protected float _jumpBufferTimer;
+        protected float _maxStepHeight;
+        protected float _stepDownBufferHeight;
+        protected Vector2 _lastGroundedVelocity;
 
         public float WidthForChecking => _currentConfig.width - 0.001f;
-        private PlayerConfig _currentConfig;
+        protected PlayerConfig _currentConfig;
 
-        private bool TryGetOptimalConfig()
+        protected bool TryGetOptimalConfig()
         {
             var got = ConfigUtility.TryGetOptimalConfig(Config, out _currentConfig);
             if (!got) Debug.LogWarning("Player cant get optimal config");
@@ -112,77 +113,54 @@ namespace Fifbox.Game.Player
             }
         }
 
-        private void UpdatePlayerCollider()
+        protected void UpdatePlayerCollider()
         {
             Collider.size = new Vector3(_currentConfig.width, _height - _maxStepHeight, _currentConfig.width);
             Collider.center = new Vector3(0, _maxStepHeight / 2, 0);
         }
 
-        private void UpdatePlayerCenter()
+        protected void UpdatePlayerCenter()
         {
             Center.localPosition = new Vector3(0, _height / 2, 0);
         }
 
-        private void Awake()
+        protected abstract bool ShouldProcessPlayer { get; }
+        private void Awake() => OnPlayerAwake();
+        private void Start() => OnPlayerStart();
+        private void OnDestroy() => OnPlayerDestroy();
+        private void Update() => OnPlayerUpdate();
+        private void LateUpdate() => OnPlayerLateUpdate();
+
+        protected virtual void OnPlayerAwake()
         {
             if (!TryGetOptimalConfig()) return;
+
+            _initialLayer = FifboxLayers.PlayerLayer.Index;
             _stepDownBufferHeight = _currentConfig.stepDownBufferHeight;
             _maxStepHeight = _currentConfig.maxStepHeight;
             _height = _currentConfig.fullHeight;
         }
 
-        private void Start()
+        protected virtual void OnPlayerStart()
         {
-            if (isLocalPlayer)
-            {
-                _initialLayer = FifboxLayers.LocalPlayerLayer.LayerIndex;
-                LocalStart();
-            }
-            else _initialLayer = FifboxLayers.PlayerLayer.LayerIndex;
+            gameObject.SetLayerForChildren(_initialLayer);
 
-            SetLayer(_initialLayer);
-        }
-
-        private void LocalStart()
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Model.SetActive(false);
-
+            if (!ShouldProcessPlayer) return;
             Inputs.tryJump += TryJump;
             Inputs.toggleNoclip += ToggleNoclip;
         }
 
-        private void SetLayer(int layer)
+        protected virtual void OnPlayerDestroy()
         {
-            foreach (Transform child in GetComponentsInChildren<Transform>())
-            {
-                child.gameObject.layer = layer;
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (!isLocalPlayer) return;
+            if (!ShouldProcessPlayer) return;
 
             Inputs.tryJump -= TryJump;
             Inputs.toggleNoclip -= ToggleNoclip;
         }
 
-        private void TryJump()
+        protected virtual void OnPlayerUpdate()
         {
-            if (!TryGetOptimalConfig()) return;
-            _jumpBufferTimer = _currentConfig.jumpBufferTime;
-        }
-
-        private void ToggleNoclip()
-        {
-            _nocliping = !_nocliping;
-            SetLayer(_nocliping ? FifboxLayers.NoclipingPlayerLayer.LayerIndex : _initialLayer);
-        }
-
-        private void Update()
-        {
-            if (!isLocalPlayer || !TryGetOptimalConfig()) return;
+            if (!ShouldProcessPlayer || !TryGetOptimalConfig()) return;
 
             HandleCrouching();
 
@@ -199,16 +177,33 @@ namespace Fifbox.Game.Player
             HandleMoving();
         }
 
-        private void LateUpdate()
+        protected virtual void OnPlayerLateUpdate()
         {
-            if (!isLocalPlayer || !TryGetOptimalConfig()) return;
+            if (!ShouldProcessPlayer || !TryGetOptimalConfig()) return;
 
             GroundCheck();
             MoveToGround();
         }
 
+        private void TryJump()
+        {
+            if (!ShouldProcessPlayer || !TryGetOptimalConfig()) return;
+
+            _jumpBufferTimer = _currentConfig.jumpBufferTime;
+        }
+
+        private void ToggleNoclip()
+        {
+            if (!ShouldProcessPlayer) return;
+
+            _nocliping = !_nocliping;
+            gameObject.SetLayerForChildren(_nocliping ? FifboxLayers.NoclipingPlayerLayer.Index : _initialLayer);
+        }
+
         private void HandleCrouching()
         {
+            if (!ShouldProcessPlayer) return;
+
             if (State == PlayerState.Nocliping)
             {
                 CanStandUp = false;
@@ -242,6 +237,8 @@ namespace Fifbox.Game.Player
 
         private void CeilCheck()
         {
+            if (!ShouldProcessPlayer) return;
+
             var ceiledCheckSize = new Vector3(WidthForChecking, 0.02f, WidthForChecking);
             var ceiledCheckPosition = transform.position + Vector3.up * _height;
             Ceiled = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers, QueryTriggerInteraction.Ignore);
@@ -256,6 +253,8 @@ namespace Fifbox.Game.Player
 
         private void GroundCheck()
         {
+            if (!ShouldProcessPlayer) return;
+
             var useBuffer = Rigidbody.linearVelocity.y == 0f;
             var groundedCheckPosition = useBuffer
                 ? transform.position + Vector3.up * (_maxStepHeight - _stepDownBufferHeight) / 2
@@ -289,12 +288,16 @@ namespace Fifbox.Game.Player
 
         private void UpdateStates()
         {
+            if (!ShouldProcessPlayer) return;
+
             UpdatePlayerState();
             UpdateMovementState();
         }
 
         private void UpdatePlayerState()
         {
+            if (!ShouldProcessPlayer) return;
+
             if (_nocliping)
             {
                 State = PlayerState.Nocliping;
@@ -308,6 +311,8 @@ namespace Fifbox.Game.Player
 
         private void UpdateMovementState()
         {
+            if (!ShouldProcessPlayer) return;
+
             if (State == PlayerState.Nocliping)
             {
                 MoveState = MovementState.None;
@@ -327,6 +332,8 @@ namespace Fifbox.Game.Player
 
         private void HandleJump()
         {
+            if (!ShouldProcessPlayer) return;
+
             if (_jumpBufferTimer > 0)
             {
                 if (Grounded)
@@ -343,6 +350,8 @@ namespace Fifbox.Game.Player
 
         private void Jump()
         {
+            if (!ShouldProcessPlayer) return;
+
             var targetForce = MoveState switch
             {
                 MovementState.Walk => _currentConfig.walkJumpForce,
@@ -357,6 +366,8 @@ namespace Fifbox.Game.Player
 
         private void ApplyGravity()
         {
+            if (!ShouldProcessPlayer) return;
+
             if (_nocliping) return;
 
             if (Grounded && Rigidbody.linearVelocity.y <= 0) Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, 0, Rigidbody.linearVelocity.z);
@@ -365,6 +376,8 @@ namespace Fifbox.Game.Player
 
         private void ApplyFriction()
         {
+            if (!ShouldProcessPlayer) return;
+
             float speed, newSpeed, control, drop;
 
             speed = Rigidbody.linearVelocity.magnitude;
@@ -397,12 +410,16 @@ namespace Fifbox.Game.Player
 
         private void HandleMoving()
         {
+            if (!ShouldProcessPlayer) return;
+
             if (_nocliping) NoclipMovement();
             else Accelerate();
         }
 
         private void NoclipMovement()
         {
+            if (!ShouldProcessPlayer) return;
+
             _maxStepHeight = 0f;
             UpdatePlayerCollider();
 
@@ -423,6 +440,8 @@ namespace Fifbox.Game.Player
 
         private void Accelerate()
         {
+            if (!ShouldProcessPlayer) return;
+
             var velocity = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.z);
 
             float targetSpeed;
@@ -491,7 +510,7 @@ namespace Fifbox.Game.Player
 
         private void MoveToGround()
         {
-            if (!Grounded || Ceiled || Rigidbody.linearVelocity.y > 0f || _nocliping) return;
+            if (!Grounded || Ceiled || Rigidbody.linearVelocity.y > 0f || _nocliping || !ShouldProcessPlayer) return;
 
             transform.position = new(transform.position.x, GroundHeight, transform.position.z);
             Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, 0, Rigidbody.linearVelocity.z);

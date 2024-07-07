@@ -7,7 +7,7 @@ namespace Fifbox.Game.Player
     public class OnlinePlayerController : NetworkBehaviour
     {
         [Header("References")]
-        [SerializeField] private Player _player;
+        [SerializeField] private OnlinePlayer _player;
         [SerializeField] private Transform _orientation;
         [SerializeField] private GameObject _mainCameraPrefab;
 

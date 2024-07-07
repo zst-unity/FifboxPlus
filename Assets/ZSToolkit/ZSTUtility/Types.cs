@@ -8,7 +8,7 @@ namespace ZSToolkit.ZSTUtility
         [SerializeField]
         private int m_LayerIndex = 0;
 
-        public int LayerIndex
+        public int Index
         {
             get { return m_LayerIndex; }
         }

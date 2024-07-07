@@ -100,6 +100,14 @@ namespace ZSToolkit.ZSTUtility.Extensions
 
             return obj;
         }
+
+        public static void SetLayerForChildren(this GameObject gameObject, int layer)
+        {
+            foreach (Transform child in gameObject.GetComponentsInChildren<Transform>())
+            {
+                child.gameObject.layer = layer;
+            }
+        }
     }
 
     public static class ZSTMath
