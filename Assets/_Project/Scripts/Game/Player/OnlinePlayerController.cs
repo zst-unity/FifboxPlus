@@ -1,7 +1,6 @@
 using Fifbox.Input;
 using Mirror;
 using UnityEngine;
-using static UnityEngine.InputSystem.InputAction;
 
 namespace Fifbox.Game.Player
 {
