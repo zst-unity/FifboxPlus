@@ -1,7 +1,6 @@
-using Fifbox.ScriptableObjects.Configs;
 using UnityEngine;
 
-namespace Fifbox.Game.Player
+namespace Fifbox.ScriptableObjects.Configs
 {
     [CreateAssetMenu(fileName = "PlayerConfig", menuName = "Fifbox/Configs/Player Config", order = 0)]
     public class PlayerConfig : Config<PlayerConfig>

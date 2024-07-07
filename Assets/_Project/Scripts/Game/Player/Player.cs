@@ -1,9 +1,10 @@
 using Mirror;
 using UnityEngine;
 using NaughtyAttributes;
-using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
 using Fifbox.ScriptableObjects.Configs;
 using Fifbox.ScriptableObjects;
+
+using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
 
 namespace Fifbox.Game.Player
 {
