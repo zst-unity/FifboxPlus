@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Fifbox.FrontEnd
+namespace Fifbox
 {
     public static class FifboxLayers
     {

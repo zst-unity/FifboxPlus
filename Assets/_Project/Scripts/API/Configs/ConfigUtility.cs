@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Fifbox.FrontEnd.Configs
+namespace Fifbox.API.Configs
 {
     public static class ConfigUtility
     {

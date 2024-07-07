@@ -1,4 +1,4 @@
-using Fifbox.FrontEnd;
+using Fifbox.Input;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,7 +15,8 @@ namespace Fifbox
         {
             Debug.Log("Entrypoint awake");
 
-            FifboxGlobal.Init();
+            Debug.Log("Initializing actions");
+            FifboxActions.Init();
 
             Debug.Log("Spawning network manager");
             _networkManager.gameObject.Spawn();

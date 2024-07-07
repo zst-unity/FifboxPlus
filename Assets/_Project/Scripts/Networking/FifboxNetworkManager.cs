@@ -1,7 +1,7 @@
 using Mirror;
 using UnityEngine;
 
-namespace Fifbox.BackEnd.Networking
+namespace Fifbox.Networking
 {
     public class FifboxNetworkManager : NetworkManager
     {

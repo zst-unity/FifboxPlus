@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Fifbox.FrontEnd.Configs
+namespace Fifbox.API.Configs
 {
     [CreateAssetMenu(fileName = "DefaultConfigs", menuName = "Fifbox/Configs/Default Configs", order = 0)]
     public class DefaultConfigs : ScriptableObject

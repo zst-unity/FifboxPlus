@@ -1,9 +1,8 @@
 using Mirror;
 using UnityEngine;
 using NaughtyAttributes;
+using Fifbox.API.Configs;
 using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
-using Fifbox.FrontEnd;
-using Fifbox.FrontEnd.Configs;
 
 namespace Fifbox.Content.Player
 {
