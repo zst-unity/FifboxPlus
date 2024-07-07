@@ -2,7 +2,7 @@ using Fifbox.Input;
 using Mirror;
 using UnityEngine;
 
-namespace Fifbox.Content.Player
+namespace Fifbox.Game.Player
 {
     public class OnlinePlayerController : NetworkBehaviour
     {

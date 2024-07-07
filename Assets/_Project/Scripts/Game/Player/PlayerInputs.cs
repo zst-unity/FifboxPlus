@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Fifbox.Content.Player
+namespace Fifbox.Game.Player
 {
     [Serializable]
     public class PlayerInputs

@@ -1,8 +1,7 @@
-using Fifbox.Base;
 using UnityEngine;
 using ZSToolkit.ZSTUtility;
 
-namespace Fifbox.API.ScriptableObjects
+namespace Fifbox.ScriptableObjects
 {
     [CreateAssetMenu(fileName = "Layers", menuName = "Fifbox/Layers", order = 0)]
     public class FifboxLayers : SingletonScriptableObject<FifboxLayers>

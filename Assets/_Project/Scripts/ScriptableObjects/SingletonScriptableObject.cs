@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Fifbox.Base
+namespace Fifbox.ScriptableObjects
 {
     public abstract class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
     {
@@ -19,11 +19,6 @@ namespace Fifbox.Base
                     else if (assets.Length > 1)
                     {
                         Debug.LogWarning($"There are multiple {typeof(T).Name} found");
-                    }
-
-                    foreach (var item in assets)
-                    {
-                        Debug.Log(item.name);
                     }
 
                     _singleton = assets[0];

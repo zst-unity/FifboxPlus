@@ -2,10 +2,10 @@ using Mirror;
 using UnityEngine;
 using NaughtyAttributes;
 using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
-using Fifbox.API.ScriptableObjects.Configs;
-using Fifbox.API.ScriptableObjects;
+using Fifbox.ScriptableObjects.Configs;
+using Fifbox.ScriptableObjects;
 
-namespace Fifbox.Content.Player
+namespace Fifbox.Game.Player
 {
     [RequireComponent(typeof(Rigidbody))]
     public class Player : NetworkBehaviour

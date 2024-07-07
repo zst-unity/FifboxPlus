@@ -1,4 +1,4 @@
-namespace Fifbox.API.ScriptableObjects.Configs
+namespace Fifbox.ScriptableObjects.Configs
 {
     public static class ConfigUtility
     {

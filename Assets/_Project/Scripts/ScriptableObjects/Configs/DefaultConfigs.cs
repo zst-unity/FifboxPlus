@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Fifbox.Base;
 using UnityEngine;
 
-namespace Fifbox.API.ScriptableObjects.Configs
+namespace Fifbox.ScriptableObjects.Configs
 {
     [CreateAssetMenu(fileName = "DefaultConfigs", menuName = "Fifbox/Configs/Default Configs", order = 0)]
     public class DefaultConfigs : SingletonScriptableObject<DefaultConfigs>
