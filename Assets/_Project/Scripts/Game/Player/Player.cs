@@ -6,6 +6,8 @@ using Fifbox.ScriptableObjects;
 
 using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
 using ZSToolkit.ZSTUtility.Extensions;
+using Fifbox.Game.Player.StateMachine;
+using Fifbox.Game.Player.StateMachine.States;
 
 namespace Fifbox.Game.Player
 {
@@ -36,6 +38,8 @@ namespace Fifbox.Game.Player
         [field: Header("Info")]
         [field: SerializeField, ReadOnly, AllowNesting] public PlayerInputs Inputs { get; private set; } = new();
         [field: SerializeField, ReadOnly, AllowNesting] public PlayerData Data { get; private set; } = new();
+
+        public PlayerStateMachine<PlayerState, OnGroundState> StateMachine { get; private set; }
 
         protected override void OnValidate()
         {
@@ -78,6 +82,7 @@ namespace Fifbox.Game.Player
 
         protected virtual void OnPlayerAwake()
         {
+            StateMachine = new(this);
             Data.initialLayer = FifboxLayers.PlayerLayer.Index;
             Data.currentMaxStepHeight = ConfigToUse.maxStepHeight;
             Data.currentHeight = ConfigToUse.fullHeight;
@@ -92,6 +97,8 @@ namespace Fifbox.Game.Player
             Inputs.setOrientationEulerAngles += SetOrientation;
             Inputs.tryJump += TryJump;
             Inputs.toggleNoclip += ToggleNoclip;
+
+            StateMachine.Start();
         }
 
         protected virtual void OnPlayerDestroy()
@@ -101,6 +108,8 @@ namespace Fifbox.Game.Player
             Inputs.setOrientationEulerAngles -= SetOrientation;
             Inputs.tryJump -= TryJump;
             Inputs.toggleNoclip -= ToggleNoclip;
+
+            StateMachine.Stop();
         }
 
         protected virtual void OnPlayerUpdate()
@@ -113,6 +122,7 @@ namespace Fifbox.Game.Player
             GroundCheck();
 
             UpdateColliderAndCenter();
+            StateMachine.Update();
 
             ApplyGravity();
             ApplyFriction();
