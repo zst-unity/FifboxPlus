@@ -51,7 +51,7 @@ namespace Fifbox.Game.Player.OnlinePlayer
             _player.Inputs.setOrientationEulerAngles(new(_cameraEulerAngles.x, _cameraEulerAngles.y, 0f));
             transform.localRotation = Quaternion.Euler(_cameraEulerAngles.x, 0f, _cameraEulerAngles.z);
 
-            var targetCameraHeight = _player.Grounded && _player.Crouching ? _cameraCrouchHeight : _cameraDefaultHeight;
+            var targetCameraHeight = _player.Data.touchingGround && _player.Data.crouching ? _cameraCrouchHeight : _cameraDefaultHeight;
             _currentCameraHeight = Mathf.Lerp(_currentCameraHeight, targetCameraHeight, Time.deltaTime * _cameraHeightTransitionSpeed);
             transform.position = _player.transform.position + Vector3.up * _currentCameraHeight;
         }

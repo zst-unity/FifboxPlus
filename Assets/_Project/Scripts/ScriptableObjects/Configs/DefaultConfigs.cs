@@ -14,5 +14,11 @@ namespace Fifbox.ScriptableObjects.Configs
             config = Singleton.configs.OfType<T>().First();
             return config;
         }
+
+        public static T TryGetDefaultConfigOrCreateNew<T>() where T : Config<T>
+        {
+            if (TryGetDefaultConfig(out T config)) return config;
+            else return ConfigUtility.Create<T>();
+        }
     }
 }

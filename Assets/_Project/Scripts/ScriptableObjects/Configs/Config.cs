@@ -9,26 +9,21 @@ namespace Fifbox.ScriptableObjects.Configs
         public abstract Type ConfigType { get; }
     }
 
-    public abstract class Config<T1> : ConfigBase where T1 : Config<T1>
+    public abstract class Config<T> : ConfigBase where T : Config<T>
     {
-        public override Type ConfigType => typeof(T1);
+        public override Type ConfigType => typeof(T);
 
-        public static T2 Create<T2>() where T2 : Config<T2>
+        public T Clone()
         {
-            return CreateInstance<T2>();
-        }
-
-        public T1 Clone()
-        {
-            if (typeof(T1) != GetType())
+            if (typeof(T) != GetType())
             {
                 throw new("Clone failed, types mismatch");
             }
 
-            return Instantiate(this) as T1;
+            return Instantiate(this) as T;
         }
 
-        public void CopyFrom(T1 source)
+        public void CopyFrom(T source)
         {
             if (!source)
             {
@@ -42,7 +37,7 @@ namespace Fifbox.ScriptableObjects.Configs
                 return;
             }
 
-            var fields = typeof(T1).GetFields().ToList();
+            var fields = typeof(T).GetFields().ToList();
             foreach (var field in fields)
             {
                 field.SetValue(this, field.GetValue(source));

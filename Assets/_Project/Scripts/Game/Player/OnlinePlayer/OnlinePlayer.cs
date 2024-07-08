@@ -11,7 +11,7 @@ namespace Fifbox.Game.Player.OnlinePlayer
         {
             if (isLocalPlayer)
             {
-                _initialLayer = FifboxLayers.LocalPlayerLayer.Index;
+                Data.initialLayer = FifboxLayers.LocalPlayerLayer.Index;
                 Cursor.lockState = CursorLockMode.Locked;
                 Model.SetActive(false);
             }
