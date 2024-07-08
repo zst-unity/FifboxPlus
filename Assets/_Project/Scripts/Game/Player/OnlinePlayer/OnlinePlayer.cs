@@ -1,7 +1,7 @@
 using Fifbox.ScriptableObjects;
 using UnityEngine;
 
-namespace Fifbox.Game.Player
+namespace Fifbox.Game.Player.OnlinePlayer
 {
     public class OnlinePlayer : Player
     {
@@ -9,7 +9,7 @@ namespace Fifbox.Game.Player
 
         protected override void OnPlayerStart()
         {
-            if (ShouldProcessPlayer)
+            if (isLocalPlayer)
             {
                 _initialLayer = FifboxLayers.LocalPlayerLayer.Index;
                 Cursor.lockState = CursorLockMode.Locked;

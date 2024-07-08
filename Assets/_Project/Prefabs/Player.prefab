@@ -430,10 +430,6 @@ MonoBehaviour:
     wantsToFlyFast: 0
     wantsToAscend: 0
     wantsToDescend: 0
-    orientationEulerAngles: {x: 0, y: 0, z: 0}
-  <State>k__BackingField: 0
-  <MoveState>k__BackingField: 0
-  <LastMovingMoveState>k__BackingField: 0
   <Crouching>k__BackingField: 0
   <WasCrouchingLastFrame>k__BackingField: 0
   _nocliping: 0
@@ -452,12 +448,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  _mainCameraPrefab: {fileID: 6722454577904573275, guid: f48ee45efdfb28347b67fd052395d735, type: 3}
   _player: {fileID: 6240247870387871730}
   _orientation: {fileID: 1742562525474242588}
-  _mainCameraPrefab: {fileID: 6722454577904573275, guid: f48ee45efdfb28347b67fd052395d735, type: 3}
-  _cameraDefaultHeight: 1.4
-  _cameraCrouchHeight: 0.85
-  _cameraHeightTransitionSpeed: 8
   _autoBHop: 1
 --- !u!54 &577452263014476418
 Rigidbody:
