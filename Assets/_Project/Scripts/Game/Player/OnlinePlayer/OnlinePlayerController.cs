@@ -176,7 +176,7 @@ namespace Fifbox.Game.Player.OnlinePlayer
 
         private void NoclipPerformed(InputAction.CallbackContext ctx)
         {
-            _player.Inputs.toggleNoclip();
+            _player.Inputs.nocliping = !_player.Inputs.nocliping;
         }
     }
 }

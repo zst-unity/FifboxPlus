@@ -21,6 +21,8 @@ namespace Fifbox.Game.Player.StateMachine
 
         public void Update()
         {
+            CurrentState.Update();
+
             var nextState = CurrentState.GetNextState();
             if (nextState == null) return;
 

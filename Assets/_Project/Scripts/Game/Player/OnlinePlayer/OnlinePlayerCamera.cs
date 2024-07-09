@@ -1,5 +1,8 @@
+using Fifbox.Game.Player.StateMachine.States;
+using Fifbox.Game.Player.StateMachine.States.OnGroundSubStates;
 using Fifbox.Input;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Fifbox.Game.Player.OnlinePlayer
 {
@@ -51,7 +54,8 @@ namespace Fifbox.Game.Player.OnlinePlayer
             _player.Inputs.setOrientationEulerAngles(new(_cameraEulerAngles.x, _cameraEulerAngles.y, 0f));
             transform.localRotation = Quaternion.Euler(_cameraEulerAngles.x, 0f, _cameraEulerAngles.z);
 
-            var targetCameraHeight = _player.Data.touchingGround && _player.Data.crouching ? _cameraCrouchHeight : _cameraDefaultHeight;
+            var crouching = _player.StateMachine.CurrentState is OnGroundState groundState && groundState.StateMachine.CurrentState is CrouchingState;
+            var targetCameraHeight = crouching ? _cameraCrouchHeight : _cameraDefaultHeight;
             _currentCameraHeight = Mathf.Lerp(_currentCameraHeight, targetCameraHeight, Time.deltaTime * _cameraHeightTransitionSpeed);
             transform.position = _player.transform.position + Vector3.up * _currentCameraHeight;
         }

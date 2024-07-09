@@ -54,7 +54,7 @@ MonoBehaviour:
   autoStartServerBuild: 0
   autoConnectClientBuild: 0
   offlineScene: Assets/_Project/Scenes/Menu.unity
-  onlineScene: Assets/_Project/Scenes/Maps/Flatsand.unity
+  onlineScene: Assets/_Project/Scenes/Maps/SuperCancer.unity
   transport: {fileID: 4677093740108149821}
   networkAddress: localhost
   maxConnections: 100
