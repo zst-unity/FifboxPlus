@@ -238,8 +238,7 @@ namespace Fifbox.Game.Player
         }
         */
 
-        // TODO: kafif
-        /* NOT DONE JUMP BUFFER
+        /* DONE
         private void HandleJump()
         {
             if (!ShouldProcessPlayer) return;

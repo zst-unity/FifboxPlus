@@ -24,6 +24,8 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override void Update()
         {
+            if (Player.Data.jumpBufferTimer > 0f) Player.Data.jumpBufferTimer -= Time.deltaTime;
+
             Player.Data.currentMaxStepHeight = Player.Inputs.wantsToCrouch ?
                 Player.ConfigToUse.maxStepHeight / 2 + Player.ConfigToUse.fullHeight - Player.ConfigToUse.crouchHeight :
                 Player.ConfigToUse.maxStepHeight;
@@ -68,7 +70,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override void TryJump()
         {
-
+            Player.Data.jumpBufferTimer = Player.ConfigToUse.jumpBufferTime;
         }
     }
 }

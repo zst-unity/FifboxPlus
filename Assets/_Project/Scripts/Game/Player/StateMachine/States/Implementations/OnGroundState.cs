@@ -1,4 +1,3 @@
-using System;
 using Fifbox.Game.Player.StateMachine.States.OnGroundSubStates;
 using UnityEngine;
 
@@ -16,6 +15,12 @@ namespace Fifbox.Game.Player.StateMachine.States
 
             StateMachine = new(player);
             StateMachine.Start();
+
+            if (Player.Data.jumpBufferTimer > 0f)
+            {
+                TryJump();
+                Player.Data.jumpBufferTimer = 0f;
+            }
         }
 
         public override void Exit()

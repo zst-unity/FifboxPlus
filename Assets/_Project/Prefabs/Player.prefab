@@ -415,14 +415,7 @@ MonoBehaviour:
   <Model>k__BackingField: {fileID: 4453974818407583281}
   <Center>k__BackingField: {fileID: 7131114985885659597}
   <Orientation>k__BackingField: {fileID: 1742562525474242588}
-  <Config>k__BackingField: {fileID: 11400000, guid: 0ff8b33f25157d74ab41b9eb87c4c49b, type: 2}
-  <Grounded>k__BackingField: 0
-  <Ceiled>k__BackingField: 0
-  <CanStandUp>k__BackingField: 0
-  <GroundNormal>k__BackingField: {x: 0, y: 0, z: 0}
-  <GroundAngle>k__BackingField: 0
-  <GroundHeight>k__BackingField: 0
-  <PreviousGroundHeight>k__BackingField: 0
+  _config: {fileID: 11400000, guid: 0ff8b33f25157d74ab41b9eb87c4c49b, type: 2}
   <Inputs>k__BackingField:
     moveVector: {x: 0, y: 0}
     wantsToRun: 0
@@ -430,9 +423,20 @@ MonoBehaviour:
     wantsToFlyFast: 0
     wantsToAscend: 0
     wantsToDescend: 0
-  <Crouching>k__BackingField: 0
-  <WasCrouchingLastFrame>k__BackingField: 0
-  _nocliping: 0
+    nocliping: 0
+  <Data>k__BackingField:
+    touchingGround: 0
+    touchingCeiling: 0
+    groundNormal: {x: 0, y: 0, z: 0}
+    groundAngle: 0
+    groundHeight: 0
+    wasCrouchingLastFrame: 0
+    currentHeight: 0
+    currentMaxStepHeight: 0
+    jumpBufferTimer: 0
+    lastGroundedVelocity: {x: 0, y: 0, z: 0}
+    fullOrientationEulerAngles: {x: 0, y: 0, z: 0}
+    initialLayer: 0
 --- !u!114 &849691339064748014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,7 +455,7 @@ MonoBehaviour:
   _mainCameraPrefab: {fileID: 6722454577904573275, guid: f48ee45efdfb28347b67fd052395d735, type: 3}
   _player: {fileID: 6240247870387871730}
   _orientation: {fileID: 1742562525474242588}
-  _autoBHop: 1
+  _autoBHop: 0
 --- !u!54 &577452263014476418
 Rigidbody:
   m_ObjectHideFlags: 0
