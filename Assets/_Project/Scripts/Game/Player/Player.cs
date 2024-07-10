@@ -82,9 +82,11 @@ namespace Fifbox.Game.Player
         protected virtual void OnPlayerAwake()
         {
             StateMachine = new(this);
+
             Data.initialLayer = FifboxLayers.PlayerLayer.Index;
-            Data.currentMaxStepHeight = Config.maxStepHeight;
             Data.currentHeight = Config.fullHeight;
+            Data.currentMaxStepHeight = Config.maxStepHeight;
+            Data.currentStepDownBufferHeight = Config.stepDownBufferHeight;
         }
 
         protected virtual void OnPlayerStart()
@@ -155,10 +157,10 @@ namespace Fifbox.Game.Player
 
             var useBuffer = Rigidbody.linearVelocity.Round(0.001f).y == 0f;
             var groundedCheckPosition = useBuffer
-                ? transform.position + Vector3.up * (Data.currentMaxStepHeight - Config.stepDownBufferHeight) / 2
+                ? transform.position + Vector3.up * (Data.currentMaxStepHeight - Data.currentStepDownBufferHeight) / 2
                 : transform.position + Vector3.up * Data.currentMaxStepHeight / 2;
 
-            Data.groundCheckSizeY = useBuffer ? Data.currentMaxStepHeight + Config.stepDownBufferHeight : Data.currentMaxStepHeight + 0.05f;
+            Data.groundCheckSizeY = useBuffer ? Data.currentMaxStepHeight + Data.currentStepDownBufferHeight : Data.currentMaxStepHeight + 0.05f;
             var groundedCheckSize = new Vector3(WidthForChecking, Data.groundCheckSizeY, WidthForChecking);
             Data.touchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
 
@@ -213,7 +215,7 @@ namespace Fifbox.Game.Player
             Gizmos.DrawWireCube(transform.position + Vector3.up * Data.currentMaxStepHeight / 2, new(Config.width, Data.currentMaxStepHeight, Config.width));
 
             Gizmos.color = Color.blue - Color.black * 0.65f;
-            Gizmos.DrawWireCube(transform.position - Vector3.up * Config.stepDownBufferHeight / 2, new(Config.width, Config.stepDownBufferHeight, Config.width));
+            Gizmos.DrawWireCube(transform.position - Vector3.up * Data.currentStepDownBufferHeight / 2, new(Config.width, Data.currentStepDownBufferHeight, Config.width));
 
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(transform.position + Vector3.up * Data.currentHeight, new(Config.width, 0.02f, Config.width));

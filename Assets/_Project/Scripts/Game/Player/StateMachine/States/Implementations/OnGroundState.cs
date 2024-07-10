@@ -1,5 +1,6 @@
 using Fifbox.Game.Player.StateMachine.States.OnGroundSubStates;
 using UnityEngine;
+using ZSToolkit.ZSTUtility.Extensions;
 
 namespace Fifbox.Game.Player.StateMachine.States
 {
@@ -42,6 +43,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
             var shouldDisableFloatingCharacter = Player.Data.touchingCeiling || Player.Data.groundAngle > Player.Config.slopeAngleLimit;
             Player.Data.currentMaxStepHeight = shouldDisableFloatingCharacter ? 0f : Player.Config.maxStepHeight;
+            Player.Data.currentStepDownBufferHeight = shouldDisableFloatingCharacter ? 0.02f : Player.Config.stepDownBufferHeight;
             Player.UpdateColliderAndCenter();
 
             var frictionMultiplierValue = Mathf.Clamp(Player.Data.groundAngle - Player.Config.slopeAngleLimit, 0f, 90f - Player.Config.slopeAngleLimit);
@@ -112,12 +114,13 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override void LateUpdate()
         {
+            StateMachine.LateUpdate();
             MoveToGround();
         }
 
         private void MoveToGround()
         {
-            if (Player.Data.touchingCeiling || Player.Rigidbody.linearVelocity.y > 0f) return;
+            if (Player.Data.touchingCeiling || Player.Rigidbody.linearVelocity.y > 0.1f) return;
 
             var diff = Mathf.Abs(Player.transform.position.y - Player.Data.groundHeight);
             if (Player.Data.groundAngle > Player.Config.slopeAngleLimit || diff > Player.Data.groundCheckSizeY) return;

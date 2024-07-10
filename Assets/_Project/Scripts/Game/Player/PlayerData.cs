@@ -19,6 +19,7 @@ namespace Fifbox.Game.Player
 
         public float currentHeight;
         public float currentMaxStepHeight;
+        public float currentStepDownBufferHeight;
 
         public float groundCheckSizeY;
     }
