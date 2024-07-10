@@ -12,13 +12,12 @@ namespace Fifbox.Game.Player
         public float groundAngle;
         public float groundHeight;
 
-        public bool wasCrouchingLastFrame;
-
-        public float currentHeight;
-        public float currentMaxStepHeight;
         public float jumpBufferTimer;
         public Vector3 lastGroundedVelocity;
         public Vector3 fullOrientationEulerAngles;
         public int initialLayer;
+
+        public float currentHeight;
+        public float currentMaxStepHeight;
     }
 }

@@ -40,10 +40,18 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             StateMachine.Update();
 
-            Player.Data.currentMaxStepHeight = Player.Data.touchingCeiling ? 0f : Player.ConfigToUse.maxStepHeight;
+            var shouldDisableFloatingCharacter = Player.Data.touchingCeiling || Player.Data.groundAngle > Player.Config.slopeAngleLimit;
+            Player.Data.currentMaxStepHeight = shouldDisableFloatingCharacter ? 0f : Player.Config.maxStepHeight;
             Player.UpdateColliderAndCenter();
 
-            ApplyFriction();
+            var ddd = Mathf.Clamp(Player.Data.groundAngle - Player.Config.slopeAngleLimit, 0f, 90f - Player.Config.slopeAngleLimit);
+            var sds = 1f - Mathf.InverseLerp(0f, 90f - Player.Config.slopeAngleLimit, ddd);
+            ApplyFriction(sds);
+
+            if (Player.Data.groundAngle > Player.Config.slopeAngleLimit)
+            {
+                Player.ApplyGravity();
+            }
 
             Player.Data.lastGroundedVelocity = Player.Rigidbody.linearVelocity;
             Player.Data.lastGroundedVelocity.y = 0f;
@@ -52,7 +60,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         }
 
         // TODO: вынести общее
-        private void ApplyFriction()
+        private void ApplyFriction(float frictionMultiplier)
         {
             float newSpeed, control;
 
@@ -65,7 +73,7 @@ namespace Fifbox.Game.Player.StateMachine.States
             }
 
             control = speed < _targetDeceleration ? _targetDeceleration : speed;
-            drop += control * Player.ConfigToUse.friction * Time.deltaTime;
+            drop += control * Player.Config.friction * frictionMultiplier * Time.deltaTime;
 
             newSpeed = Mathf.Max(speed - drop, 0f);
 
@@ -84,9 +92,9 @@ namespace Fifbox.Game.Player.StateMachine.States
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
 
-            if (wishSpeed != 0f && (wishSpeed > Player.ConfigToUse.maxSpeed))
+            if (wishSpeed != 0f && (wishSpeed > Player.Config.maxSpeed))
             {
-                wishSpeed = Player.ConfigToUse.maxSpeed;
+                wishSpeed = Player.Config.maxSpeed;
             }
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
@@ -105,6 +113,8 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override void TryJump()
         {
+            if (Player.Data.groundAngle > Player.Config.slopeAngleLimit) return;
+
             var targetForce = StateMachine.CurrentState.JumpForce;
             Player.Rigidbody.linearVelocity = new(Player.Rigidbody.linearVelocity.x, targetForce, Player.Rigidbody.linearVelocity.z);
         }

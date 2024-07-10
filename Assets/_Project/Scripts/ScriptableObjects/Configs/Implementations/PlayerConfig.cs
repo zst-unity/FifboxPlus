@@ -57,5 +57,6 @@ namespace Fifbox.ScriptableObjects.Configs
         [Header("Ground handling")]
         public float maxStepHeight;
         public float stepDownBufferHeight;
+        public float slopeAngleLimit;
     }
 }

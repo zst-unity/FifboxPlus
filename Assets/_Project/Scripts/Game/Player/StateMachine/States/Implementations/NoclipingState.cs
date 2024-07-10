@@ -20,7 +20,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         private void SetNoclip(bool noclip)
         {
             Player.gameObject.SetLayerForChildren(noclip ? FifboxLayers.NoclipingPlayerLayer.Index : Player.Data.initialLayer);
-            Player.Data.currentMaxStepHeight = noclip ? 0f : Player.ConfigToUse.maxStepHeight;
+            Player.Data.currentMaxStepHeight = noclip ? 0f : Player.Config.maxStepHeight;
             Player.UpdateColliderAndCenter();
         }
 
@@ -34,7 +34,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override void Update()
         {
-            var targetSpeed = Player.Inputs.wantsToRun ? Player.ConfigToUse.noclipFastFlySpeed : Player.ConfigToUse.noclipNormalFlySpeed;
+            var targetSpeed = Player.Inputs.wantsToRun ? Player.Config.noclipFastFlySpeed : Player.Config.noclipNormalFlySpeed;
 
             var fullOrientation = Quaternion.Euler(Player.Data.fullOrientationEulerAngles.x, Player.Data.fullOrientationEulerAngles.y, 0f);
             var forward = fullOrientation * Vector3.forward;
@@ -44,7 +44,7 @@ namespace Fifbox.Game.Player.StateMachine.States
             var verticalModifierDirection = 0f;
             if (Player.Inputs.wantsToCrouch) verticalModifierDirection -= 1f;
             if (Player.Inputs.wantsToAscend) verticalModifierDirection += 1f;
-            var verticalModifierForce = verticalModifierDirection * Player.ConfigToUse.noclipVerticalModifierSpeed;
+            var verticalModifierForce = verticalModifierDirection * Player.Config.noclipVerticalModifierSpeed;
 
             Player.Rigidbody.linearVelocity = (targetSpeed * direction) + Vector3.up * verticalModifierForce;
         }

@@ -7,14 +7,14 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
     {
         private bool _canStandUp;
 
-        public override float JumpForce => _canStandUp ? Player.ConfigToUse.crouchJumpForce : 0f;
-        public override float MoveSpeed => Player.ConfigToUse.crouchSpeed;
-        public override float Acceleration => Player.ConfigToUse.crouchAcceleration;
-        public override float Deceleration => Player.ConfigToUse.crouchDeceleration;
+        public override float JumpForce => _canStandUp ? Player.Config.crouchJumpForce : 0f;
+        public override float MoveSpeed => Player.Config.crouchSpeed;
+        public override float Acceleration => Player.Config.crouchAcceleration;
+        public override float Deceleration => Player.Config.crouchDeceleration;
 
         private void SetCrouching(bool crouching)
         {
-            Player.Data.currentHeight = crouching ? Player.ConfigToUse.crouchHeight : Player.ConfigToUse.fullHeight;
+            Player.Data.currentHeight = crouching ? Player.Config.crouchHeight : Player.Config.fullHeight;
             Player.UpdateColliderAndCenter();
         }
 
@@ -45,8 +45,8 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
 
         public override void Update()
         {
-            var canStandUpCheckSize = new Vector3(Player.WidthForChecking, Player.ConfigToUse.fullHeight - Player.ConfigToUse.crouchHeight, Player.WidthForChecking);
-            var canStandUpCheckPosition = Player.transform.position + Vector3.up * (Player.ConfigToUse.fullHeight + Player.ConfigToUse.crouchHeight) / 2;
+            var canStandUpCheckSize = new Vector3(Player.Config.width, Player.Config.fullHeight - Player.Config.crouchHeight, Player.Config.width);
+            var canStandUpCheckPosition = Player.transform.position + Vector3.up * (Player.Config.fullHeight + Player.Config.crouchHeight) / 2;
             _canStandUp = !Physics.CheckBox(canStandUpCheckPosition, canStandUpCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
         }
     }

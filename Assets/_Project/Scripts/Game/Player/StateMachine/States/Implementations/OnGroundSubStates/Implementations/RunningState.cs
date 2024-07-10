@@ -2,10 +2,10 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
 {
     public class RunningState : OnGroundSubState
     {
-        public override float JumpForce => Player.ConfigToUse.runJumpForce;
-        public override float MoveSpeed => Player.ConfigToUse.runSpeed;
-        public override float Acceleration => Player.ConfigToUse.runAcceleration;
-        public override float Deceleration => Player.ConfigToUse.runDeceleration;
+        public override float JumpForce => Player.Config.runJumpForce;
+        public override float MoveSpeed => Player.Config.runSpeed;
+        public override float Acceleration => Player.Config.runAcceleration;
+        public override float Deceleration => Player.Config.runDeceleration;
 
         public override void Enter(Player player)
         {

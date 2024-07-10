@@ -27,18 +27,13 @@ namespace Fifbox.Game.Player.StateMachine.States
             if (Player.Data.jumpBufferTimer > 0f) Player.Data.jumpBufferTimer -= Time.deltaTime;
 
             Player.Data.currentMaxStepHeight = Player.Inputs.wantsToCrouch ?
-                Player.ConfigToUse.maxStepHeight / 2 + Player.ConfigToUse.fullHeight - Player.ConfigToUse.crouchHeight :
-                Player.ConfigToUse.maxStepHeight;
+                Player.Config.maxStepHeight / 2 + Player.Config.fullHeight - Player.Config.crouchHeight :
+                Player.Config.maxStepHeight;
 
             Player.UpdateColliderAndCenter();
 
-            ApplyGravity();
+            Player.ApplyGravity();
             Accelerate();
-        }
-
-        private void ApplyGravity()
-        {
-            Player.Rigidbody.linearVelocity += Player.ConfigToUse.gravityMultiplier * Time.deltaTime * Physics.gravity;
         }
 
         private void Accelerate()
@@ -48,20 +43,20 @@ namespace Fifbox.Game.Player.StateMachine.States
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
 
-            if (wishSpeed != 0f && (wishSpeed > Player.ConfigToUse.maxSpeed))
+            if (wishSpeed != 0f && (wishSpeed > Player.Config.maxSpeed))
             {
-                wishSpeed = Player.ConfigToUse.maxSpeed;
+                wishSpeed = Player.Config.maxSpeed;
             }
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
             var currentSpeed = Vector2.Dot(velocity, wishDir);
 
-            var airWishSpeed = Mathf.Min(wishSpeed, Player.ConfigToUse.airSpeedCap);
+            var airWishSpeed = Mathf.Min(wishSpeed, Player.Config.airSpeedCap);
             var addSpeed = airWishSpeed - currentSpeed;
 
             if (addSpeed <= 0) return;
 
-            var accelSpeed = Player.ConfigToUse.airAcceleration * Time.deltaTime * wishSpeed;
+            var accelSpeed = Player.Config.airAcceleration * Time.deltaTime * wishSpeed;
             accelSpeed = Mathf.Min(accelSpeed, addSpeed);
 
             velocity += wishDir * accelSpeed;
@@ -70,7 +65,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override void TryJump()
         {
-            Player.Data.jumpBufferTimer = Player.ConfigToUse.jumpBufferTime;
+            Player.Data.jumpBufferTimer = Player.Config.jumpBufferTime;
         }
     }
 }
