@@ -15,6 +15,7 @@ namespace Fifbox.Game.Player
     public abstract class Player : NetworkBehaviour
     {
         public const float MAX_GROUND_INFO_CHECK_DISTANCE = 100f;
+        public float WidthForChecking => Config.width - 0.01f;
 
         [field: Header("References")]
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
@@ -54,23 +55,20 @@ namespace Fifbox.Game.Player
                 Rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
                 Rigidbody.freezeRotation = true;
 
-                if (Config) Rigidbody.mass = Config.mass;
+                Rigidbody.mass = Config.mass;
             }
 
             if (Collider)
             {
                 Collider.isTrigger = false;
 
-                if (Config)
-                {
-                    Collider.center = PlayerUtility.GetColliderCenter(Config.maxStepHeight);
-                    Collider.size = PlayerUtility.GetColliderSize(Config.width, Config.fullHeight, Config.maxStepHeight);
-                }
+                Collider.center = PlayerUtility.GetColliderCenter(Config.maxStepHeight);
+                Collider.size = PlayerUtility.GetColliderSize(Config.width, Config.fullHeight, Config.maxStepHeight);
             }
 
             if (Center)
             {
-                if (Config) Center.localPosition = PlayerUtility.GetCenterPosition(Config.fullHeight);
+                Center.localPosition = PlayerUtility.GetCenterPosition(Config.fullHeight);
             }
         }
 
@@ -146,7 +144,7 @@ namespace Fifbox.Game.Player
         {
             if (!ShouldProcessPlayer) return;
 
-            var ceiledCheckSize = new Vector3(Config.width, 0.02f, Config.width);
+            var ceiledCheckSize = new Vector3(WidthForChecking, 0.02f, WidthForChecking);
             var ceiledCheckPosition = transform.position + Vector3.up * Data.currentHeight;
             Data.touchingCeiling = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
         }
@@ -161,7 +159,7 @@ namespace Fifbox.Game.Player
                 : transform.position + Vector3.up * Data.currentMaxStepHeight / 2;
 
             Data.groundCheckSizeY = useBuffer ? Data.currentMaxStepHeight + Config.stepDownBufferHeight : Data.currentMaxStepHeight + 0.05f;
-            var groundedCheckSize = new Vector3(Config.width, Data.groundCheckSizeY, Config.width);
+            var groundedCheckSize = new Vector3(WidthForChecking, Data.groundCheckSizeY, WidthForChecking);
             Data.touchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
 
             var groundInfoCheckPosition = transform.position + (Data.currentHeight - Data.currentMaxStepHeight / 2) * Vector3.up;
