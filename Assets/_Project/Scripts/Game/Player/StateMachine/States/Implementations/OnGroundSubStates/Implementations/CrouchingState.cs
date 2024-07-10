@@ -49,5 +49,10 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
             var canStandUpCheckPosition = Player.transform.position + Vector3.up * (Player.Config.fullHeight + Player.Config.crouchHeight) / 2;
             _canStandUp = !Physics.CheckBox(canStandUpCheckPosition, canStandUpCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
         }
+
+        public override void LateUpdate()
+        {
+
+        }
     }
 }

@@ -50,5 +50,10 @@ namespace Fifbox.Game.Player.StateMachine.States
         }
 
         public override void TryJump() { }
+
+        public override void LateUpdate()
+        {
+
+        }
     }
 }

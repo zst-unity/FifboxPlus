@@ -31,6 +31,11 @@ namespace Fifbox.Game.Player.StateMachine
             CurrentState.Enter(player);
         }
 
+        public void LateUpdate()
+        {
+            CurrentState.LateUpdate();
+        }
+
         public void Stop()
         {
             CurrentState.Exit();

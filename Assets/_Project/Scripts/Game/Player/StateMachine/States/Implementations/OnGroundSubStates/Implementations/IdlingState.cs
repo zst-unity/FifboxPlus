@@ -30,6 +30,11 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
             return null;
         }
 
+        public override void LateUpdate()
+        {
+
+        }
+
         public override void Update()
         {
 

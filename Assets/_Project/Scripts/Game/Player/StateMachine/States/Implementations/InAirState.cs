@@ -39,14 +39,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         private void Accelerate()
         {
             var targetSpeed = Player.Data.lastGroundedVelocity.magnitude;
-            var wishVel = (Player.Orientation.right * Player.Inputs.moveVector.x + Player.Orientation.forward * Player.Inputs.moveVector.y) * targetSpeed;
-            var wishSpeed = wishVel.magnitude;
-            var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
-
-            if (wishSpeed != 0f && (wishSpeed > Player.Config.maxSpeed))
-            {
-                wishSpeed = Player.Config.maxSpeed;
-            }
+            var (_, wishSpeed, wishDir) = Player.GetWishValues(targetSpeed);
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
             var currentSpeed = Vector2.Dot(velocity, wishDir);
@@ -66,6 +59,11 @@ namespace Fifbox.Game.Player.StateMachine.States
         public override void TryJump()
         {
             Player.Data.jumpBufferTimer = Player.Config.jumpBufferTime;
+        }
+
+        public override void LateUpdate()
+        {
+
         }
     }
 }

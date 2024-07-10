@@ -12,6 +12,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         public abstract void Enter(Player player);
         public abstract void Exit();
         public abstract void Update();
+        public abstract void LateUpdate();
         public abstract T GetNextState();
     }
 }

@@ -59,7 +59,6 @@ namespace Fifbox.Game.Player.StateMachine.States
             Accelerate();
         }
 
-        // TODO: вынести общее
         private void ApplyFriction(float frictionMultiplier)
         {
             float newSpeed, control;
@@ -87,15 +86,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         private void Accelerate()
         {
             var targetSpeed = StateMachine.CurrentState.MoveSpeed;
-
-            var wishVel = (Player.Orientation.right * Player.Inputs.moveVector.x + Player.Orientation.forward * Player.Inputs.moveVector.y) * targetSpeed;
-            var wishSpeed = wishVel.magnitude;
-            var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
-
-            if (wishSpeed != 0f && (wishSpeed > Player.Config.maxSpeed))
-            {
-                wishSpeed = Player.Config.maxSpeed;
-            }
+            var (_, wishSpeed, wishDir) = Player.GetWishValues(targetSpeed);
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
             var currentSpeed = Vector2.Dot(velocity, wishDir);
@@ -117,6 +108,22 @@ namespace Fifbox.Game.Player.StateMachine.States
 
             var targetForce = StateMachine.CurrentState.JumpForce;
             Player.Rigidbody.linearVelocity = new(Player.Rigidbody.linearVelocity.x, targetForce, Player.Rigidbody.linearVelocity.z);
+        }
+
+        public override void LateUpdate()
+        {
+            MoveToGround();
+        }
+
+        private void MoveToGround()
+        {
+            if (Player.Data.touchingCeiling || Player.Rigidbody.linearVelocity.y > 0f) return;
+
+            var diff = Mathf.Abs(Player.transform.position.y - Player.Data.groundHeight);
+            if (Player.Data.groundAngle > Player.Config.slopeAngleLimit || diff > Player.Data.groundCheckSizeY) return;
+
+            Player.transform.position = new(Player.transform.position.x, Player.Data.groundHeight, Player.transform.position.z);
+            Player.Rigidbody.linearVelocity = new(Player.Rigidbody.linearVelocity.x, 0f, Player.Rigidbody.linearVelocity.z);
         }
     }
 }

@@ -124,7 +124,7 @@ namespace Fifbox.Game.Player
             if (!ShouldProcessPlayer) return;
 
             GroundCheck();
-            MoveToGround();
+            StateMachine.LateUpdate();
         }
 
         private void TryJump()
@@ -160,8 +160,8 @@ namespace Fifbox.Game.Player
                 ? transform.position + Vector3.up * (Data.currentMaxStepHeight - Config.stepDownBufferHeight) / 2
                 : transform.position + Vector3.up * Data.currentMaxStepHeight / 2;
 
-            var groundCheckSizeY = useBuffer ? Data.currentMaxStepHeight + Config.stepDownBufferHeight : Data.currentMaxStepHeight + 0.05f;
-            var groundedCheckSize = new Vector3(Config.width, groundCheckSizeY, Config.width);
+            Data.groundCheckSizeY = useBuffer ? Data.currentMaxStepHeight + Config.stepDownBufferHeight : Data.currentMaxStepHeight + 0.05f;
+            var groundedCheckSize = new Vector3(Config.width, Data.groundCheckSizeY, Config.width);
             Data.touchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
 
             var groundInfoCheckPosition = transform.position + (Data.currentHeight - Data.currentMaxStepHeight / 2) * Vector3.up;
@@ -182,26 +182,31 @@ namespace Fifbox.Game.Player
             Data.groundAngle = Vector3.Angle(Data.groundNormal, Vector3.up);
         }
 
-        public void ApplyGravity()
-        {
-            Rigidbody.linearVelocity += Config.gravityMultiplier * Time.deltaTime * Physics.gravity;
-        }
-
-        private void MoveToGround()
-        {
-            if (!Data.touchingGround || Data.touchingCeiling) return;
-            if (Rigidbody.linearVelocity.y > 0f || Inputs.nocliping || !ShouldProcessPlayer) return;
-            if (Data.groundAngle > Config.slopeAngleLimit || Mathf.Abs(transform.position.y - Data.groundHeight) > Data.currentMaxStepHeight) return;
-
-            transform.position = new(transform.position.x, Data.groundHeight, transform.position.z);
-            Rigidbody.linearVelocity = new(Rigidbody.linearVelocity.x, 0, Rigidbody.linearVelocity.z);
-        }
-
         public void UpdateColliderAndCenter()
         {
             Collider.center = PlayerUtility.GetColliderCenter(Data.currentMaxStepHeight);
             Collider.size = PlayerUtility.GetColliderSize(Config.width, Data.currentHeight, Data.currentMaxStepHeight);
             Center.localPosition = PlayerUtility.GetCenterPosition(Data.currentHeight);
+        }
+
+        public void ApplyGravity()
+        {
+            Rigidbody.linearVelocity += Config.gravityMultiplier * Time.deltaTime * Physics.gravity;
+        }
+
+        public (Vector3 wishVel, float wishSpeed, Vector2 wishDir) GetWishValues(float wishVelMultiplier = 1f)
+        {
+            var wishVel = (Orientation.right * Inputs.moveVector.x + Orientation.forward * Inputs.moveVector.y) * wishVelMultiplier;
+            var wishSpeed = wishVel.magnitude;
+            var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
+
+            if (wishSpeed != 0f && (wishSpeed > Config.maxSpeed))
+            {
+                wishVel *= _config.maxSpeed / wishSpeed;
+                wishSpeed = Config.maxSpeed;
+            }
+
+            return (wishVel, wishSpeed, wishDir);
         }
 
         private void OnDrawGizmosSelected()
