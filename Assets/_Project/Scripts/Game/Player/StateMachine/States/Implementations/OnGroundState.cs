@@ -44,9 +44,9 @@ namespace Fifbox.Game.Player.StateMachine.States
             Player.Data.currentMaxStepHeight = shouldDisableFloatingCharacter ? 0f : Player.Config.maxStepHeight;
             Player.UpdateColliderAndCenter();
 
-            var ddd = Mathf.Clamp(Player.Data.groundAngle - Player.Config.slopeAngleLimit, 0f, 90f - Player.Config.slopeAngleLimit);
-            var sds = 1f - Mathf.InverseLerp(0f, 90f - Player.Config.slopeAngleLimit, ddd);
-            ApplyFriction(sds);
+            var frictionMultiplierValue = Mathf.Clamp(Player.Data.groundAngle - Player.Config.slopeAngleLimit, 0f, 90f - Player.Config.slopeAngleLimit);
+            var frictionMultiplier = 1f - Mathf.InverseLerp(0f, 90f - Player.Config.slopeAngleLimit, frictionMultiplierValue);
+            ApplyFriction(frictionMultiplier);
 
             if (Player.Data.groundAngle > Player.Config.slopeAngleLimit)
             {
