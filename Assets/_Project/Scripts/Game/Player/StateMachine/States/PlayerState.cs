@@ -4,11 +4,13 @@ namespace Fifbox.Game.Player.StateMachine.States
 
     public abstract class PlayerStateBase<T> where T : PlayerStateBase<T>
     {
-        public Player Player { get; protected set; }
+        public Player Player { get; private set; }
+        public PlayerInputs PlayerInputs { get; private set; }
 
-        public void Enter(Player player)
+        public void Enter(Player player, PlayerInputs playerInputs)
         {
             Player = player;
+            PlayerInputs = playerInputs;
             OnEnter();
         }
 

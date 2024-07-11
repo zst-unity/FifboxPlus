@@ -37,40 +37,14 @@ namespace Fifbox.Game.Player
             set => _config = value;
         }
 
-        [field: Header("Info")]
-        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInputs Inputs { get; private set; } = new();
+        [Header("Info")]
+        [SerializeField, ReadOnly, AllowNesting] private PlayerInputsInfo _inputsInfo;
+        public PlayerInputsInfo InputsInfo => inputs.Info;
+        protected readonly PlayerInputs inputs = new();
+
         [field: SerializeField, ReadOnly, AllowNesting] public PlayerInfo Info { get; private set; } = new();
 
         public PlayerStateMachine<PlayerState, OnGroundState> StateMachine { get; private set; }
-
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-
-            if (TryGetComponent(out Rigidbody rb))
-            {
-                Rigidbody = rb;
-                Rigidbody.useGravity = false;
-                Rigidbody.isKinematic = false;
-                Rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
-                Rigidbody.freezeRotation = true;
-
-                Rigidbody.mass = Config.mass;
-            }
-
-            if (Collider)
-            {
-                Collider.isTrigger = false;
-
-                Collider.center = PlayerUtility.GetColliderCenter(Config.maxStepHeight);
-                Collider.size = PlayerUtility.GetColliderSize(Config.width, Config.fullHeight, Config.maxStepHeight);
-            }
-
-            if (Center)
-            {
-                Center.localPosition = PlayerUtility.GetCenterPosition(Config.fullHeight);
-            }
-        }
 
         protected abstract bool ShouldProcessPlayer { get; }
         public abstract int DefaultLayer { get; }
@@ -78,12 +52,17 @@ namespace Fifbox.Game.Player
         private void Awake() => OnPlayerAwake();
         private void Start() => OnPlayerStart();
         private void OnDestroy() => OnPlayerDestroy();
-        private void Update() => OnPlayerUpdate();
+        private void Update()
+        {
+            OnPlayerUpdate();
+            _inputsInfo = InputsInfo;
+        }
+
         private void LateUpdate() => OnPlayerLateUpdate();
 
         protected virtual void OnPlayerAwake()
         {
-            StateMachine = new(this);
+            StateMachine = new(this, inputs);
 
             Info.currentHeight = Config.fullHeight;
             Info.currentMaxStepHeight = Config.maxStepHeight;
@@ -96,7 +75,7 @@ namespace Fifbox.Game.Player
 
             if (!ShouldProcessPlayer) return;
 
-            Inputs.setOrientationEulerAngles += SetOrientation;
+            inputs.setOrientationEulerAngles += SetOrientation;
             StateMachine.Start();
         }
 
@@ -104,7 +83,7 @@ namespace Fifbox.Game.Player
         {
             if (!ShouldProcessPlayer) return;
 
-            Inputs.setOrientationEulerAngles -= SetOrientation;
+            inputs.setOrientationEulerAngles -= SetOrientation;
             StateMachine.Stop();
         }
 
@@ -179,6 +158,35 @@ namespace Fifbox.Game.Player
             Collider.center = PlayerUtility.GetColliderCenter(Info.currentMaxStepHeight);
             Collider.size = PlayerUtility.GetColliderSize(Config.width, Info.currentHeight, Info.currentMaxStepHeight);
             Center.localPosition = PlayerUtility.GetCenterPosition(Info.currentHeight);
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (TryGetComponent(out Rigidbody rb))
+            {
+                Rigidbody = rb;
+                Rigidbody.useGravity = false;
+                Rigidbody.isKinematic = false;
+                Rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+                Rigidbody.freezeRotation = true;
+
+                Rigidbody.mass = Config.mass;
+            }
+
+            if (Collider)
+            {
+                Collider.isTrigger = false;
+
+                Collider.center = PlayerUtility.GetColliderCenter(Config.maxStepHeight);
+                Collider.size = PlayerUtility.GetColliderSize(Config.width, Config.fullHeight, Config.maxStepHeight);
+            }
+
+            if (Center)
+            {
+                Center.localPosition = PlayerUtility.GetCenterPosition(Config.fullHeight);
+            }
         }
 
         private void OnDrawGizmosSelected()

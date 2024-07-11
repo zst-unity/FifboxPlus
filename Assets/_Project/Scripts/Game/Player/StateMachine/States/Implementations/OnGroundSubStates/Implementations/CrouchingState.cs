@@ -30,11 +30,11 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
 
         public override OnGroundSubState GetNextState()
         {
-            if (Player.Inputs.wantsToCrouch || !_canStandUp) return null;
+            if (PlayerInputs.WantsToCrouch || !_canStandUp) return null;
 
-            if (Player.Inputs.moveVector.magnitude > 0f)
+            if (PlayerInputs.MoveVector.magnitude > 0f)
             {
-                if (Player.Inputs.wantsToRun) return new RunningState();
+                if (PlayerInputs.WantsToRun) return new RunningState();
                 else return new WalkingState();
             }
 

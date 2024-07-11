@@ -39,6 +39,5 @@ namespace Fifbox.Game.Player
 
             return (wishVel, wishSpeed, wishDir);
         }
-
     }
 }

@@ -11,7 +11,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         protected override void OnEnter()
         {
-            StateMachine = new(Player);
+            StateMachine = new(Player, PlayerInputs);
             StateMachine.Start();
 
             if (Player.Info.jumpBufferTimer > 0f)
@@ -20,13 +20,13 @@ namespace Fifbox.Game.Player.StateMachine.States
                 Player.Info.jumpBufferTimer = 0f;
             }
 
-            Player.Inputs.tryJump += TryJump;
+            PlayerInputs.tryJump += TryJump;
         }
 
         public override void OnExit()
         {
             StateMachine.Stop();
-            Player.Inputs.tryJump -= TryJump;
+            PlayerInputs.tryJump -= TryJump;
         }
 
         private void TryJump()
@@ -39,7 +39,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override PlayerState GetNextState()
         {
-            if (Player.Inputs.nocliping) return new NoclipingState();
+            if (PlayerInputs.Nocliping) return new NoclipingState();
 
             if (!Player.Info.touchingGround) return new InAirState();
             else return null;
@@ -76,7 +76,7 @@ namespace Fifbox.Game.Player.StateMachine.States
             var speed = Player.Rigidbody.linearVelocity.magnitude;
             var drop = 0f;
 
-            if (Player.Inputs.moveVector.magnitude > 0f)
+            if (PlayerInputs.MoveVector.magnitude > 0f)
             {
                 _targetDeceleration = StateMachine.CurrentState.Deceleration;
             }
@@ -96,7 +96,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         private void Accelerate()
         {
             var targetSpeed = StateMachine.CurrentState.MoveSpeed;
-            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues(Player.Info.flatOrientation, Player.Inputs.moveVector, Player.Config.maxSpeed, targetSpeed);
+            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues(Player.Info.flatOrientation, PlayerInputs.MoveVector, Player.Config.maxSpeed, targetSpeed);
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
             var currentSpeed = Vector2.Dot(velocity, wishDir);

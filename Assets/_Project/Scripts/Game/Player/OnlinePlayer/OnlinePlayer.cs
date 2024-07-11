@@ -43,7 +43,7 @@ namespace Fifbox.Game.Player.OnlinePlayer
             }
 
             var onlinePlayerCamera = Instantiate(_mainCameraPrefab, Orientation).GetComponent<OnlinePlayerCamera>();
-            onlinePlayerCamera.Init(this);
+            onlinePlayerCamera.Init(this, inputs);
         }
 
         private void InitActions()
@@ -113,43 +113,43 @@ namespace Fifbox.Game.Player.OnlinePlayer
         {
             base.OnPlayerUpdate();
 
-            if (isLocalPlayer && _autoBHop && _holdingJump) Inputs.tryJump();
+            if (isLocalPlayer && _autoBHop && _holdingJump) inputs.tryJump();
         }
 
         private void MovePerformed(InputAction.CallbackContext ctx)
         {
-            Inputs.moveVector = ctx.ReadValue<Vector2>();
+            inputs.MoveVector = ctx.ReadValue<Vector2>();
         }
 
         private void MoveCanceled(InputAction.CallbackContext ctx)
         {
-            Inputs.moveVector = Vector2.zero;
+            inputs.MoveVector = Vector2.zero;
         }
 
         private void RunPerformed(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToRun = true;
+            inputs.WantsToRun = true;
         }
 
         private void RunCanceled(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToRun = false;
+            inputs.WantsToRun = false;
         }
 
         private void CrouchPerformed(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToCrouch = true;
+            inputs.WantsToCrouch = true;
         }
 
         private void CrouchCanceled(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToCrouch = false;
+            inputs.WantsToCrouch = false;
         }
 
         private void JumpPerformed(InputAction.CallbackContext ctx)
         {
             _holdingJump = true;
-            if (!_autoBHop) Inputs.tryJump();
+            if (!_autoBHop) inputs.tryJump();
         }
 
         private void JumpCanceled(InputAction.CallbackContext ctx)
@@ -159,37 +159,37 @@ namespace Fifbox.Game.Player.OnlinePlayer
 
         private void FastFlyPerformed(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToFlyFast = true;
+            inputs.WantsToFlyFast = true;
         }
 
         private void FastFlyCanceled(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToFlyFast = false;
+            inputs.WantsToFlyFast = false;
         }
 
         private void AscendPerformed(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToAscend = true;
+            inputs.WantsToAscend = true;
         }
 
         private void AscendCanceled(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToAscend = false;
+            inputs.WantsToAscend = false;
         }
 
         private void DescendPerformed(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToDescend = true;
+            inputs.WantsToDescend = true;
         }
 
         private void DescendCanceled(InputAction.CallbackContext ctx)
         {
-            Inputs.wantsToDescend = false;
+            inputs.WantsToDescend = false;
         }
 
         private void NoclipPerformed(InputAction.CallbackContext ctx)
         {
-            Inputs.nocliping = !Inputs.nocliping;
+            inputs.Nocliping = !inputs.Nocliping;
         }
     }
 }

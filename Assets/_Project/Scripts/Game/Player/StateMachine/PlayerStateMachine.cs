@@ -7,16 +7,18 @@ namespace Fifbox.Game.Player.StateMachine
         public T CurrentState { get; private set; }
 
         public readonly Player player;
+        public readonly PlayerInputs playerInputs;
 
-        public PlayerStateMachine(Player player)
+        public PlayerStateMachine(Player player, PlayerInputs playerInputs)
         {
             this.player = player;
+            this.playerInputs = playerInputs;
         }
 
         public void Start()
         {
             CurrentState = new T1();
-            CurrentState.Enter(player);
+            CurrentState.Enter(player, playerInputs);
         }
 
         public void Update()
@@ -28,7 +30,7 @@ namespace Fifbox.Game.Player.StateMachine
 
             CurrentState.OnExit();
             CurrentState = nextState;
-            CurrentState.Enter(player);
+            CurrentState.Enter(player, playerInputs);
         }
 
         public void LateUpdate()

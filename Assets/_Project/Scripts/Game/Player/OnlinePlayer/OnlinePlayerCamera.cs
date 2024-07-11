@@ -2,13 +2,13 @@ using Fifbox.Game.Player.StateMachine.States;
 using Fifbox.Game.Player.StateMachine.States.OnGroundSubStates;
 using Fifbox.Input;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace Fifbox.Game.Player.OnlinePlayer
 {
     public class OnlinePlayerCamera : MonoBehaviour
     {
         private OnlinePlayer _player;
+        private PlayerInputs _inputs;
         private bool _initialized;
 
         [Header("Height properties")]
@@ -26,10 +26,11 @@ namespace Fifbox.Game.Player.OnlinePlayer
             transform.localPosition = Vector3.up * _cameraDefaultHeight;
         }
 
-        public void Init(OnlinePlayer player)
+        public void Init(OnlinePlayer player, PlayerInputs inputs)
         {
             if (_initialized) return;
             _player = player;
+            _inputs = inputs;
             _initialized = true;
         }
 
@@ -51,7 +52,7 @@ namespace Fifbox.Game.Player.OnlinePlayer
             _cameraEulerAngles.y += cameraInput.x;
             _cameraEulerAngles.x = Mathf.Clamp(_cameraEulerAngles.x - cameraInput.y, -90f, 90f);
 
-            _player.Inputs.setOrientationEulerAngles(new(_cameraEulerAngles.x, _cameraEulerAngles.y, 0f));
+            _inputs.setOrientationEulerAngles(new(_cameraEulerAngles.x, _cameraEulerAngles.y, 0f));
             transform.localRotation = Quaternion.Euler(_cameraEulerAngles.x, 0f, _cameraEulerAngles.z);
 
             var crouching = _player.StateMachine.CurrentState is OnGroundState groundState && groundState.StateMachine.CurrentState is CrouchingState;

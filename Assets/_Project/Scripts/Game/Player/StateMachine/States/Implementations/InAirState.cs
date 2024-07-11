@@ -6,12 +6,12 @@ namespace Fifbox.Game.Player.StateMachine.States
     {
         protected override void OnEnter()
         {
-            Player.Inputs.tryJump += TryJump;
+            PlayerInputs.tryJump += TryJump;
         }
 
         public override void OnExit()
         {
-            Player.Inputs.tryJump -= TryJump;
+            PlayerInputs.tryJump -= TryJump;
         }
 
         private void TryJump()
@@ -21,7 +21,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override PlayerState GetNextState()
         {
-            if (Player.Inputs.nocliping) return new NoclipingState();
+            if (PlayerInputs.Nocliping) return new NoclipingState();
 
             if (Player.Info.touchingGround) return new OnGroundState();
             else return null;
@@ -31,7 +31,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             if (Player.Info.jumpBufferTimer > 0f) Player.Info.jumpBufferTimer -= Time.deltaTime;
 
-            Player.Info.currentMaxStepHeight = Player.Inputs.wantsToCrouch ?
+            Player.Info.currentMaxStepHeight = PlayerInputs.WantsToCrouch ?
                 Player.Config.maxStepHeight / 2 + Player.Config.fullHeight - Player.Config.crouchHeight :
                 Player.Config.maxStepHeight;
 
@@ -44,7 +44,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         private void Accelerate()
         {
             var targetSpeed = Player.Info.lastGroundedVelocity.magnitude;
-            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues(Player.Info.flatOrientation, Player.Inputs.moveVector, Player.Config.maxSpeed, targetSpeed);
+            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues(Player.Info.flatOrientation, PlayerInputs.MoveVector, Player.Config.maxSpeed, targetSpeed);
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
             var currentSpeed = Vector2.Dot(velocity, wishDir);

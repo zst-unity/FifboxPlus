@@ -9,11 +9,11 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
 
         public override OnGroundSubState GetNextState()
         {
-            if (Player.Inputs.wantsToCrouch) return new RunningState();
+            if (PlayerInputs.WantsToCrouch) return new RunningState();
 
-            if (Player.Inputs.moveVector.magnitude > 0f)
+            if (PlayerInputs.MoveVector.magnitude > 0f)
             {
-                if (Player.Inputs.wantsToRun) return null;
+                if (PlayerInputs.WantsToRun) return null;
                 else return new WalkingState();
             }
 
