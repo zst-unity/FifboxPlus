@@ -6,12 +6,17 @@ namespace Fifbox.Game.Player.StateMachine.States
     {
         protected override void OnEnter()
         {
-
+            Player.Inputs.tryJump += TryJump;
         }
 
         public override void OnExit()
         {
+            Player.Inputs.tryJump -= TryJump;
+        }
 
+        private void TryJump()
+        {
+            Player.Info.jumpBufferTimer = Player.Config.jumpBufferTime;
         }
 
         public override PlayerState GetNextState()
@@ -39,7 +44,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         private void Accelerate()
         {
             var targetSpeed = Player.Info.lastGroundedVelocity.magnitude;
-            var (_, wishSpeed, wishDir) = Player.GetWishValues(targetSpeed);
+            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues(Player.Info.flatOrientation, Player.Inputs.moveVector, Player.Config.maxSpeed, targetSpeed);
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
             var currentSpeed = Vector2.Dot(velocity, wishDir);
@@ -54,16 +59,6 @@ namespace Fifbox.Game.Player.StateMachine.States
 
             velocity += wishDir * accelSpeed;
             Player.Rigidbody.linearVelocity = new(velocity.x, Player.Rigidbody.linearVelocity.y, velocity.y);
-        }
-
-        public override void TryJump()
-        {
-            Player.Info.jumpBufferTimer = Player.Config.jumpBufferTime;
-        }
-
-        public override void OnLateUpdate()
-        {
-
         }
     }
 }

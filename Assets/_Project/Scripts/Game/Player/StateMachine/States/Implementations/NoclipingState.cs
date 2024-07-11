@@ -44,12 +44,5 @@ namespace Fifbox.Game.Player.StateMachine.States
 
             Player.Rigidbody.linearVelocity = (targetSpeed * direction) + Vector3.up * verticalModifierForce;
         }
-
-        public override void TryJump() { }
-
-        public override void OnLateUpdate()
-        {
-
-        }
     }
 }

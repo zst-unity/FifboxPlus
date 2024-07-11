@@ -97,7 +97,6 @@ namespace Fifbox.Game.Player
             if (!ShouldProcessPlayer) return;
 
             Inputs.setOrientationEulerAngles += SetOrientation;
-            Inputs.tryJump += TryJump;
             StateMachine.Start();
         }
 
@@ -106,7 +105,6 @@ namespace Fifbox.Game.Player
             if (!ShouldProcessPlayer) return;
 
             Inputs.setOrientationEulerAngles -= SetOrientation;
-            Inputs.tryJump -= TryJump;
             StateMachine.Stop();
         }
 
@@ -126,13 +124,6 @@ namespace Fifbox.Game.Player
 
             GroundCheck();
             StateMachine.LateUpdate();
-        }
-
-        private void TryJump()
-        {
-            if (!ShouldProcessPlayer) return;
-
-            StateMachine.CurrentState.TryJump();
         }
 
         private void SetOrientation(Vector3 eulerAngles)
@@ -188,21 +179,6 @@ namespace Fifbox.Game.Player
             Collider.center = PlayerUtility.GetColliderCenter(Info.currentMaxStepHeight);
             Collider.size = PlayerUtility.GetColliderSize(Config.width, Info.currentHeight, Info.currentMaxStepHeight);
             Center.localPosition = PlayerUtility.GetCenterPosition(Info.currentHeight);
-        }
-
-        public (Vector3 wishVel, float wishSpeed, Vector2 wishDir) GetWishValues(float wishVelMultiplier = 1f)
-        {
-            var wishVel = (Info.flatOrientation.right * Inputs.moveVector.x + Info.flatOrientation.forward * Inputs.moveVector.y) * wishVelMultiplier;
-            var wishSpeed = wishVel.magnitude;
-            var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
-
-            if (wishSpeed != 0f && (wishSpeed > Config.maxSpeed))
-            {
-                wishVel *= _config.maxSpeed / wishSpeed;
-                wishSpeed = Config.maxSpeed;
-            }
-
-            return (wishVel, wishSpeed, wishDir);
         }
 
         private void OnDrawGizmosSelected()

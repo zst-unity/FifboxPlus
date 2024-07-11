@@ -7,16 +7,6 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
         public override float Acceleration => Player.Config.walkAcceleration;
         public override float Deceleration => Player.Config.walkDeceleration;
 
-        protected override void OnEnter()
-        {
-
-        }
-
-        public override void OnExit()
-        {
-
-        }
-
         public override OnGroundSubState GetNextState()
         {
             if (Player.Inputs.wantsToCrouch) return new CrouchingState();
@@ -28,16 +18,6 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
             }
 
             return new IdlingState();
-        }
-
-        public override void OnLateUpdate()
-        {
-
-        }
-
-        public override void OnUpdate()
-        {
-
         }
     }
 }

@@ -14,8 +14,8 @@ namespace Fifbox.Game.Player
         public bool wantsToDescend;
         public bool nocliping;
 
-        public Action<Vector3> setOrientationEulerAngles;
-        public Action tryJump;
+        public Action<Vector3> setOrientationEulerAngles = e => { };
+        public Action tryJump = () => { };
     }
 
     [Serializable]

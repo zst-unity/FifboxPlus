@@ -19,11 +19,22 @@ namespace Fifbox.Game.Player.StateMachine.States
                 TryJump();
                 Player.Info.jumpBufferTimer = 0f;
             }
+
+            Player.Inputs.tryJump += TryJump;
         }
 
         public override void OnExit()
         {
             StateMachine.Stop();
+            Player.Inputs.tryJump -= TryJump;
+        }
+
+        private void TryJump()
+        {
+            if (Player.Info.ground.angle > Player.Config.slopeAngleLimit) return;
+
+            var targetForce = StateMachine.CurrentState.JumpForce;
+            Player.Rigidbody.linearVelocity = new(Player.Rigidbody.linearVelocity.x, targetForce, Player.Rigidbody.linearVelocity.z);
         }
 
         public override PlayerState GetNextState()
@@ -85,7 +96,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         private void Accelerate()
         {
             var targetSpeed = StateMachine.CurrentState.MoveSpeed;
-            var (_, wishSpeed, wishDir) = Player.GetWishValues(targetSpeed);
+            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues(Player.Info.flatOrientation, Player.Inputs.moveVector, Player.Config.maxSpeed, targetSpeed);
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
             var currentSpeed = Vector2.Dot(velocity, wishDir);
@@ -99,14 +110,6 @@ namespace Fifbox.Game.Player.StateMachine.States
 
             velocity += wishDir * accelSpeed;
             Player.Rigidbody.linearVelocity = new(velocity.x, Player.Rigidbody.linearVelocity.y, velocity.y);
-        }
-
-        public override void TryJump()
-        {
-            if (Player.Info.ground.angle > Player.Config.slopeAngleLimit) return;
-
-            var targetForce = StateMachine.CurrentState.JumpForce;
-            Player.Rigidbody.linearVelocity = new(Player.Rigidbody.linearVelocity.x, targetForce, Player.Rigidbody.linearVelocity.z);
         }
 
         public override void OnLateUpdate()
