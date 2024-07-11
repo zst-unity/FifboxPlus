@@ -21,24 +21,24 @@ namespace Fifbox.Game.Player.StateMachine
 
         public void Update()
         {
-            CurrentState.Update();
+            CurrentState.OnUpdate();
 
             var nextState = CurrentState.GetNextState();
             if (nextState == null) return;
 
-            CurrentState.Exit();
+            CurrentState.OnExit();
             CurrentState = nextState;
             CurrentState.Enter(player);
         }
 
         public void LateUpdate()
         {
-            CurrentState.LateUpdate();
+            CurrentState.OnLateUpdate();
         }
 
         public void Stop()
         {
-            CurrentState.Exit();
+            CurrentState.OnExit();
         }
     }
 }

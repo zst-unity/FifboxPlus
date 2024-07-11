@@ -32,7 +32,7 @@ MonoBehaviour:
   runJumpForce: 4.9
   crouchJumpForce: 3.5
   jumpBufferTime: 0.15
-  airAcceleration: 28
+  airAcceleration: 25
   airSpeedCap: 3.1
   noclipNormalFlySpeed: 15
   noclipFastFlySpeed: 27.3

@@ -6,21 +6,20 @@ namespace Fifbox.Game.Player.StateMachine.States
 {
     public class NoclipingState : PlayerState
     {
-        public override void Enter(Player player)
+        protected override void OnEnter()
         {
-            Player = player;
             SetNoclip(true);
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
             SetNoclip(false);
         }
 
         private void SetNoclip(bool noclip)
         {
-            Player.gameObject.SetLayerForChildren(noclip ? FifboxLayers.NoclipingPlayerLayer.Index : Player.Data.initialLayer);
-            Player.Data.currentMaxStepHeight = noclip ? 0f : Player.Config.maxStepHeight;
+            Player.gameObject.SetLayerForChildren(noclip ? FifboxLayers.NoclipingPlayerLayer.Index : Player.DefaultLayer);
+            Player.Info.currentMaxStepHeight = noclip ? 0f : Player.Config.maxStepHeight;
             Player.UpdateColliderAndCenter();
         }
 
@@ -28,18 +27,15 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             if (Player.Inputs.nocliping) return null;
 
-            if (Player.Data.touchingGround) return new OnGroundState();
+            if (Player.Info.touchingGround) return new OnGroundState();
             else return new InAirState();
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
             var targetSpeed = Player.Inputs.wantsToRun ? Player.Config.noclipFastFlySpeed : Player.Config.noclipNormalFlySpeed;
 
-            var fullOrientation = Quaternion.Euler(Player.Data.fullOrientationEulerAngles.x, Player.Data.fullOrientationEulerAngles.y, 0f);
-            var forward = fullOrientation * Vector3.forward;
-            var right = fullOrientation * Vector3.right;
-            var direction = right * Player.Inputs.moveVector.x + forward * Player.Inputs.moveVector.y;
+            var direction = Player.Info.fullOrientation.right * Player.Inputs.moveVector.x + Player.Info.fullOrientation.forward * Player.Inputs.moveVector.y;
 
             var verticalModifierDirection = 0f;
             if (Player.Inputs.wantsToCrouch) verticalModifierDirection -= 1f;
@@ -51,7 +47,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override void TryJump() { }
 
-        public override void LateUpdate()
+        public override void OnLateUpdate()
         {
 
         }

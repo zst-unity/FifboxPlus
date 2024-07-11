@@ -8,15 +8,15 @@ namespace Fifbox.Game.Player.OnlinePlayer
 {
     public class OnlinePlayer : Player
     {
+        protected override bool ShouldProcessPlayer => isLocalPlayer;
+        public override int DefaultLayer => FifboxLayers.LocalPlayerLayer.Index;
+
         [Header("Online Player References")]
         [SerializeField, WithComponent(typeof(OnlinePlayerCamera))] private GameObject _mainCameraPrefab;
 
         [Header("Online Player Inputs")]
         [SerializeField] private bool _autoBHop;
-
         private bool _holdingJump;
-
-        protected override bool ShouldProcessPlayer => isLocalPlayer;
 
         protected override void OnPlayerStart()
         {
@@ -27,7 +27,6 @@ namespace Fifbox.Game.Player.OnlinePlayer
 
         private void LocalStart()
         {
-            Data.initialLayer = FifboxLayers.LocalPlayerLayer.Index;
             Cursor.lockState = CursorLockMode.Locked;
             Model.SetActive(false);
 

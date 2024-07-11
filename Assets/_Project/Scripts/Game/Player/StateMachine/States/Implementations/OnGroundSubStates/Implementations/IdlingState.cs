@@ -7,12 +7,12 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
         public override float Acceleration => 0f;
         public override float Deceleration => 0f;
 
-        public override void Enter(Player player)
+        protected override void OnEnter()
         {
-            Player = player;
+
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
 
         }
@@ -30,12 +30,12 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
             return null;
         }
 
-        public override void LateUpdate()
+        public override void OnLateUpdate()
         {
 
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
 
         }

@@ -1,6 +1,5 @@
 using Fifbox.Game.Player.StateMachine.States.OnGroundSubStates;
 using UnityEngine;
-using ZSToolkit.ZSTUtility.Extensions;
 
 namespace Fifbox.Game.Player.StateMachine.States
 {
@@ -10,21 +9,19 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public PlayerStateMachine<OnGroundSubState, IdlingState> StateMachine { get; private set; }
 
-        public override void Enter(Player player)
+        protected override void OnEnter()
         {
-            Player = player;
-
-            StateMachine = new(player);
+            StateMachine = new(Player);
             StateMachine.Start();
 
-            if (Player.Data.jumpBufferTimer > 0f)
+            if (Player.Info.jumpBufferTimer > 0f)
             {
                 TryJump();
-                Player.Data.jumpBufferTimer = 0f;
+                Player.Info.jumpBufferTimer = 0f;
             }
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
             StateMachine.Stop();
         }
@@ -33,30 +30,30 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             if (Player.Inputs.nocliping) return new NoclipingState();
 
-            if (!Player.Data.touchingGround) return new InAirState();
+            if (!Player.Info.touchingGround) return new InAirState();
             else return null;
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
             StateMachine.Update();
 
-            var shouldDisableFloatingCharacter = Player.Data.touchingCeiling || Player.Data.groundAngle > Player.Config.slopeAngleLimit;
-            Player.Data.currentMaxStepHeight = shouldDisableFloatingCharacter ? 0f : Player.Config.maxStepHeight;
-            Player.Data.currentStepDownBufferHeight = shouldDisableFloatingCharacter ? 0.02f : Player.Config.stepDownBufferHeight;
+            var shouldDisableFloatingCharacter = Player.Info.touchingCeiling || Player.Info.ground.angle > Player.Config.slopeAngleLimit;
+            Player.Info.currentMaxStepHeight = shouldDisableFloatingCharacter ? 0f : Player.Config.maxStepHeight;
+            Player.Info.currentStepDownBufferHeight = shouldDisableFloatingCharacter ? 0.02f : Player.Config.stepDownBufferHeight;
             Player.UpdateColliderAndCenter();
 
-            var frictionMultiplierValue = Mathf.Clamp(Player.Data.groundAngle - Player.Config.slopeAngleLimit, 0f, 90f - Player.Config.slopeAngleLimit);
+            var frictionMultiplierValue = Mathf.Clamp(Player.Info.ground.angle - Player.Config.slopeAngleLimit, 0f, 90f - Player.Config.slopeAngleLimit);
             var frictionMultiplier = 1f - Mathf.InverseLerp(0f, 90f - Player.Config.slopeAngleLimit, frictionMultiplierValue);
             ApplyFriction(frictionMultiplier);
 
-            if (Player.Data.groundAngle > Player.Config.slopeAngleLimit)
+            if (Player.Info.ground.angle > Player.Config.slopeAngleLimit)
             {
-                Player.ApplyGravity();
+                Player.Rigidbody.linearVelocity += Player.Config.gravityMultiplier * Time.deltaTime * Physics.gravity;
             }
 
-            Player.Data.lastGroundedVelocity = Player.Rigidbody.linearVelocity;
-            Player.Data.lastGroundedVelocity.y = 0f;
+            Player.Info.lastGroundedVelocity = Player.Rigidbody.linearVelocity;
+            Player.Info.lastGroundedVelocity.y = 0f;
 
             Accelerate();
         }
@@ -106,13 +103,13 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override void TryJump()
         {
-            if (Player.Data.groundAngle > Player.Config.slopeAngleLimit) return;
+            if (Player.Info.ground.angle > Player.Config.slopeAngleLimit) return;
 
             var targetForce = StateMachine.CurrentState.JumpForce;
             Player.Rigidbody.linearVelocity = new(Player.Rigidbody.linearVelocity.x, targetForce, Player.Rigidbody.linearVelocity.z);
         }
 
-        public override void LateUpdate()
+        public override void OnLateUpdate()
         {
             StateMachine.LateUpdate();
             MoveToGround();
@@ -120,12 +117,12 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         private void MoveToGround()
         {
-            if (Player.Data.touchingCeiling || Player.Rigidbody.linearVelocity.y > 0.1f) return;
+            if (Player.Info.touchingCeiling || Player.Rigidbody.linearVelocity.y > 0.1f) return;
 
-            var diff = Mathf.Abs(Player.transform.position.y - Player.Data.groundHeight);
-            if (Player.Data.groundAngle > Player.Config.slopeAngleLimit || diff > Player.Data.groundCheckSizeY) return;
+            var diff = Mathf.Abs(Player.transform.position.y - Player.Info.ground.height);
+            if (Player.Info.ground.angle > Player.Config.slopeAngleLimit || diff > Player.Info.groundCheckSizeY) return;
 
-            Player.transform.position = new(Player.transform.position.x, Player.Data.groundHeight, Player.transform.position.z);
+            Player.transform.position = new(Player.transform.position.x, Player.Info.ground.height, Player.transform.position.z);
             Player.Rigidbody.linearVelocity = new(Player.Rigidbody.linearVelocity.x, 0f, Player.Rigidbody.linearVelocity.z);
         }
     }

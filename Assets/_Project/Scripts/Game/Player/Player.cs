@@ -39,7 +39,7 @@ namespace Fifbox.Game.Player
 
         [field: Header("Info")]
         [field: SerializeField, ReadOnly, AllowNesting] public PlayerInputs Inputs { get; private set; } = new();
-        [field: SerializeField, ReadOnly, AllowNesting] public PlayerData Data { get; private set; } = new();
+        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInfo Info { get; private set; } = new();
 
         public PlayerStateMachine<PlayerState, OnGroundState> StateMachine { get; private set; }
 
@@ -73,6 +73,8 @@ namespace Fifbox.Game.Player
         }
 
         protected abstract bool ShouldProcessPlayer { get; }
+        public abstract int DefaultLayer { get; }
+
         private void Awake() => OnPlayerAwake();
         private void Start() => OnPlayerStart();
         private void OnDestroy() => OnPlayerDestroy();
@@ -83,15 +85,14 @@ namespace Fifbox.Game.Player
         {
             StateMachine = new(this);
 
-            Data.initialLayer = FifboxLayers.PlayerLayer.Index;
-            Data.currentHeight = Config.fullHeight;
-            Data.currentMaxStepHeight = Config.maxStepHeight;
-            Data.currentStepDownBufferHeight = Config.stepDownBufferHeight;
+            Info.currentHeight = Config.fullHeight;
+            Info.currentMaxStepHeight = Config.maxStepHeight;
+            Info.currentStepDownBufferHeight = Config.stepDownBufferHeight;
         }
 
         protected virtual void OnPlayerStart()
         {
-            gameObject.SetLayerForChildren(Data.initialLayer);
+            gameObject.SetLayerForChildren(DefaultLayer);
 
             if (!ShouldProcessPlayer) return;
 
@@ -138,8 +139,9 @@ namespace Fifbox.Game.Player
         {
             if (!ShouldProcessPlayer) return;
 
-            Data.fullOrientationEulerAngles = eulerAngles;
-            Orientation.localRotation = Quaternion.Euler(0f, eulerAngles.y, 0f);
+            Info.fullOrientation = new(eulerAngles);
+            Info.flatOrientation = new(new(0f, eulerAngles.y, 0f));
+            Orientation.localRotation = Info.flatOrientation.quaternion;
         }
 
         private void CeilCheck()
@@ -147,8 +149,8 @@ namespace Fifbox.Game.Player
             if (!ShouldProcessPlayer) return;
 
             var ceiledCheckSize = new Vector3(WidthForChecking, 0.02f, WidthForChecking);
-            var ceiledCheckPosition = transform.position + Vector3.up * Data.currentHeight;
-            Data.touchingCeiling = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
+            var ceiledCheckPosition = transform.position + Vector3.up * Info.currentHeight;
+            Info.touchingCeiling = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
         }
 
         private void GroundCheck()
@@ -157,15 +159,15 @@ namespace Fifbox.Game.Player
 
             var useBuffer = Rigidbody.linearVelocity.Round(0.001f).y == 0f;
             var groundedCheckPosition = useBuffer
-                ? transform.position + Vector3.up * (Data.currentMaxStepHeight - Data.currentStepDownBufferHeight) / 2
-                : transform.position + Vector3.up * Data.currentMaxStepHeight / 2;
+                ? transform.position + Vector3.up * (Info.currentMaxStepHeight - Info.currentStepDownBufferHeight) / 2
+                : transform.position + Vector3.up * Info.currentMaxStepHeight / 2;
 
-            Data.groundCheckSizeY = useBuffer ? Data.currentMaxStepHeight + Data.currentStepDownBufferHeight : Data.currentMaxStepHeight + 0.05f;
-            var groundedCheckSize = new Vector3(WidthForChecking, Data.groundCheckSizeY, WidthForChecking);
-            Data.touchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
+            Info.groundCheckSizeY = useBuffer ? Info.currentMaxStepHeight + Info.currentStepDownBufferHeight : Info.currentMaxStepHeight + 0.05f;
+            var groundedCheckSize = new Vector3(WidthForChecking, Info.groundCheckSizeY, WidthForChecking);
+            Info.touchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
 
-            var groundInfoCheckPosition = transform.position + (Data.currentHeight - Data.currentMaxStepHeight / 2) * Vector3.up;
-            var groundInfoCheckSize = new Vector3(Config.width + 0.1f, Data.currentMaxStepHeight, Config.width + 0.1f);
+            var groundInfoCheckPosition = transform.position + (Info.currentHeight - Info.currentMaxStepHeight / 2) * Vector3.up;
+            var groundInfoCheckSize = new Vector3(Config.width + 0.1f, Info.currentMaxStepHeight, Config.width + 0.1f);
             Physics.BoxCast
             (
                 groundInfoCheckPosition,
@@ -177,26 +179,20 @@ namespace Fifbox.Game.Player
                 FifboxLayers.GroundLayers
             );
 
-            Data.groundHeight = hit.point.y;
-            Data.groundNormal = hit.normal.Round(0.001f);
-            Data.groundAngle = Vector3.Angle(Data.groundNormal, Vector3.up);
+            var normal = hit.normal.Round(0.001f);
+            Info.ground = new(normal, Vector3.Angle(normal, Vector3.up), hit.point.y);
         }
 
         public void UpdateColliderAndCenter()
         {
-            Collider.center = PlayerUtility.GetColliderCenter(Data.currentMaxStepHeight);
-            Collider.size = PlayerUtility.GetColliderSize(Config.width, Data.currentHeight, Data.currentMaxStepHeight);
-            Center.localPosition = PlayerUtility.GetCenterPosition(Data.currentHeight);
-        }
-
-        public void ApplyGravity()
-        {
-            Rigidbody.linearVelocity += Config.gravityMultiplier * Time.deltaTime * Physics.gravity;
+            Collider.center = PlayerUtility.GetColliderCenter(Info.currentMaxStepHeight);
+            Collider.size = PlayerUtility.GetColliderSize(Config.width, Info.currentHeight, Info.currentMaxStepHeight);
+            Center.localPosition = PlayerUtility.GetCenterPosition(Info.currentHeight);
         }
 
         public (Vector3 wishVel, float wishSpeed, Vector2 wishDir) GetWishValues(float wishVelMultiplier = 1f)
         {
-            var wishVel = (Orientation.right * Inputs.moveVector.x + Orientation.forward * Inputs.moveVector.y) * wishVelMultiplier;
+            var wishVel = (Info.flatOrientation.right * Inputs.moveVector.x + Info.flatOrientation.forward * Inputs.moveVector.y) * wishVelMultiplier;
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
 
@@ -212,13 +208,13 @@ namespace Fifbox.Game.Player
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireCube(transform.position + Vector3.up * Data.currentMaxStepHeight / 2, new(Config.width, Data.currentMaxStepHeight, Config.width));
+            Gizmos.DrawWireCube(transform.position + Vector3.up * Info.currentMaxStepHeight / 2, new(Config.width, Info.currentMaxStepHeight, Config.width));
 
             Gizmos.color = Color.blue - Color.black * 0.65f;
-            Gizmos.DrawWireCube(transform.position - Vector3.up * Data.currentStepDownBufferHeight / 2, new(Config.width, Data.currentStepDownBufferHeight, Config.width));
+            Gizmos.DrawWireCube(transform.position - Vector3.up * Info.currentStepDownBufferHeight / 2, new(Config.width, Info.currentStepDownBufferHeight, Config.width));
 
             Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(transform.position + Vector3.up * Data.currentHeight, new(Config.width, 0.02f, Config.width));
+            Gizmos.DrawWireCube(transform.position + Vector3.up * Info.currentHeight, new(Config.width, 0.02f, Config.width));
 
             Gizmos.color = Color.green;
 

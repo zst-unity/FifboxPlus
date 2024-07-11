@@ -14,18 +14,16 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
 
         private void SetCrouching(bool crouching)
         {
-            Player.Data.currentHeight = crouching ? Player.Config.crouchHeight : Player.Config.fullHeight;
+            Player.Info.currentHeight = crouching ? Player.Config.crouchHeight : Player.Config.fullHeight;
             Player.UpdateColliderAndCenter();
         }
 
-        public override void Enter(Player player)
+        protected override void OnEnter()
         {
-            Player = player;
-
             SetCrouching(true);
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
             SetCrouching(false);
         }
@@ -43,14 +41,14 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
             return new IdlingState();
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
             var canStandUpCheckSize = new Vector3(Player.WidthForChecking, Player.Config.fullHeight - Player.Config.crouchHeight, Player.WidthForChecking);
             var canStandUpCheckPosition = Player.transform.position + Vector3.up * (Player.Config.fullHeight + Player.Config.crouchHeight) / 2;
             _canStandUp = !Physics.CheckBox(canStandUpCheckPosition, canStandUpCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
         }
 
-        public override void LateUpdate()
+        public override void OnLateUpdate()
         {
 
         }

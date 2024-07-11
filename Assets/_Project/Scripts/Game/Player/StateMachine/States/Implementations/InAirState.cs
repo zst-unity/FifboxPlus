@@ -4,12 +4,12 @@ namespace Fifbox.Game.Player.StateMachine.States
 {
     public class InAirState : PlayerState
     {
-        public override void Enter(Player player)
+        protected override void OnEnter()
         {
-            Player = player;
+
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
 
         }
@@ -18,27 +18,27 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             if (Player.Inputs.nocliping) return new NoclipingState();
 
-            if (Player.Data.touchingGround) return new OnGroundState();
+            if (Player.Info.touchingGround) return new OnGroundState();
             else return null;
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
-            if (Player.Data.jumpBufferTimer > 0f) Player.Data.jumpBufferTimer -= Time.deltaTime;
+            if (Player.Info.jumpBufferTimer > 0f) Player.Info.jumpBufferTimer -= Time.deltaTime;
 
-            Player.Data.currentMaxStepHeight = Player.Inputs.wantsToCrouch ?
+            Player.Info.currentMaxStepHeight = Player.Inputs.wantsToCrouch ?
                 Player.Config.maxStepHeight / 2 + Player.Config.fullHeight - Player.Config.crouchHeight :
                 Player.Config.maxStepHeight;
 
             Player.UpdateColliderAndCenter();
 
-            Player.ApplyGravity();
+            Player.Rigidbody.linearVelocity += Player.Config.gravityMultiplier * Time.deltaTime * Physics.gravity;
             Accelerate();
         }
 
         private void Accelerate()
         {
-            var targetSpeed = Player.Data.lastGroundedVelocity.magnitude;
+            var targetSpeed = Player.Info.lastGroundedVelocity.magnitude;
             var (_, wishSpeed, wishDir) = Player.GetWishValues(targetSpeed);
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
@@ -58,10 +58,10 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         public override void TryJump()
         {
-            Player.Data.jumpBufferTimer = Player.Config.jumpBufferTime;
+            Player.Info.jumpBufferTimer = Player.Config.jumpBufferTime;
         }
 
-        public override void LateUpdate()
+        public override void OnLateUpdate()
         {
 
         }
