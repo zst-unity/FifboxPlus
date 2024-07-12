@@ -75,7 +75,7 @@ namespace Fifbox.Game.Player
 
             if (!ShouldProcessPlayer) return;
 
-            inputs.setOrientationEulerAngles += SetOrientation;
+            inputs.OnOrientationEulerAnglesChanged += OnOrientationChanged;
             StateMachine.Start();
         }
 
@@ -83,7 +83,7 @@ namespace Fifbox.Game.Player
         {
             if (!ShouldProcessPlayer) return;
 
-            inputs.setOrientationEulerAngles -= SetOrientation;
+            inputs.OnOrientationEulerAnglesChanged -= OnOrientationChanged;
             StateMachine.Stop();
         }
 
@@ -105,7 +105,7 @@ namespace Fifbox.Game.Player
             StateMachine.LateUpdate();
         }
 
-        private void SetOrientation(Vector3 eulerAngles)
+        private void OnOrientationChanged(Vector3 eulerAngles)
         {
             if (!ShouldProcessPlayer) return;
 

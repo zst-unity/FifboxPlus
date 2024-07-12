@@ -14,7 +14,6 @@ namespace Fifbox.Game.Player
         public bool touchingCeiling;
 
         public float jumpBufferTimer;
-        public Vector3 lastGroundedVelocity;
 
         public float currentHeight;
         public float currentMaxStepHeight;

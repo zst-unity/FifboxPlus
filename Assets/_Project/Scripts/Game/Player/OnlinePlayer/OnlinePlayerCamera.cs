@@ -52,7 +52,7 @@ namespace Fifbox.Game.Player.OnlinePlayer
             _cameraEulerAngles.y += cameraInput.x;
             _cameraEulerAngles.x = Mathf.Clamp(_cameraEulerAngles.x - cameraInput.y, -90f, 90f);
 
-            _inputs.setOrientationEulerAngles(new(_cameraEulerAngles.x, _cameraEulerAngles.y, 0f));
+            _inputs.OrientationEulerAngles = new(_cameraEulerAngles.x, _cameraEulerAngles.y, 0f);
             transform.localRotation = Quaternion.Euler(_cameraEulerAngles.x, 0f, _cameraEulerAngles.z);
 
             var crouching = _player.StateMachine.CurrentState is OnGroundState groundState && groundState.StateMachine.CurrentState is CrouchingState;

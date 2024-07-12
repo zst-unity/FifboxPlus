@@ -63,9 +63,6 @@ namespace Fifbox.Game.Player.StateMachine.States
                 Player.Rigidbody.linearVelocity += Player.Config.gravityMultiplier * Time.deltaTime * Physics.gravity;
             }
 
-            Player.Info.lastGroundedVelocity = Player.Rigidbody.linearVelocity;
-            Player.Info.lastGroundedVelocity.y = 0f;
-
             Accelerate();
         }
 
@@ -96,7 +93,14 @@ namespace Fifbox.Game.Player.StateMachine.States
         private void Accelerate()
         {
             var targetSpeed = StateMachine.CurrentState.MoveSpeed;
-            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues(Player.Info.flatOrientation, PlayerInputs.MoveVector, Player.Config.maxSpeed, targetSpeed);
+            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues
+            (
+                Player.Info.flatOrientation.right,
+                Player.Info.flatOrientation.forward,
+                PlayerInputs.MoveVector,
+                Player.Config.maxSpeed,
+                targetSpeed
+            );
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
             var currentSpeed = Vector2.Dot(velocity, wishDir);

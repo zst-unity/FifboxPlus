@@ -21,13 +21,14 @@ namespace Fifbox.Game.Player
 
         public static (Vector3 wishVel, float wishSpeed, Vector2 wishDir) GetWishValues
         (
-            PlayerOrientation flatOrientation,
+            Vector3 right,
+            Vector3 forward,
             Vector2 moveVector,
             float maxSpeed,
             float wishVelMultiplier = 1f
         )
         {
-            var wishVel = (flatOrientation.right * moveVector.x + flatOrientation.forward * moveVector.y) * wishVelMultiplier;
+            var wishVel = (right * moveVector.x + forward * moveVector.y) * wishVelMultiplier;
             var wishSpeed = wishVel.magnitude;
             var wishDir = new Vector2(wishVel.x, wishVel.z).normalized;
 

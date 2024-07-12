@@ -43,8 +43,14 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         private void Accelerate()
         {
-            var targetSpeed = Player.Info.lastGroundedVelocity.magnitude;
-            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues(Player.Info.flatOrientation, PlayerInputs.MoveVector, Player.Config.maxSpeed, targetSpeed);
+            var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues
+            (
+                Player.Info.flatOrientation.right,
+                Player.Info.flatOrientation.forward,
+                PlayerInputs.MoveVector,
+                Player.Config.maxSpeed,
+                2f
+            );
 
             var velocity = new Vector2(Player.Rigidbody.linearVelocity.x, Player.Rigidbody.linearVelocity.z);
             var currentSpeed = Vector2.Dot(velocity, wishDir);

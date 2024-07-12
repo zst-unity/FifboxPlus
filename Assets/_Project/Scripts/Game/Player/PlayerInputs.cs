@@ -84,33 +84,46 @@ namespace Fifbox.Game.Player
         }
         private bool _nocliping;
 
-        public Action<Vector3> setOrientationEulerAngles = delegate { };
+        public Vector3 OrientationEulerAngles
+        {
+            get => _orientationEulerAngles;
+            set
+            {
+                _orientationEulerAngles = value;
+                OnOrientationEulerAnglesChanged(_orientationEulerAngles);
+            }
+        }
+        private Vector3 _orientationEulerAngles;
+
+        public event Action<Vector3> OnOrientationEulerAnglesChanged = delegate { };
         public Action tryJump = delegate { };
 
         public PlayerInputsInfo GetInfo()
         {
-            return new PlayerInputsInfo
-            {
-                moveVector = _moveVector,
-                wantsToRun = _wantsToRun,
-                wantsToCrouch = _wantsToCrouch,
-                wantsToFlyFast = _wantsToFlyFast,
-                wantsToAscend = _wantsToAscend,
-                wantsToDescend = _wantsToDescend,
-                nocliping = _nocliping
-            };
+            return new(_moveVector, _wantsToRun, _wantsToCrouch, _wantsToFlyFast, _wantsToAscend, _wantsToDescend, _nocliping);
         }
     }
 
     [Serializable]
-    public struct PlayerInputsInfo
+    public readonly struct PlayerInputsInfo
     {
-        public Vector2 moveVector;
-        public bool wantsToRun;
-        public bool wantsToCrouch;
-        public bool wantsToFlyFast;
-        public bool wantsToAscend;
-        public bool wantsToDescend;
-        public bool nocliping;
+        public readonly Vector2 moveVector;
+        public readonly bool wantsToRun;
+        public readonly bool wantsToCrouch;
+        public readonly bool wantsToFlyFast;
+        public readonly bool wantsToAscend;
+        public readonly bool wantsToDescend;
+        public readonly bool nocliping;
+
+        public PlayerInputsInfo(Vector2 moveVector, bool wantsToRun, bool wantsToCrouch, bool wantsToFlyFast, bool wantsToAscend, bool wantsToDescend, bool nocliping)
+        {
+            this.moveVector = moveVector;
+            this.wantsToRun = wantsToRun;
+            this.wantsToCrouch = wantsToCrouch;
+            this.wantsToFlyFast = wantsToFlyFast;
+            this.wantsToAscend = wantsToAscend;
+            this.wantsToDescend = wantsToDescend;
+            this.nocliping = nocliping;
+        }
     }
 }
