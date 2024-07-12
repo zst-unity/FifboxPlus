@@ -15,7 +15,7 @@ namespace Fifbox.Game.Player
     public abstract class Player : NetworkBehaviour
     {
         public const float MAX_GROUND_INFO_CHECK_DISTANCE = 100f;
-        public float WidthForChecking => Config.width - 0.01f;
+        public float WidthForChecking => Config.width - 0.001f;
 
         [Header("References")]
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
@@ -137,7 +137,7 @@ namespace Fifbox.Game.Player
             Info.touchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
 
             var groundInfoCheckPosition = transform.position + (Info.currentHeight - Info.currentMaxStepHeight / 2) * Vector3.up;
-            var groundInfoCheckSize = new Vector3(Config.width - 0.01f, Info.currentMaxStepHeight, Config.width - 0.01f);
+            var groundInfoCheckSize = new Vector3(WidthForChecking, Info.currentMaxStepHeight, WidthForChecking);
             Physics.BoxCast
             (
                 groundInfoCheckPosition,
