@@ -8,14 +8,25 @@ using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
 using ZSToolkit.ZSTUtility.Extensions;
 using Fifbox.Game.Player.StateMachine;
 using Fifbox.Game.Player.StateMachine.States;
+using System;
 
 namespace Fifbox.Game.Player
 {
+    [Serializable]
+    public struct PlayerMapInfo
+    {
+        public Vector3 normal;
+        public float angle;
+        public float height;
+    }
+
     [RequireComponent(typeof(Rigidbody))]
     public abstract class Player : NetworkBehaviour
     {
         public const float MAX_GROUND_INFO_CHECK_DISTANCE = 100f;
         public float WidthForChecking => Config.width - 0.001f;
+
+        public PlayerStateMachine<PlayerState, OnGroundState> StateMachine { get; private set; }
 
         [Header("References")]
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
@@ -42,9 +53,15 @@ namespace Fifbox.Game.Player
         public PlayerInputsInfo InputsInfo => inputs.Info;
         protected readonly PlayerInputsController inputs = new();
 
-        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInfo Info { get; private set; } = new();
+        [field: Space(9)]
 
-        public PlayerStateMachine<PlayerState, OnGroundState> StateMachine { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public PlayerMapInfo GroundInfo { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public bool TouchingGround { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public bool TouchingCeiling { get; private set; }
+
+        [field: Space(9)]
+
+        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInfo Info { get; private set; } = new();
 
         protected abstract bool ShouldProcessPlayer { get; }
         public abstract int DefaultLayer { get; }
@@ -93,7 +110,6 @@ namespace Fifbox.Game.Player
 
             CeilCheck();
             GroundCheck();
-
             StateMachine.Update();
         }
 
@@ -109,9 +125,7 @@ namespace Fifbox.Game.Player
         {
             if (!ShouldProcessPlayer) return;
 
-            Info.fullOrientation = new(eulerAngles);
-            Info.flatOrientation = new(new(0f, eulerAngles.y, 0f));
-            Orientation.localRotation = Info.flatOrientation.quaternion;
+            Orientation.localRotation = inputs.FlatOrientation.quaternion;
         }
 
         private void CeilCheck()
@@ -120,7 +134,7 @@ namespace Fifbox.Game.Player
 
             var ceiledCheckSize = new Vector3(WidthForChecking, 0.02f, WidthForChecking);
             var ceiledCheckPosition = transform.position + Vector3.up * Info.currentHeight;
-            Info.touchingCeiling = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
+            TouchingCeiling = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
         }
 
         private void GroundCheck()
@@ -134,7 +148,7 @@ namespace Fifbox.Game.Player
 
             Info.groundCheckSizeY = useBuffer ? Info.currentMaxStepHeight + Info.currentStepDownBufferHeight : Info.currentMaxStepHeight + 0.05f;
             var groundedCheckSize = new Vector3(WidthForChecking, Info.groundCheckSizeY, WidthForChecking);
-            Info.touchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
+            TouchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
 
             var groundInfoCheckPosition = transform.position + (Info.currentHeight - Info.currentMaxStepHeight / 2) * Vector3.up;
             var groundInfoCheckSize = new Vector3(WidthForChecking, Info.currentMaxStepHeight, WidthForChecking);
@@ -150,7 +164,12 @@ namespace Fifbox.Game.Player
             );
 
             var normal = hit.normal.Round(0.001f);
-            Info.ground = new(normal, Vector3.Angle(normal, Vector3.up), hit.point.y);
+            GroundInfo = new()
+            {
+                normal = normal,
+                angle = Vector3.Angle(Vector3.up, normal),
+                height = hit.point.y
+            };
         }
 
         public void UpdateColliderAndCenter()

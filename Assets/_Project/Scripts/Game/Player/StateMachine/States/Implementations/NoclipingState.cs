@@ -27,7 +27,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             if (PlayerInputs.Nocliping) return null;
 
-            if (Player.Info.touchingGround) return new OnGroundState();
+            if (Player.TouchingGround) return new OnGroundState();
             else return new InAirState();
         }
 
@@ -35,7 +35,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             var targetSpeed = PlayerInputs.WantsToRun ? Player.Config.noclipFastFlySpeed : Player.Config.noclipNormalFlySpeed;
 
-            var direction = Player.Info.fullOrientation.right * PlayerInputs.MoveVector.x + Player.Info.fullOrientation.forward * PlayerInputs.MoveVector.y;
+            var direction = PlayerInputs.FullOrientation.right * PlayerInputs.MoveVector.x + PlayerInputs.FullOrientation.forward * PlayerInputs.MoveVector.y;
 
             var verticalModifierDirection = 0f;
             if (PlayerInputs.WantsToCrouch) verticalModifierDirection -= 1f;

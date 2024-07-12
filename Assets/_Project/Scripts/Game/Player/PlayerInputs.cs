@@ -90,10 +90,16 @@ namespace Fifbox.Game.Player
             set
             {
                 _orientationEulerAngles = value;
+
+                FullOrientation = new(_orientationEulerAngles);
+                FlatOrientation = new(new(0f, _orientationEulerAngles.y, 0f));
                 OnOrientationEulerAnglesChanged(_orientationEulerAngles);
             }
         }
         private Vector3 _orientationEulerAngles;
+
+        public PlayerOrientation FullOrientation { get; private set; }
+        public PlayerOrientation FlatOrientation { get; private set; }
 
         public event Action<Vector3> OnOrientationEulerAnglesChanged = delegate { };
         public Action tryJump = delegate { };
@@ -108,7 +114,9 @@ namespace Fifbox.Game.Player
                 wantsToFlyFast = WantsToFlyFast,
                 wantsToAscend = WantsToAscend,
                 wantsToDescend = WantsToDescend,
-                nocliping = Nocliping
+                nocliping = Nocliping,
+                fullOrientation = FullOrientation,
+                flatOrientation = FlatOrientation
             };
         }
     }
@@ -123,5 +131,27 @@ namespace Fifbox.Game.Player
         public bool wantsToAscend;
         public bool wantsToDescend;
         public bool nocliping;
+
+        public PlayerOrientation fullOrientation;
+        public PlayerOrientation flatOrientation;
+    }
+
+    [Serializable]
+    public struct PlayerOrientation
+    {
+        public Vector3 eulerAngles;
+        public readonly Quaternion quaternion;
+        public readonly Vector3 forward;
+        public readonly Vector3 right;
+        public readonly Vector3 up;
+
+        public PlayerOrientation(Vector3 eulerAngles)
+        {
+            this.eulerAngles = eulerAngles;
+            quaternion = Quaternion.Euler(eulerAngles);
+            forward = quaternion * Vector3.forward;
+            right = quaternion * Vector3.right;
+            up = quaternion * Vector3.up;
+        }
     }
 }

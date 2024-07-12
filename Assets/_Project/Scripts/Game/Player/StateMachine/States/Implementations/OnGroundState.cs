@@ -34,7 +34,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         private void TryJump()
         {
-            if (Player.Info.ground.angle > Player.Config.slopeAngleLimit) return;
+            if (Player.GroundInfo.angle > Player.Config.slopeAngleLimit) return;
 
             var targetForce = StateMachine.CurrentState.JumpForce;
             Player.Rigidbody.SetVelocityY(targetForce);
@@ -44,7 +44,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             if (PlayerInputs.Nocliping) return new NoclipingState();
 
-            if (!Player.Info.touchingGround) return new InAirState();
+            if (!Player.TouchingGround) return new InAirState();
             else return null;
         }
 
@@ -52,8 +52,8 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             StateMachine.Update();
 
-            var isOnSlopeLimit = Player.Info.ground.angle > Player.Config.slopeAngleLimit;
-            var shouldDisableFloatingCharacter = Player.Info.touchingCeiling || isOnSlopeLimit;
+            var isOnSlopeLimit = Player.GroundInfo.angle > Player.Config.slopeAngleLimit;
+            var shouldDisableFloatingCharacter = Player.TouchingCeiling || isOnSlopeLimit;
             Player.Info.currentMaxStepHeight = shouldDisableFloatingCharacter ? 0.05f : Player.Config.maxStepHeight;
             Player.UpdateColliderAndCenter();
 
@@ -94,11 +94,11 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         private void Accelerate()
         {
-            var targetSpeed = Player.Info.ground.angle > Player.Config.slopeAngleLimit ? 1f : StateMachine.CurrentState.MoveSpeed;
+            var targetSpeed = Player.GroundInfo.angle > Player.Config.slopeAngleLimit ? 1f : StateMachine.CurrentState.MoveSpeed;
             var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues
             (
-                Player.Info.flatOrientation.right,
-                Player.Info.flatOrientation.forward,
+                PlayerInputs.FlatOrientation.right,
+                PlayerInputs.FlatOrientation.forward,
                 PlayerInputs.MoveVector,
                 Player.Config.maxSpeed,
                 targetSpeed
@@ -126,12 +126,12 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         private void MoveToGround()
         {
-            if (Player.Info.touchingCeiling || Player.Rigidbody.linearVelocity.y > 0.1f) return;
+            if (Player.TouchingCeiling || Player.Rigidbody.linearVelocity.y > 0.1f) return;
 
-            var diff = Mathf.Abs(Player.transform.position.y - Player.Info.ground.height);
-            if (Player.Info.ground.angle > Player.Config.slopeAngleLimit || diff > Player.Info.groundCheckSizeY) return;
+            var diff = Mathf.Abs(Player.transform.position.y - Player.GroundInfo.height);
+            if (Player.GroundInfo.angle > Player.Config.slopeAngleLimit || diff > Player.Info.groundCheckSizeY) return;
 
-            Player.transform.position = new(Player.transform.position.x, Player.Info.ground.height, Player.transform.position.z);
+            Player.transform.position = new(Player.transform.position.x, Player.GroundInfo.height, Player.transform.position.z);
             Player.Rigidbody.SetVelocityY(0f);
         }
     }

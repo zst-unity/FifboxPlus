@@ -23,7 +23,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             if (PlayerInputs.Nocliping) return new NoclipingState();
 
-            if (Player.Info.touchingGround) return new OnGroundState();
+            if (Player.TouchingGround) return new OnGroundState();
             else return null;
         }
 
@@ -45,8 +45,8 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             var (_, wishSpeed, wishDir) = PlayerUtility.GetWishValues
             (
-                Player.Info.flatOrientation.right,
-                Player.Info.flatOrientation.forward,
+                PlayerInputs.FlatOrientation.right,
+                PlayerInputs.FlatOrientation.forward,
                 PlayerInputs.MoveVector,
                 Player.Config.maxSpeed,
                 2f
