@@ -7,22 +7,24 @@ namespace Fifbox.Game.Player.StateMachine
         public T CurrentState { get; private set; }
 
         public readonly Player player;
-        public readonly PlayerInputsController playerInputs;
 
-        private T2 _statesData;
+        private readonly PlayerInputsController _playerInputs;
+        private readonly PlayerHeightsController _playerHeights;
+        private readonly T2 _statesData;
 
-        public PlayerStateMachine(Player player, PlayerInputsController playerInputs)
+        public PlayerStateMachine(Player player, PlayerInputsController playerInputs, PlayerHeightsController playerHeights)
         {
             this.player = player;
-            this.playerInputs = playerInputs;
 
+            _playerInputs = playerInputs;
+            _playerHeights = playerHeights;
             _statesData = new();
         }
 
         public void Start()
         {
             CurrentState = new T1();
-            CurrentState.Enter(player, playerInputs, _statesData);
+            CurrentState.Enter(player, _playerInputs, _playerHeights, _statesData);
         }
 
         public void Update()
@@ -34,7 +36,7 @@ namespace Fifbox.Game.Player.StateMachine
 
             CurrentState.OnExit();
             CurrentState = nextState;
-            CurrentState.Enter(player, playerInputs, _statesData);
+            CurrentState.Enter(player, _playerInputs, _playerHeights, _statesData);
         }
 
         public void LateUpdate()

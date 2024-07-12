@@ -14,7 +14,7 @@ namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
 
         private void SetCrouching(bool crouching)
         {
-            Player.Info.currentHeight = crouching ? Player.Config.crouchHeight : Player.Config.fullHeight;
+            PlayerHeights.CurrentHeight = crouching ? Player.Config.crouchHeight : Player.Config.fullHeight;
             Player.UpdateColliderAndCenter();
         }
 

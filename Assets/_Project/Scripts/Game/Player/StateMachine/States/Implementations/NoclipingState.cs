@@ -19,7 +19,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         private void SetNoclip(bool noclip)
         {
             Player.gameObject.SetLayerForChildren(noclip ? FifboxLayers.NoclipingPlayerLayer.Index : Player.DefaultLayer);
-            Player.Info.currentMaxStepHeight = noclip ? 0f : Player.Config.maxStepHeight;
+            PlayerHeights.CurrentMaxStepHeight = noclip ? 0f : Player.Config.maxStepHeight;
             Player.UpdateColliderAndCenter();
         }
 

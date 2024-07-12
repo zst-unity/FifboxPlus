@@ -6,12 +6,14 @@ namespace Fifbox.Game.Player.StateMachine.States
     {
         public Player Player { get; private set; }
         public PlayerInputsController PlayerInputs { get; private set; }
+        public PlayerHeightsController PlayerHeights { get; private set; }
         public T1 Data { get; private set; }
 
-        public void Enter(Player player, PlayerInputsController playerInputs, T1 statesData)
+        public void Enter(Player player, PlayerInputsController playerInputs, PlayerHeightsController playerHeights, T1 statesData)
         {
             Player = player;
             PlayerInputs = playerInputs;
+            PlayerHeights = playerHeights;
             Data = statesData;
             OnEnter();
         }

@@ -31,7 +31,7 @@ namespace Fifbox.Game.Player.StateMachine.States
         {
             if (Data.jumpBufferTimer > 0f) Data.jumpBufferTimer -= Time.deltaTime;
 
-            Player.Info.currentMaxStepHeight = PlayerInputs.WantsToCrouch ?
+            PlayerHeights.CurrentMaxStepHeight = PlayerInputs.WantsToCrouch ?
                 Player.Config.maxStepHeight / 2 + Player.Config.fullHeight - Player.Config.crouchHeight :
                 Player.Config.maxStepHeight;
 

@@ -53,16 +53,16 @@ namespace Fifbox.Game.Player
         public PlayerInputsInfo InputsInfo => inputs.Info;
         protected readonly PlayerInputsController inputs = new();
 
+        [SerializeField, ReadOnly, AllowNesting] private PlayerHeightsInfo _heightsInfo;
+        public PlayerHeightsInfo HeightsInfo => heights.Info;
+        protected readonly PlayerHeightsController heights = new();
+
         [field: Space(9)]
 
         [field: SerializeField, ReadOnly, AllowNesting] public PlayerMapInfo GroundInfo { get; private set; }
         [field: SerializeField, ReadOnly, AllowNesting] public bool TouchingGround { get; private set; }
         [field: SerializeField, ReadOnly, AllowNesting] public bool TouchingCeiling { get; private set; }
         [field: SerializeField, ReadOnly, AllowNesting] public float GroundCheckSizeY { get; private set; }
-
-        [field: Space(9)]
-
-        [field: SerializeField, ReadOnly, AllowNesting] public PlayerInfo Info { get; private set; } = new();
 
         protected abstract bool ShouldProcessPlayer { get; }
         public abstract int DefaultLayer { get; }
@@ -80,11 +80,11 @@ namespace Fifbox.Game.Player
 
         protected virtual void OnPlayerAwake()
         {
-            StateMachine = new(this, inputs);
+            StateMachine = new(this, inputs, heights);
 
-            Info.currentHeight = Config.fullHeight;
-            Info.currentMaxStepHeight = Config.maxStepHeight;
-            Info.currentStepDownBufferHeight = Config.stepDownBufferHeight;
+            heights.CurrentHeight = Config.fullHeight;
+            heights.CurrentMaxStepHeight = Config.maxStepHeight;
+            heights.CurrentStepDownBufferHeight = Config.stepDownBufferHeight;
         }
 
         protected virtual void OnPlayerStart()
@@ -134,7 +134,7 @@ namespace Fifbox.Game.Player
             if (!ShouldProcessPlayer) return;
 
             var ceiledCheckSize = new Vector3(WidthForChecking, 0.02f, WidthForChecking);
-            var ceiledCheckPosition = transform.position + Vector3.up * Info.currentHeight;
+            var ceiledCheckPosition = transform.position + Vector3.up * HeightsInfo.currentHeight;
             TouchingCeiling = Physics.CheckBox(ceiledCheckPosition, ceiledCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
         }
 
@@ -144,15 +144,15 @@ namespace Fifbox.Game.Player
 
             var useBuffer = Rigidbody.linearVelocity.Round(0.001f).y == 0f;
             var groundedCheckPosition = useBuffer
-                ? transform.position + Vector3.up * (Info.currentMaxStepHeight - Info.currentStepDownBufferHeight) / 2
-                : transform.position + Vector3.up * Info.currentMaxStepHeight / 2;
+                ? transform.position + Vector3.up * (HeightsInfo.currentMaxStepHeight - HeightsInfo.currentStepDownBufferHeight) / 2
+                : transform.position + Vector3.up * HeightsInfo.currentMaxStepHeight / 2;
 
-            GroundCheckSizeY = useBuffer ? Info.currentMaxStepHeight + Info.currentStepDownBufferHeight : Info.currentMaxStepHeight + 0.05f;
+            GroundCheckSizeY = useBuffer ? HeightsInfo.currentMaxStepHeight + HeightsInfo.currentStepDownBufferHeight : HeightsInfo.currentMaxStepHeight + 0.05f;
             var groundedCheckSize = new Vector3(WidthForChecking, GroundCheckSizeY, WidthForChecking);
             TouchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
 
-            var groundInfoCheckPosition = transform.position + (Info.currentHeight - Info.currentMaxStepHeight / 2) * Vector3.up;
-            var groundInfoCheckSize = new Vector3(WidthForChecking, Info.currentMaxStepHeight, WidthForChecking);
+            var groundInfoCheckPosition = transform.position + (HeightsInfo.currentHeight - HeightsInfo.currentMaxStepHeight / 2) * Vector3.up;
+            var groundInfoCheckSize = new Vector3(WidthForChecking, HeightsInfo.currentMaxStepHeight, WidthForChecking);
             Physics.BoxCast
             (
                 groundInfoCheckPosition,
@@ -175,9 +175,9 @@ namespace Fifbox.Game.Player
 
         public void UpdateColliderAndCenter()
         {
-            Collider.center = PlayerUtility.GetColliderCenter(Info.currentMaxStepHeight);
-            Collider.size = PlayerUtility.GetColliderSize(Config.width, Info.currentHeight, Info.currentMaxStepHeight);
-            Center.localPosition = PlayerUtility.GetCenterPosition(Info.currentHeight);
+            Collider.center = PlayerUtility.GetColliderCenter(HeightsInfo.currentMaxStepHeight);
+            Collider.size = PlayerUtility.GetColliderSize(Config.width, HeightsInfo.currentHeight, HeightsInfo.currentMaxStepHeight);
+            Center.localPosition = PlayerUtility.GetCenterPosition(HeightsInfo.currentHeight);
         }
 
         protected override void OnValidate()
@@ -212,20 +212,34 @@ namespace Fifbox.Game.Player
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireCube(transform.position + Vector3.up * Info.currentMaxStepHeight / 2, new(Config.width, Info.currentMaxStepHeight, Config.width));
+            Gizmos.DrawWireCube
+            (
+                transform.position + Vector3.up * HeightsInfo.currentMaxStepHeight / 2,
+                new(Config.width, HeightsInfo.currentMaxStepHeight, Config.width)
+            );
 
             Gizmos.color = Color.blue - Color.black * 0.65f;
-            Gizmos.DrawWireCube(transform.position - Vector3.up * Info.currentStepDownBufferHeight / 2, new(Config.width, Info.currentStepDownBufferHeight, Config.width));
+            Gizmos.DrawWireCube
+            (
+                transform.position - Vector3.up * HeightsInfo.currentStepDownBufferHeight / 2,
+                new(Config.width, HeightsInfo.currentStepDownBufferHeight, Config.width)
+            );
 
             Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(transform.position + Vector3.up * Info.currentHeight, new(Config.width, 0.02f, Config.width));
-
-            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube
+            (
+                transform.position + Vector3.up * HeightsInfo.currentHeight,
+                new(Config.width, 0.02f, Config.width)
+            );
 
             if (Application.isPlaying) return;
-            var position = transform.position + Vector3.up * (Config.maxStepHeight / 2 + Config.crouchHeight / 2);
-            var size = new Vector3(Config.width, Config.crouchHeight - Config.maxStepHeight, Config.width);
-            Gizmos.DrawWireCube(position, size);
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube
+            (
+                transform.position + Vector3.up * (Config.maxStepHeight / 2 + Config.crouchHeight / 2),
+                new(Config.width, Config.crouchHeight - Config.maxStepHeight, Config.width)
+            );
         }
     }
 }

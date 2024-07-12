@@ -12,7 +12,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
         protected override void OnEnter()
         {
-            StateMachine = new(Player, PlayerInputs);
+            StateMachine = new(Player, PlayerInputs, PlayerHeights);
             StateMachine.Start();
 
             Player.Rigidbody.SetVelocityY(0f);
@@ -54,7 +54,7 @@ namespace Fifbox.Game.Player.StateMachine.States
 
             var isOnSlopeLimit = Player.GroundInfo.angle > Player.Config.slopeAngleLimit;
             var shouldDisableFloatingCharacter = Player.TouchingCeiling || isOnSlopeLimit;
-            Player.Info.currentMaxStepHeight = shouldDisableFloatingCharacter ? 0.05f : Player.Config.maxStepHeight;
+            PlayerHeights.CurrentMaxStepHeight = shouldDisableFloatingCharacter ? 0.05f : Player.Config.maxStepHeight;
             Player.UpdateColliderAndCenter();
 
             if (isOnSlopeLimit) ApplyGravity();
