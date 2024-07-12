@@ -74,6 +74,7 @@ namespace Fifbox.Game.Player
         {
             OnPlayerUpdate();
             _inputsInfo = InputsInfo;
+            _heightsInfo = HeightsInfo;
         }
 
         private void LateUpdate() => OnPlayerLateUpdate();

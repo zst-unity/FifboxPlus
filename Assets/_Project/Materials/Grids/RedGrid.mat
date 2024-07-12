@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: RedGrid
-  m_Shader: {fileID: -6465566751694194690, guid: f6af76b703efb904baf6c320e80858d6, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 1e6fb7be17bf9b44185f40f89801b2b6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -83,6 +83,7 @@ Material:
     m_Ints: []
     m_Floats:
     - Boolean_a1588f281f4343ff8b59f75c07bd6dc0: 0
+    - Boolean_d65300d66b3747f383c66186af491efd: 0
     - Checker_Contrast: 1
     - Checker_Size: 100
     - Metallic: 0

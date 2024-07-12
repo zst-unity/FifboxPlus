@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7131114985885659597}
+  - component: {fileID: 6400356635196082866}
   m_Layer: 7
   m_Name: Center
   m_TagString: Untagged
@@ -33,6 +34,40 @@ Transform:
   - {fileID: 1745921407570226558}
   m_Father: {fileID: 6293730416056293195}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6400356635196082866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 327212448623479434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 1742562525474242588}
+  syncPosition: 1
+  syncRotation: 0
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 0
+  interpolateRotation: 0
+  interpolateScale: 0
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &604378904611252223
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,9 +294,9 @@ MonoBehaviour:
   syncScale: 0
   onlySyncOnChange: 1
   compressRotation: 1
-  interpolatePosition: 1
+  interpolatePosition: 0
   interpolateRotation: 1
-  interpolateScale: 1
+  interpolateScale: 0
   coordinateSpace: 0
   sendIntervalMultiplier: 1
   timelineOffset: 0
@@ -415,7 +450,7 @@ MonoBehaviour:
   <Center>k__BackingField: {fileID: 7131114985885659597}
   <Orientation>k__BackingField: {fileID: 1742562525474242588}
   _config: {fileID: 11400000, guid: 0ff8b33f25157d74ab41b9eb87c4c49b, type: 2}
-  <Inputs>k__BackingField:
+  _inputsInfo:
     moveVector: {x: 0, y: 0}
     wantsToRun: 0
     wantsToCrouch: 0
@@ -423,20 +458,21 @@ MonoBehaviour:
     wantsToAscend: 0
     wantsToDescend: 0
     nocliping: 0
-  <Data>k__BackingField:
-    touchingGround: 0
-    touchingCeiling: 0
-    groundNormal: {x: 0, y: 0, z: 0}
-    groundAngle: 0
-    groundHeight: 0
-    jumpBufferTimer: 0
-    lastGroundedVelocity: {x: 0, y: 0, z: 0}
-    fullOrientationEulerAngles: {x: 0, y: 0, z: 0}
-    initialLayer: 0
+    fullOrientation:
+      eulerAngles: {x: 0, y: 0, z: 0}
+    flatOrientation:
+      eulerAngles: {x: 0, y: 0, z: 0}
+  _heightsInfo:
     currentHeight: 0
     currentMaxStepHeight: 0
     currentStepDownBufferHeight: 0
-    groundCheckSizeY: 0
+  <GroundInfo>k__BackingField:
+    normal: {x: 0, y: 0, z: 0}
+    angle: 0
+    height: 0
+  <TouchingGround>k__BackingField: 0
+  <TouchingCeiling>k__BackingField: 0
+  <GroundCheckSizeY>k__BackingField: 0
   _mainCameraPrefab: {fileID: 6722454577904573275, guid: f48ee45efdfb28347b67fd052395d735, type: 3}
   _autoBHop: 1
 --- !u!54 &577452263014476418

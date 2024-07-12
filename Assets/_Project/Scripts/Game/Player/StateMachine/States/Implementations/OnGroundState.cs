@@ -55,6 +55,7 @@ namespace Fifbox.Game.Player.StateMachine.States
             var isOnSlopeLimit = Player.GroundInfo.angle > Player.Config.slopeAngleLimit;
             var shouldDisableFloatingCharacter = Player.TouchingCeiling || isOnSlopeLimit;
             PlayerHeights.CurrentMaxStepHeight = shouldDisableFloatingCharacter ? 0.05f : Player.Config.maxStepHeight;
+            PlayerHeights.CurrentStepDownBufferHeight = Player.TouchingCeiling ? 0f : Player.Config.stepDownBufferHeight;
             Player.UpdateColliderAndCenter();
 
             if (isOnSlopeLimit) ApplyGravity();
