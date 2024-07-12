@@ -17,7 +17,7 @@ namespace Fifbox.Game.Player
         public const float MAX_GROUND_INFO_CHECK_DISTANCE = 100f;
         public float WidthForChecking => Config.width - 0.01f;
 
-        [field: Header("References")]
+        [Header("References")]
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
         [field: SerializeField] public BoxCollider Collider { get; private set; }
         [field: SerializeField] public GameObject Model { get; private set; }
@@ -40,7 +40,7 @@ namespace Fifbox.Game.Player
         [Header("Info")]
         [SerializeField, ReadOnly, AllowNesting] private PlayerInputsInfo _inputsInfo;
         public PlayerInputsInfo InputsInfo => inputs.Info;
-        protected readonly PlayerInputs inputs = new();
+        protected readonly PlayerInputsController inputs = new();
 
         [field: SerializeField, ReadOnly, AllowNesting] public PlayerInfo Info { get; private set; } = new();
 
@@ -137,7 +137,7 @@ namespace Fifbox.Game.Player
             Info.touchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
 
             var groundInfoCheckPosition = transform.position + (Info.currentHeight - Info.currentMaxStepHeight / 2) * Vector3.up;
-            var groundInfoCheckSize = new Vector3(Config.width + 0.1f, Info.currentMaxStepHeight, Config.width + 0.1f);
+            var groundInfoCheckSize = new Vector3(Config.width - 0.01f, Info.currentMaxStepHeight, Config.width - 0.01f);
             Physics.BoxCast
             (
                 groundInfoCheckPosition,

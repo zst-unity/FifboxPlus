@@ -7,9 +7,9 @@ namespace Fifbox.Game.Player.StateMachine
         public T CurrentState { get; private set; }
 
         public readonly Player player;
-        public readonly PlayerInputs playerInputs;
+        public readonly PlayerInputsController playerInputs;
 
-        public PlayerStateMachine(Player player, PlayerInputs playerInputs)
+        public PlayerStateMachine(Player player, PlayerInputsController playerInputs)
         {
             this.player = player;
             this.playerInputs = playerInputs;

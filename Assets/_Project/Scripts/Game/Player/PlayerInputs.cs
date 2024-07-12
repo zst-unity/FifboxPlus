@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Fifbox.Game.Player
 {
-    public class PlayerInputs
+    public class PlayerInputsController
     {
         public PlayerInputsInfo Info { get; private set; }
 
@@ -100,30 +100,28 @@ namespace Fifbox.Game.Player
 
         public PlayerInputsInfo GetInfo()
         {
-            return new(_moveVector, _wantsToRun, _wantsToCrouch, _wantsToFlyFast, _wantsToAscend, _wantsToDescend, _nocliping);
+            return new()
+            {
+                moveVector = MoveVector,
+                wantsToRun = WantsToRun,
+                wantsToCrouch = WantsToCrouch,
+                wantsToFlyFast = WantsToFlyFast,
+                wantsToAscend = WantsToAscend,
+                wantsToDescend = WantsToDescend,
+                nocliping = Nocliping
+            };
         }
     }
 
     [Serializable]
-    public readonly struct PlayerInputsInfo
+    public struct PlayerInputsInfo
     {
-        public readonly Vector2 moveVector;
-        public readonly bool wantsToRun;
-        public readonly bool wantsToCrouch;
-        public readonly bool wantsToFlyFast;
-        public readonly bool wantsToAscend;
-        public readonly bool wantsToDescend;
-        public readonly bool nocliping;
-
-        public PlayerInputsInfo(Vector2 moveVector, bool wantsToRun, bool wantsToCrouch, bool wantsToFlyFast, bool wantsToAscend, bool wantsToDescend, bool nocliping)
-        {
-            this.moveVector = moveVector;
-            this.wantsToRun = wantsToRun;
-            this.wantsToCrouch = wantsToCrouch;
-            this.wantsToFlyFast = wantsToFlyFast;
-            this.wantsToAscend = wantsToAscend;
-            this.wantsToDescend = wantsToDescend;
-            this.nocliping = nocliping;
-        }
+        public Vector2 moveVector;
+        public bool wantsToRun;
+        public bool wantsToCrouch;
+        public bool wantsToFlyFast;
+        public bool wantsToAscend;
+        public bool wantsToDescend;
+        public bool nocliping;
     }
 }

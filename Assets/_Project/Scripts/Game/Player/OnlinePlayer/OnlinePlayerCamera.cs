@@ -8,7 +8,7 @@ namespace Fifbox.Game.Player.OnlinePlayer
     public class OnlinePlayerCamera : MonoBehaviour
     {
         private OnlinePlayer _player;
-        private PlayerInputs _inputs;
+        private PlayerInputsController _inputs;
         private bool _initialized;
 
         [Header("Height properties")]
@@ -26,7 +26,7 @@ namespace Fifbox.Game.Player.OnlinePlayer
             transform.localPosition = Vector3.up * _cameraDefaultHeight;
         }
 
-        public void Init(OnlinePlayer player, PlayerInputs inputs)
+        public void Init(OnlinePlayer player, PlayerInputsController inputs)
         {
             if (_initialized) return;
             _player = player;

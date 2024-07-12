@@ -110,6 +110,24 @@ namespace ZSToolkit.ZSTUtility.Extensions
         }
     }
 
+    public static class ZSTRigidbodyExtensions
+    {
+        public static void SetVelocityX(this Rigidbody rigidbody, float value)
+        {
+            rigidbody.linearVelocity = new Vector3(value, rigidbody.linearVelocity.y, rigidbody.linearVelocity.z);
+        }
+
+        public static void SetVelocityY(this Rigidbody rigidbody, float value)
+        {
+            rigidbody.linearVelocity = new Vector3(rigidbody.linearVelocity.x, value, rigidbody.linearVelocity.z);
+        }
+
+        public static void SetVelocityZ(this Rigidbody rigidbody, float value)
+        {
+            rigidbody.linearVelocity = new Vector3(rigidbody.linearVelocity.x, rigidbody.linearVelocity.y, value);
+        }
+    }
+
     public static class ZSTMath
     {
         public static float Remap(this float value, float fromMin, float fromMax, float toMin, float toMax)

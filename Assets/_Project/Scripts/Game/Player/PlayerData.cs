@@ -25,9 +25,9 @@ namespace Fifbox.Game.Player
     [Serializable]
     public struct PlayerMapInfo
     {
-        public readonly Vector3 normal;
-        public readonly float angle;
-        public readonly float height;
+        public Vector3 normal;
+        public float angle;
+        public float height;
 
         public PlayerMapInfo(Vector3 normal, float angle, float height)
         {
@@ -40,7 +40,7 @@ namespace Fifbox.Game.Player
     [Serializable]
     public struct PlayerOrientation
     {
-        public readonly Vector3 eulerAngles;
+        public Vector3 eulerAngles;
         public readonly Quaternion quaternion;
         public readonly Vector3 forward;
         public readonly Vector3 right;

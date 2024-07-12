@@ -5,9 +5,9 @@ namespace Fifbox.Game.Player.StateMachine.States
     public abstract class PlayerStateBase<T> where T : PlayerStateBase<T>
     {
         public Player Player { get; private set; }
-        public PlayerInputs PlayerInputs { get; private set; }
+        public PlayerInputsController PlayerInputs { get; private set; }
 
-        public void Enter(Player player, PlayerInputs playerInputs)
+        public void Enter(Player player, PlayerInputsController playerInputs)
         {
             Player = player;
             PlayerInputs = playerInputs;

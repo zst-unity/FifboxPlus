@@ -34,9 +34,9 @@ MonoBehaviour:
   jumpBufferTime: 0.15
   airAcceleration: 50
   airSpeedCap: 3.2
-  noclipNormalFlySpeed: 15
+  noclipNormalFlySpeed: 11.2
   noclipFastFlySpeed: 27.3
   noclipVerticalModifierSpeed: 15
   maxStepHeight: 0.4
   stepDownBufferHeight: 0.5
-  slopeAngleLimit: 70
+  slopeAngleLimit: 50
