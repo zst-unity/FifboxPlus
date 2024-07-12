@@ -8,7 +8,7 @@ namespace Fifbox.Game.Player.StateMachine.States
     {
         private float _targetDeceleration;
 
-        public PlayerStateMachine<OnGroundSubState, IdlingState> StateMachine { get; private set; }
+        public PlayerStateMachine<OnGroundSubState, IdlingState, OnGroundSubStatesData> StateMachine { get; private set; }
 
         protected override void OnEnter()
         {
@@ -17,10 +17,10 @@ namespace Fifbox.Game.Player.StateMachine.States
 
             Player.Rigidbody.SetVelocityY(0f);
 
-            if (Player.Info.jumpBufferTimer > 0f)
+            if (Data.jumpBufferTimer > 0f)
             {
                 TryJump();
-                Player.Info.jumpBufferTimer = 0f;
+                Data.jumpBufferTimer = 0f;
             }
 
             PlayerInputs.tryJump += TryJump;
@@ -129,7 +129,7 @@ namespace Fifbox.Game.Player.StateMachine.States
             if (Player.TouchingCeiling || Player.Rigidbody.linearVelocity.y > 0.1f) return;
 
             var diff = Mathf.Abs(Player.transform.position.y - Player.GroundInfo.height);
-            if (Player.GroundInfo.angle > Player.Config.slopeAngleLimit || diff > Player.Info.groundCheckSizeY) return;
+            if (Player.GroundInfo.angle > Player.Config.slopeAngleLimit || diff > Player.GroundCheckSizeY) return;
 
             Player.transform.position = new(Player.transform.position.x, Player.GroundInfo.height, Player.transform.position.z);
             Player.Rigidbody.SetVelocityY(0f);

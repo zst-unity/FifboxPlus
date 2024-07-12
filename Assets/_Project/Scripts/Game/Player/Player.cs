@@ -26,7 +26,7 @@ namespace Fifbox.Game.Player
         public const float MAX_GROUND_INFO_CHECK_DISTANCE = 100f;
         public float WidthForChecking => Config.width - 0.001f;
 
-        public PlayerStateMachine<PlayerState, OnGroundState> StateMachine { get; private set; }
+        public PlayerStateMachine<PlayerState, OnGroundState, PlayerStatesData> StateMachine { get; private set; }
 
         [Header("References")]
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
@@ -58,6 +58,7 @@ namespace Fifbox.Game.Player
         [field: SerializeField, ReadOnly, AllowNesting] public PlayerMapInfo GroundInfo { get; private set; }
         [field: SerializeField, ReadOnly, AllowNesting] public bool TouchingGround { get; private set; }
         [field: SerializeField, ReadOnly, AllowNesting] public bool TouchingCeiling { get; private set; }
+        [field: SerializeField, ReadOnly, AllowNesting] public float GroundCheckSizeY { get; private set; }
 
         [field: Space(9)]
 
@@ -146,8 +147,8 @@ namespace Fifbox.Game.Player
                 ? transform.position + Vector3.up * (Info.currentMaxStepHeight - Info.currentStepDownBufferHeight) / 2
                 : transform.position + Vector3.up * Info.currentMaxStepHeight / 2;
 
-            Info.groundCheckSizeY = useBuffer ? Info.currentMaxStepHeight + Info.currentStepDownBufferHeight : Info.currentMaxStepHeight + 0.05f;
-            var groundedCheckSize = new Vector3(WidthForChecking, Info.groundCheckSizeY, WidthForChecking);
+            GroundCheckSizeY = useBuffer ? Info.currentMaxStepHeight + Info.currentStepDownBufferHeight : Info.currentMaxStepHeight + 0.05f;
+            var groundedCheckSize = new Vector3(WidthForChecking, GroundCheckSizeY, WidthForChecking);
             TouchingGround = Physics.CheckBox(groundedCheckPosition, groundedCheckSize / 2f, Quaternion.identity, FifboxLayers.GroundLayers);
 
             var groundInfoCheckPosition = transform.position + (Info.currentHeight - Info.currentMaxStepHeight / 2) * Vector3.up;
