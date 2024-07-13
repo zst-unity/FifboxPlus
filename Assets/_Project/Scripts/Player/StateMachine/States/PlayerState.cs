@@ -1,4 +1,4 @@
-namespace Fifbox.Game.Player.StateMachine.States
+namespace Fifbox.Player.StateMachine.States
 {
     public abstract class PlayerState : PlayerStateBase<PlayerState, PlayerStatesData> { }
 

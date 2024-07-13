@@ -1,6 +1,6 @@
-using Fifbox.Game.Player.StateMachine.States;
+using Fifbox.Player.StateMachine.States;
 
-namespace Fifbox.Game.Player.StateMachine
+namespace Fifbox.Player.StateMachine
 {
     public class PlayerStateMachine<T, T1, T2> where T : PlayerStateBase<T, T2> where T1 : T, new() where T2 : PlayerStatesDataBase, new()
     {

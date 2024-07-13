@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using ZSToolkit.ZSTUtility;
 
-namespace Fifbox.Game.Player.OnlinePlayer
+namespace Fifbox.Player.OnlinePlayer
 {
     public class OnlinePlayer : Player
     {

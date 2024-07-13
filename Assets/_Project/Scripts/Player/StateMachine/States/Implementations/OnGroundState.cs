@@ -1,8 +1,8 @@
-using Fifbox.Game.Player.StateMachine.States.OnGroundSubStates;
+using Fifbox.Player.StateMachine.States.OnGroundSubStates;
 using UnityEngine;
 using ZSToolkit.ZSTUtility.Extensions;
 
-namespace Fifbox.Game.Player.StateMachine.States
+namespace Fifbox.Player.StateMachine.States
 {
     public class OnGroundState : PlayerState
     {

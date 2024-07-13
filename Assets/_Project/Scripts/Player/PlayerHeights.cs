@@ -1,6 +1,6 @@
 using System;
 
-namespace Fifbox.Game.Player
+namespace Fifbox.Player
 {
     public class PlayerHeightsController
     {

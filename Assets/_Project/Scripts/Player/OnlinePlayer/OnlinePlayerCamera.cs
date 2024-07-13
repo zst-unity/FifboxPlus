@@ -1,9 +1,9 @@
-using Fifbox.Game.Player.StateMachine.States;
-using Fifbox.Game.Player.StateMachine.States.OnGroundSubStates;
+using Fifbox.Player.StateMachine.States;
+using Fifbox.Player.StateMachine.States.OnGroundSubStates;
 using Fifbox.Input;
 using UnityEngine;
 
-namespace Fifbox.Game.Player.OnlinePlayer
+namespace Fifbox.Player.OnlinePlayer
 {
     public class OnlinePlayerCamera : MonoBehaviour
     {

@@ -2,7 +2,7 @@ using Fifbox.ScriptableObjects;
 using UnityEngine;
 using ZSToolkit.ZSTUtility.Extensions;
 
-namespace Fifbox.Game.Player.StateMachine.States
+namespace Fifbox.Player.StateMachine.States
 {
     public class NoclipingState : PlayerState
     {

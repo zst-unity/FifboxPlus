@@ -1,4 +1,4 @@
-namespace Fifbox.Game.Player.StateMachine.States.OnGroundSubStates
+namespace Fifbox.Player.StateMachine.States.OnGroundSubStates
 {
     public class WalkingState : OnGroundSubState
     {

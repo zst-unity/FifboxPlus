@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Fifbox.Game.Player
+namespace Fifbox.Player
 {
     public static class PlayerUtility
     {

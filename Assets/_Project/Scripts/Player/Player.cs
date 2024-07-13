@@ -6,11 +6,11 @@ using Fifbox.ScriptableObjects;
 
 using ReadOnlyAttribute = NaughtyAttributes.ReadOnlyAttribute;
 using ZSToolkit.ZSTUtility.Extensions;
-using Fifbox.Game.Player.StateMachine;
-using Fifbox.Game.Player.StateMachine.States;
+using Fifbox.Player.StateMachine;
+using Fifbox.Player.StateMachine.States;
 using System;
 
-namespace Fifbox.Game.Player
+namespace Fifbox.Player
 {
     [Serializable]
     public struct PlayerMapInfo

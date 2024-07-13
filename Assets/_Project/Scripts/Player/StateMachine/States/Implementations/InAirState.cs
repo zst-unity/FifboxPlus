@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Fifbox.Game.Player.StateMachine.States
+namespace Fifbox.Player.StateMachine.States
 {
     public class InAirState : PlayerState
     {
