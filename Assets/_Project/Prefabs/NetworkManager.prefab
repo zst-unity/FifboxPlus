@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7034000722388773483}
   - component: {fileID: 8859445176279063213}
   - component: {fileID: 4677093740108149821}
-  - component: {fileID: 8024558596591431504}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -80,6 +79,7 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
+  _gameplayCanvas: {fileID: 3737553570743497157, guid: 2d4f9286b2281934bbceec952d90f9eb, type: 3}
 --- !u!114 &4677093740108149821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,17 +109,3 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
---- !u!114 &8024558596591431504
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2683873194132009017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0

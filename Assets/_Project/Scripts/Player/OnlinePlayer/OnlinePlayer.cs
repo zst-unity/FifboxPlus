@@ -27,7 +27,6 @@ namespace Fifbox.Player.OnlinePlayer
 
         private void LocalStart()
         {
-            Cursor.lockState = CursorLockMode.Locked;
             Model.SetActive(false);
 
             InitCameras();
@@ -48,7 +47,8 @@ namespace Fifbox.Player.OnlinePlayer
 
         private void InitActions()
         {
-            FifboxActions.Asset.Player.Enable();
+            FifboxActions.EnablePlayerActions();
+            FifboxActions.StopAllPlayerActionsInterruptions();
 
             FifboxActions.Asset.Player.Move.performed += MovePerformed;
             FifboxActions.Asset.Player.Move.canceled += MoveCanceled;
@@ -83,7 +83,7 @@ namespace Fifbox.Player.OnlinePlayer
 
         private void ResetActions()
         {
-            FifboxActions.Asset.Player.Disable();
+            FifboxActions.DisablePlayerActions();
 
             FifboxActions.Asset.Player.Move.performed -= MovePerformed;
             FifboxActions.Asset.Player.Move.canceled -= MoveCanceled;

@@ -2,6 +2,7 @@ using Fifbox.Input;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using ZSToolkit.ZSTUtility;
 using ZSToolkit.ZSTUtility.Extensions;
 
 namespace Fifbox
@@ -9,17 +10,21 @@ namespace Fifbox
     public class Entrypoint : MonoBehaviour
     {
         [SerializeField, Scene] private string _menuScene;
-        [SerializeField] private GameObject _networkManager;
+        [SerializeField, WithComponent(typeof(NetworkManager))] private GameObject _networkManager;
+        [SerializeField, WithComponent(typeof(FifboxEventSystem))] private GameObject _eventSystem;
 
         private void Awake()
         {
             Debug.Log("Entrypoint awake");
 
+            Debug.Log("Spawning event system");
+            _eventSystem.Spawn();
+
             Debug.Log("Initializing actions");
             FifboxActions.Init();
 
             Debug.Log("Spawning network manager");
-            _networkManager.gameObject.Spawn();
+            _networkManager.Spawn();
         }
 
         private void Start()

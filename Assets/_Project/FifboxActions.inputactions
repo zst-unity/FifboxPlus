@@ -157,7 +157,7 @@
                 {
                     "name": "",
                     "id": "7fc3fad9-3ef8-4d93-b0f9-69e08f12f7d2",
-                    "path": "<Gamepad>/leftShoulder",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -327,6 +327,45 @@
                     "processors": "",
                     "groups": "",
                     "action": "Noclip",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "GameplayUI",
+            "id": "bf7c9fa4-4ac7-4322-b094-3d27d4782ba1",
+            "actions": [
+                {
+                    "name": "ToggleOptions",
+                    "type": "Button",
+                    "id": "094213e4-6467-4d59-8d31-653930b8601c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "bb1446a1-3673-4e5f-9670-738e5a05a9ac",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleOptions",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "83ff9758-febd-4d5d-a6b1-9dc3186a5dfe",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleOptions",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
